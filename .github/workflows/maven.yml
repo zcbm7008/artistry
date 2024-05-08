@@ -38,9 +38,9 @@ jobs:
       if: always()
       with:
         files: |
-          test-results\**\*.xml
-          test-results\**\*.trx
-          test-results\**\*.json
+          test-results/**/*.xml
+          test-results/**/*.trx
+          test-results/**/*.json
             
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
