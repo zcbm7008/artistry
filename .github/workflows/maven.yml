@@ -8,6 +8,10 @@
 
 name: Java CI with Maven
 
+permissions:
+  checks: write
+  pull-requests: write
+  
 on:
   push:
     branches: [ "master", "feat/*" ]
