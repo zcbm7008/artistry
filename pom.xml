@@ -16,6 +16,33 @@
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>local</id>
+			<activation>
+				<!--<activeByDefault>true</activeByDefault>-->
+			</activation>
+			<properties>
+				<environment>local</environment>
+			</properties>
+		</profile>
+		<!-- dev: 개발 -->
+		<profile>
+			<id>dev</id>
+			<properties>
+				<environment>dev</environment>
+			</properties>
+		</profile>
+		<!-- prd: 운영 -->
+		<profile>
+			<id>prod</id>
+			<properties>
+				<environment>prod</environment>
+			</properties>
+		</profile>
+	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -41,9 +68,29 @@
 			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<!-- 환경별 리소스 포함 -->
+			<resource>
+				<directory>src/main/resources-${environment}</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
