@@ -3,6 +3,7 @@ package com.artistry.artistry.domain;
 import com.artistry.artistry.Domain.Team;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.TeamRepository;
+import com.artistry.artistry.Service.TeamService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
