@@ -2,12 +2,15 @@ package com.artistry.artistry.service;
 
 import com.artistry.artistry.Exceptions.RoleNotFoundException;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
+import com.artistry.artistry.Service.RoleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest
 public class RoleServiceTest {
 
     @Autowired
@@ -16,7 +19,7 @@ public class RoleServiceTest {
     @DisplayName("Role Id가 없을경우 예외를 던짐.")
     @Test
     void roleNotFound(){
-        assertThatThrownBy(() -> roleService.findById(Long.MAX_VALUE)
-                .isInstanceOf(RoleNotFoundException.class));
+        assertThatThrownBy(() -> roleService.findById(Long.MAX_VALUE))
+                .isInstanceOf(RoleNotFoundException.class);
     }
 }
