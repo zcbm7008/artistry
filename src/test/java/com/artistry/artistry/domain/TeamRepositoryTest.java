@@ -77,7 +77,7 @@ public class TeamRepositoryTest {
     void saveTeamCreatedDate() {
         Team team = saveTeam();
 
-        assertThat(team.getCreatedDate()).isNotNull();
+        assertThat(team.getCreatedAt()).isNotNull();
     }
 
 
