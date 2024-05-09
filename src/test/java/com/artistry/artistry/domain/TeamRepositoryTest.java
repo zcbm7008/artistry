@@ -5,9 +5,6 @@ import com.artistry.artistry.Domain.Member;
 import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Domain.Team;
-import com.artistry.artistry.Repository.MemberRepository;
-import com.artistry.artistry.Repository.RoleRepository;
-import com.artistry.artistry.Repository.TagRepository;
 import com.artistry.artistry.Repository.TeamRepository;
 import com.artistry.artistry.Service.MemberService;
 import com.artistry.artistry.Service.RoleService;
@@ -24,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 public class TeamRepositoryTest {
