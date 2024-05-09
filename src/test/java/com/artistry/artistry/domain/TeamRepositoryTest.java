@@ -40,7 +40,7 @@ public class TeamRepositoryTest {
 
     @DisplayName("팀 더미데이터 확인")
     @ParameterizedTest
-    @CsvSource({"1,Group1","2,Group2"})
+    @CsvSource({"1,team1","2,team2"})
     void dummyGroupTest(Long id, String groupName){
         Optional<Team> team = teamRepository.findById(id);
         assertThat(team.isPresent()).isTrue();
@@ -69,8 +69,9 @@ public class TeamRepositoryTest {
                 tagService.findById(2L));
 
         return teamRepository.save(Team.builder()
-                .role(roles)
-                .member(members)
+                .name("team1")
+                .roles(roles)
+                .members(members)
                 .tags(tags)
                 .build());
     }

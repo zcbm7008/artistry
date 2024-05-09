@@ -16,4 +16,7 @@ public class Member {
 
     @NonNull
     private String nickname;
+
+    @ManyToOne
+    private Team team;
 }

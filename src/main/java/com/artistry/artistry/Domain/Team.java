@@ -1,13 +1,13 @@
 package com.artistry.artistry.Domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 
-@Builder
+
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +19,36 @@ public class Team {
 
     @NonNull
     private String name;
+
+    @NonNull
+    @OneToOne
+    @JoinColumn(name="member_id")
+    private Member host;
+
+    @OneToMany(mappedBy = "team")
+    private List<Member> members;
+
+    @NonNull
+    @ManyToMany
+    @JoinTable(name = "team_role",
+            joinColumns = @JoinColumn(name="team_id"),
+            inverseJoinColumns = @JoinColumn(name="role_id"))
+    private List<Role> roles = new ArrayList<>();
+
+    @NonNull
+    @ManyToMany
+    @JoinTable(name = "team_tag",
+            joinColumns = @JoinColumn(name="team_id"),
+            inverseJoinColumns = @JoinColumn(name="tag_id"))
+    private List<Tag> tags = new ArrayList<>();
+
+    @Builder
+    public Team(Long id, @NonNull String name,@NonNull List<Member> members,@NonNull List<Role> roles,@NonNull List<Tag> tags){
+        this.id = id;
+        this.name = name;
+        this.members=members;
+        this.roles = roles;
+        this.tags=tags;
+    }
 
 }
