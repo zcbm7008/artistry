@@ -72,5 +72,13 @@ public class TeamRepositoryTest {
                 .build());
     }
 
+    @DisplayName("팀 생성시각을 저장한다.")
+    @Test
+    void saveTeamCreatedDate() {
+        Team team = saveTeam();
+
+        assertThat(team.getCreatedDate()).isNotNull();
+    }
+
 
 }
