@@ -1,6 +1,8 @@
 package com.artistry.artistry.domain;
 
+import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Repository.TagRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -19,10 +21,10 @@ public class TagRepositoryTest {
 
     @DisplayName("태그 더미 데이터를 확인한다.")
     @ParameterizedTest
-    @CsvSource({"1,tag1","2,tag2"})
+    @CsvSource({"1,band","2,edm"})
     void dummyTagTest(Long id,String name){
         Optional<Tag> tag = tagRepository.findById(id);
         assertThat(tag.isPresent()).isTrue();
-        assertThat(tag.get().getName()).isEqualTo(tagName);
+        assertThat(tag.get().getName()).isEqualTo(name);
     }
 }
