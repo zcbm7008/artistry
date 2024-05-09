@@ -2,8 +2,10 @@ package com.artistry.artistry;
 
 import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Domain.Member;
 import com.artistry.artistry.Repository.TagRepository;
 import com.artistry.artistry.Repository.TeamRepository;
+import com.artistry.artistry.Repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,7 @@ public class DataLoader implements CommandLineRunner {
 
     private final TeamRepository groupRepository;
     private final TagRepository tagRepository;
-
+    private final MemberRepository memberRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -38,7 +40,15 @@ public class DataLoader implements CommandLineRunner {
                 .name("edm")
                 .build());
 
+        memberRepository.save(Member.builder()
+                .id(1L)
+                .nickname("member1")
+                .build());
 
+        memberRepository.save(Member.builder()
+                .id(2L)
+                .nickname("member2")
+                .build());
 
 
     }
