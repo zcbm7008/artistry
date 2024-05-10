@@ -1,4 +1,4 @@
-package com.artistry.artistry.domain;
+package com.artistry.artistry.domain.Repository;
 
 import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Domain.Team;
