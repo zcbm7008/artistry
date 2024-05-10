@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DataLoader implements CommandLineRunner {
 
-    private final TeamRepository groupRepository;
+    private final TeamRepository teamRepository;
     private final TagRepository tagRepository;
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
@@ -38,36 +38,33 @@ public class DataLoader implements CommandLineRunner {
     private void prepareDummyTags(){
 
         tagRepository.save(Tag.builder()
-                .id(1L)
                 .name("band")
                 .build());
 
         tagRepository.save(Tag.builder()
-                .id(2L)
                 .name("edm")
                 .build());
     }
 
     private void prepareDummyMembers(){
         memberRepository.save(Member.builder()
-                .id(1L)
                 .nickname("member1")
                 .build());
 
         memberRepository.save(Member.builder()
-                .id(2L)
                 .nickname("member2")
+                .build());
+        memberRepository.save(Member.builder()
+                .nickname("member3")
                 .build());
     }
 
     private void prepareDummyRoles(){
         roleRepository.save(Role.builder()
-                .id(1L)
                 .roleName("vocal")
                 .build());
 
         roleRepository.save(Role.builder()
-                .id(2L)
                 .roleName("composer")
                 .build());
     }
@@ -86,20 +83,20 @@ public class DataLoader implements CommandLineRunner {
                         roleRepository.findById(2L).orElseThrow(RoleNotFoundException::new));
 
 
-        groupRepository.save(Team.builder()
+        teamRepository.save(Team.builder()
+                .host(memberRepository.findById(1L).orElseThrow(MemberNotFoundException::new))
                 .name("team1")
                 .tags(tags)
                 .members(members)
                 .roles(roles)
                 .build());
 
-        groupRepository.save(Team.builder()
+        teamRepository.save(Team.builder()
+                .host(memberRepository.findById(3L).orElseThrow(MemberNotFoundException::new))
                 .name("team2")
                 .tags(tags)
                 .members(members)
                 .roles(roles)
                 .build());
-
-
     }
 }
