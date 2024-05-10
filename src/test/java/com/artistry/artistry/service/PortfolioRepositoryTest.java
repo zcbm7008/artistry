@@ -2,6 +2,7 @@ package com.artistry.artistry.service;
 
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Exceptions.RoleNotFoundException;
+import com.artistry.artistry.Service.PortfolioService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
