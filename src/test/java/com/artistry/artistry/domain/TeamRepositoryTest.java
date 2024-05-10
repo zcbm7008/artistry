@@ -66,6 +66,7 @@ public class TeamRepositoryTest {
 
         return teamRepository.save(Team.builder()
                 .name("team1")
+                .host(memberService.findById(1L))
                 .roles(roles)
                 .members(members)
                 .tags(tags)
