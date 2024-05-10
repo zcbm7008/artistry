@@ -18,7 +18,7 @@ public class PortfolioRepositoryTest {
 
     @DisplayName("porfolio Id가 없을경우 예외를 던짐.")
     @Test
-    void PortfolioNotFound(Long id){
+    void PortfolioNotFound(){
         assertThatThrownBy(() -> portfolioService.findById(Long.MAX_VALUE))
                 .isInstanceOf(PortfolioNotFoundException.class);
     }

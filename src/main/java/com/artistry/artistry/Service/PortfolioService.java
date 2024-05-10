@@ -1,7 +1,7 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Portfolio;
-import com.artistry.artistry.Exceptions.RoleNotFoundException;
+import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ public class PortfolioService {
 
     public Portfolio findById(Long id){
         return portfolioRepository.findById(id)
-                .orElseThrow(RoleNotFoundException::new);
+                .orElseThrow(PortfolioNotFoundException::new);
     }
 }
