@@ -19,6 +19,7 @@ public class TeamTest {
     void requestJoinTeam(){
         //Given
         Team team = createTeam();
+        Member applicant = Member.builder().nickname("지원자1").build();
 
         //When
         team.apply(applicant);
@@ -44,9 +45,8 @@ public class TeamTest {
                 .nickname("호스트")
                 .build();
 
-
-
         return Team.builder()
+                .name("밴드")
                 .tags(tags)
                 .host(host)
                 .roles(roles)
