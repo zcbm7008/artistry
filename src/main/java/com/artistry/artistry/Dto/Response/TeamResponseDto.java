@@ -1,5 +1,6 @@
 package com.artistry.artistry.Dto.Response;
 
+import com.artistry.artistry.Domain.Member;
 import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Domain.Team;
@@ -29,9 +30,7 @@ public class TeamResponseDto {
         return TeamResponseDto.builder()
                 .teamId(team.getId())
                 .createdAt(team.getCreatedAt().toString())
-                .members(team.getMembers().stream()
-                        .map(MemberResponseDto::from)
-                        .collect(Collectors.toList()))
+                .members(memberNames(team.getApplicants()))
                 .host(HostResponseDto.from(team.getHost()))
                 .tags(tagNames(team.getTags()))
                 .roles(roleNames(team.getRoles()))
@@ -42,6 +41,17 @@ public class TeamResponseDto {
         return objects.stream()
                 .map(mapper)
                 .collect(Collectors.toList());
+    }
+
+    private static List<MemberResponseDto> memberNames(List<Member> applicants){
+        if(applicants != null){
+            return applicants.stream()
+                    .map(MemberResponseDto::from)
+                    .collect(Collectors.toList());
+        }
+        else{
+            return null;
+        }
     }
 
     private static List<String> tagNames(List<Tag> tags){
