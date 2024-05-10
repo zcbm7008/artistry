@@ -33,7 +33,7 @@ public class Team {
     @JoinTable(name = "team_member",
             joinColumns = @JoinColumn(name="team_id"),
             inverseJoinColumns = @JoinColumn(name="member_id"))
-    private List<Member> members;
+    private List<Member> applicants;
 
     @CreatedDate
     @Column(updatable = false)
@@ -53,21 +53,21 @@ public class Team {
     private List<Tag> tags;
 
     @Builder
-    public Team(Long id, @NonNull Member host,@NonNull String name, List<Member> members,@NonNull List<Role> roles, List<Tag> tags){
+    public Team(Long id, @NonNull Member host,@NonNull String name, List<Member> applicants,@NonNull List<Role> roles, List<Tag> tags){
         this.id = id;
         this.host = host;
         this.name = name;
-        this.members=members;
-        initMembers();
+        this.applicants = applicants;
+        if(applicants == null){
+            this.applicants=new ArrayList<>();
+        }
+
         this.roles = roles;
         this.tags=tags;
     }
 
-    public void initMembers(){
-        if(this.members == null){
-            this.members = new ArrayList<>();
-            this.members.add(this.host);
-        }
+    public void apply(Member applicant){
+        applicants.add(applicant);
     }
 
 }

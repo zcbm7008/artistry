@@ -68,7 +68,7 @@ public class TeamRepositoryTest {
                 .name("team1")
                 .host(memberService.findById(1L))
                 .roles(roles)
-                .members(members)
+                .applicants(members)
                 .tags(tags)
                 .build());
     }
