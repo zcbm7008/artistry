@@ -25,11 +25,14 @@ public class Team {
     private String name;
 
     @NonNull
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="member_id")
     private Member host;
 
-    @OneToMany(mappedBy = "team")
+    @ManyToMany
+    @JoinTable(name = "team_member",
+            joinColumns = @JoinColumn(name="team_id"),
+            inverseJoinColumns = @JoinColumn(name="member_id"))
     private List<Member> members;
 
     @CreatedDate
@@ -41,22 +44,30 @@ public class Team {
     @JoinTable(name = "team_role",
             joinColumns = @JoinColumn(name="team_id"),
             inverseJoinColumns = @JoinColumn(name="role_id"))
-    private List<Role> roles = new ArrayList<>();
+    private List<Role> roles;
 
-    @NonNull
     @ManyToMany
     @JoinTable(name = "team_tag",
             joinColumns = @JoinColumn(name="team_id"),
             inverseJoinColumns = @JoinColumn(name="tag_id"))
-    private List<Tag> tags = new ArrayList<>();
+    private List<Tag> tags;
 
     @Builder
-    public Team(Long id, @NonNull String name,@NonNull List<Member> members,@NonNull List<Role> roles,@NonNull List<Tag> tags){
+    public Team(Long id, @NonNull Member host,@NonNull String name, List<Member> members,@NonNull List<Role> roles, List<Tag> tags){
         this.id = id;
+        this.host = host;
         this.name = name;
         this.members=members;
+        initMembers();
         this.roles = roles;
         this.tags=tags;
+    }
+
+    public void initMembers(){
+        if(this.members == null){
+            this.members = new ArrayList<>();
+            this.members.add(this.host);
+        }
     }
 
 }

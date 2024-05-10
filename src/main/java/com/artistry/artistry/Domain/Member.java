@@ -3,6 +3,8 @@ package com.artistry.artistry.Domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -17,6 +19,9 @@ public class Member {
     @NonNull
     private String nickname;
 
-    @ManyToOne
-    private Team team;
+    @ManyToMany
+    @JoinTable(name = "team_member",
+            joinColumns = @JoinColumn(name="member_id"),
+            inverseJoinColumns = @JoinColumn(name="team_id"))
+    private List<Team> teams;
 }
