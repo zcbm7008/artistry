@@ -1,16 +1,10 @@
 package com.artistry.artistry;
 
-import com.artistry.artistry.Domain.Role;
-import com.artistry.artistry.Domain.Tag;
-import com.artistry.artistry.Domain.Team;
-import com.artistry.artistry.Domain.Member;
+import com.artistry.artistry.Domain.*;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
 import com.artistry.artistry.Exceptions.RoleNotFoundException;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
-import com.artistry.artistry.Repository.RoleRepository;
-import com.artistry.artistry.Repository.TagRepository;
-import com.artistry.artistry.Repository.TeamRepository;
-import com.artistry.artistry.Repository.MemberRepository;
+import com.artistry.artistry.Repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -26,13 +20,25 @@ public class DataLoader implements CommandLineRunner {
     private final TagRepository tagRepository;
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
+    private final PortfolioRepository portfolioRepository;
 
     @Override
     public void run(String... args) throws Exception {
+        prepareDummyPortfolios();
         prepareDummyTags();
         prepareDummyMembers();
         prepareDummyRoles();
         prepareDummyTeams();
+    }
+    private void prepareDummyPortfolios(){
+
+        portfolioRepository.save(Portfolio.builder()
+                .title("Portfolio1")
+                .build());
+
+        portfolioRepository.save(Portfolio.builder()
+                .title("Portfolio2")
+                .build());
     }
 
     private void prepareDummyTags(){

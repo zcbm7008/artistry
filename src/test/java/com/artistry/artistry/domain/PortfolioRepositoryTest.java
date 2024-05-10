@@ -1,5 +1,7 @@
 package com.artistry.artistry.domain;
 
+import com.artistry.artistry.Domain.Portfolio;
+import com.artistry.artistry.Repository.PortfolioRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -21,7 +23,7 @@ public class PortfolioRepositoryTest {
     void dummyPortfolioTest(Long id, String title){
         Optional<Portfolio> portfolio = portfolioRepository.findById(id);
         assertThat(portfolio.isPresent()).isTrue();
-        assertThat(portfolio.get().getNickname()).isEqualTo(title);
+        assertThat(portfolio.get().getTitle()).isEqualTo(title);
 
     }
 
