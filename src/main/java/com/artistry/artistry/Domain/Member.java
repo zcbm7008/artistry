@@ -3,7 +3,8 @@ package com.artistry.artistry.Domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.sound.sampled.Port;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -27,7 +28,11 @@ public class Member {
     private List<Team> teams;
 
     @OneToMany(mappedBy = "member")
-    private List<Portfolio> portfolios;
+    private List<Portfolio> portfolios = new ArrayList<>();
+
+    public void addPortfolio(Portfolio portfolio){
+        this.portfolios.add(portfolio);
+    }
 
 
 }
