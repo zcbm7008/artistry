@@ -97,7 +97,7 @@ public class DataLoader implements CommandLineRunner {
                 .host(memberRepository.findById(1L).orElseThrow(MemberNotFoundException::new))
                 .name("team1")
                 .tags(tags)
-                .applicants(members)
+                .members(members)
                 .roles(roles)
                 .build());
 
@@ -105,7 +105,7 @@ public class DataLoader implements CommandLineRunner {
                 .host(memberRepository.findById(3L).orElseThrow(MemberNotFoundException::new))
                 .name("team2")
                 .tags(tags)
-                .applicants(members)
+                .members(members)
                 .roles(roles)
                 .build());
     }
