@@ -1,10 +1,10 @@
-package com.artistry.artistry.domain;
+package com.artistry.artistry.Domain;
 
-import com.artistry.artistry.Domain.*;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,36 +48,31 @@ public class TeamTest {
     @DisplayName("한 포지션에 같은 멤버의 포트폴리오가 여러개면 중복처리한다.")
     @Test
     void DuplicatedRolePortfolioException(){
-
-
         //Given
         Role role1 = Role.builder().roleName("작곡가").build();
 
+        List<Portfolio> portfolios = new ArrayList<>();
+
         Member applicant = Member.builder()
-                .nickname("지원자1").build();
+                .nickname("지원자1").portfolios(portfolios).build();
 
         Portfolio portfolio1 = Portfolio.builder()
-                .role(role1).member(applicant).build();
+                .role(role1).member(applicant).title("portfolio1").build();
 
 
         Portfolio portfolio2 = Portfolio.builder()
-                .role(role1).member(applicant).build();
+                .role(role1).member(applicant).title("portfolio2").build();
 
-        applicant.getPortfolios().add(portfolio1);
-        applicant.getPortfolios().add(portfolio2);
+        applicant.addPortfolio(portfolio1);
+        applicant.addPortfolio(portfolio2);
 
         Team team = createTeam();
 
         //when
-
         team.apply(applicant.getPortfolios().get(0));
 
         //then
         assertThatThrownBy(() -> team.apply(applicant.getPortfolios().get(1))).isInstanceOf(ArtistryDuplicatedException.class);
-
-
-
-
     }
 
     private Team createTeam(){

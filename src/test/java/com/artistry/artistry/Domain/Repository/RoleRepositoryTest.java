@@ -1,4 +1,4 @@
-package com.artistry.artistry.domain.Repository;
+package com.artistry.artistry.Domain.Repository;
 
 import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Repository.RoleRepository;

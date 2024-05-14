@@ -1,4 +1,4 @@
-package com.artistry.artistry.domain.Repository;
+package com.artistry.artistry.Domain.Repository;
 
 import com.artistry.artistry.Domain.Member;
 import com.artistry.artistry.Repository.MemberRepository;

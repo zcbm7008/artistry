@@ -1,7 +1,6 @@
-package com.artistry.artistry.domain.Repository;
+package com.artistry.artistry.Domain.Repository;
 
 import com.artistry.artistry.Domain.Tag;
-import com.artistry.artistry.Domain.Team;
 import com.artistry.artistry.Repository.TagRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

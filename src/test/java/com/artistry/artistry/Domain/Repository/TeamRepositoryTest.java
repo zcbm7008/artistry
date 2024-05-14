@@ -1,4 +1,4 @@
-package com.artistry.artistry.domain.Repository;
+package com.artistry.artistry.Domain.Repository;
 
 
 import com.artistry.artistry.Domain.Member;
@@ -68,7 +68,7 @@ public class TeamRepositoryTest {
                 .name("team1")
                 .host(memberService.findById(1L))
                 .roles(roles)
-                .applicants(members)
+                .members(members)
                 .tags(tags)
                 .build());
     }
