@@ -1,5 +1,6 @@
 package com.artistry.artistry.Domain;
 
+import com.artistry.artistry.Exceptions.MemberDuplicatedException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -67,7 +68,15 @@ public class Team {
     }
 
     public void apply(Member applicant){
+        if(isMemberInTeam(applicant)){
+            throw new MemberDuplicatedException("이미 해당 팀에 멤버가 있습니다.");
+        }
+
         applicants.add(applicant);
+    }
+
+    public boolean isMemberInTeam(Member member){
+        return host.equals(member) || applicants.contains(member);
     }
 
 }
