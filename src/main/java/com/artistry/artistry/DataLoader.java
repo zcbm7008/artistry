@@ -24,22 +24,14 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        prepareDummyPortfolios();
+
         prepareDummyTags();
         prepareDummyMembers();
+        prepareDummyPortfolios();
         prepareDummyRoles();
         prepareDummyTeams();
     }
-    private void prepareDummyPortfolios(){
 
-        portfolioRepository.save(Portfolio.builder()
-                .title("Portfolio1")
-                .build());
-
-        portfolioRepository.save(Portfolio.builder()
-                .title("Portfolio2")
-                .build());
-    }
 
     private void prepareDummyTags(){
 
@@ -62,6 +54,18 @@ public class DataLoader implements CommandLineRunner {
                 .build());
         memberRepository.save(Member.builder()
                 .nickname("member3")
+                .build());
+    }
+    private void prepareDummyPortfolios(){
+
+        portfolioRepository.save(Portfolio.builder()
+                .title("Portfolio1")
+                .member(memberRepository.findById(1L).orElseThrow(MemberNotFoundException::new))
+                .build());
+
+        portfolioRepository.save(Portfolio.builder()
+                .title("Portfolio2")
+                .member(memberRepository.findById(2L).orElseThrow(MemberNotFoundException::new))
                 .build());
     }
 

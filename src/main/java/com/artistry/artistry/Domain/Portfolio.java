@@ -1,9 +1,6 @@
 package com.artistry.artistry.Domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Builder
@@ -18,6 +15,15 @@ public class Portfolio {
 
     @NonNull
     private String title;
+
+    @ManyToOne
+    private Role role;
+
+    @NonNull
+    @ManyToOne
+    private Member member;
+
+
 
 
 }

@@ -3,6 +3,7 @@ package com.artistry.artistry.Domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import javax.sound.sampled.Port;
 import java.util.List;
 
 @Builder
@@ -24,4 +25,9 @@ public class Member {
             joinColumns = @JoinColumn(name="member_id"),
             inverseJoinColumns = @JoinColumn(name="team_id"))
     private List<Team> teams;
+
+    @OneToMany(mappedBy = "member")
+    private List<Portfolio> portfolios;
+
+
 }
