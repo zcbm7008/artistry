@@ -1,10 +1,7 @@
 package com.artistry.artistry.domain;
 
-import com.artistry.artistry.Domain.Member;
-import com.artistry.artistry.Domain.Role;
-import com.artistry.artistry.Domain.Tag;
-import com.artistry.artistry.Domain.Team;
-import com.artistry.artistry.Exceptions.MemberDuplicatedException;
+import com.artistry.artistry.Domain.*;
+import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,11 +21,11 @@ public class TeamTest {
         Member applicant = Member.builder().nickname("지원자1").build();
 
         //When
-        team.apply(applicant);
+        team.participate(applicant);
 
         //Then
-        assertThat(team.getApplicants()).hasSize(1);
-        assertThat(team.getApplicants()).contains(applicant);
+        assertThat(team.getMembers()).hasSize(1);
+        assertThat(team.getMembers()).contains(applicant);
 
     }
 
@@ -37,13 +34,49 @@ public class TeamTest {
     void DuplicatedMemberException(){
         //Given
         Team team = createTeam();
-        Member applicant = Member.builder().nickname("지원자1").build();
+        Member applicant = Member.builder()
+                .nickname("지원자1").build();
 
         //When
-        team.apply(applicant);
+        team.participate(applicant);
 
         //Then
-        assertThatThrownBy(() -> team.apply(applicant)).isInstanceOf(MemberDuplicatedException.class);
+        assertThatThrownBy(() -> team.participate(applicant)).isInstanceOf(ArtistryDuplicatedException.class);
+
+    }
+
+    @DisplayName("한 포지션에 같은 멤버의 포트폴리오가 여러개면 중복처리한다.")
+    @Test
+    void DuplicatedRolePortfolioException(){
+
+
+        //Given
+        Role role1 = Role.builder().roleName("작곡가").build();
+
+        Member applicant = Member.builder()
+                .nickname("지원자1").build();
+
+        Portfolio portfolio1 = Portfolio.builder()
+                .role(role1).member(applicant).build();
+
+
+        Portfolio portfolio2 = Portfolio.builder()
+                .role(role1).member(applicant).build();
+
+        applicant.getPortfolios().add(portfolio1);
+        applicant.getPortfolios().add(portfolio2);
+
+        Team team = createTeam();
+
+        //when
+
+        team.apply(applicant.getPortfolios().get(0));
+
+        //then
+        assertThatThrownBy(() -> team.apply(applicant.getPortfolios().get(1))).isInstanceOf(ArtistryDuplicatedException.class);
+
+
+
 
     }
 
@@ -69,4 +102,6 @@ public class TeamTest {
                 .roles(roles)
                 .build();
     }
+
+
 }
