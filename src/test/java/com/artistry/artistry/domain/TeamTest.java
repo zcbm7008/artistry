@@ -4,6 +4,7 @@ import com.artistry.artistry.Domain.Member;
 import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Exceptions.MemberDuplicatedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class TeamTest {
 
@@ -27,6 +29,21 @@ public class TeamTest {
         //Then
         assertThat(team.getApplicants()).hasSize(1);
         assertThat(team.getApplicants()).contains(applicant);
+
+    }
+
+    @DisplayName("같은 유저의 요청이 이미 있을경우 예외가 발생한다.")
+    @Test
+    void DuplicatedMemberException(){
+        //Given
+        Team team = createTeam();
+        Member applicant = Member.builder().nickname("지원자1").build();
+
+        //When
+        team.apply(applicant);
+
+        //Then
+        assertThatThrownBy(() -> team.apply(applicant)).isInstanceOf(MemberDuplicatedException.class);
 
     }
 
