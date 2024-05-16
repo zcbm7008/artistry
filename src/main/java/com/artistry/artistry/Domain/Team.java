@@ -8,9 +8,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 
 @Getter
@@ -41,7 +40,6 @@ public class Team {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @NonNull
     @ManyToMany
     @JoinTable(name = "team_role",
             joinColumns = @JoinColumn(name="team_id"),
@@ -59,19 +57,16 @@ public class Team {
             joinColumns = @JoinColumn(name="team_id"),
             inverseJoinColumns = @JoinColumn(name="portfolio_id"))
     private List<Portfolio> portfolioList = new ArrayList<>();
-
-    private Map<Role,Member> applicantMap = new HashMap<>();
+    
+    @Transient
+    private RoleMember applicantMap = new RoleMember();
 
     @Builder
-    public Team(Long id, @NonNull Member host, @NonNull String name, List<Member> members, @NonNull List<Role> roles, List<Tag> tags){
+    public Team(Long id, @NonNull Member host, @NonNull String name, List<Member> members, List<Role> roles, List<Tag> tags){
         this.id = id;
         this.host = host;
         this.name = name;
-        this.members = members;
-        if(members == null){
-            this.members =new ArrayList<>();
-        }
-
+        this.members = (members != null) ? members : new ArrayList<>();
         this.roles = roles;
         this.tags=tags;
     }
@@ -85,12 +80,11 @@ public class Team {
 
     public void addPortfolio(Portfolio portfolio){
         this.portfolioList.add(portfolio);
-        applicantMap.put(portfolio.getRole(),portfolio.getMember());
+        applicantMap.add(portfolio.getRole(),portfolio.getMember());
     }
 
     public boolean isPortfolioInRole(Portfolio portfolio){
-        return applicantMap.containsKey(portfolio.getRole()) && applicantMap.containsValue(portfolio.getMember());
-
+        return applicantMap.contains(portfolio.getRole(),portfolio.getMember());
     }
 
     public void participate(Member member){
