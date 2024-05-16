@@ -1,0 +1,24 @@
+= REST Service API Guide
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+= Resources
+
+=== 팀 생성 API
+
+==== HTTP Request
+
+include::{snippets}/create-team/http-request.adoc[]
+[width="40%"]
+[cols="^,^,^",options="headers"]
+include::{snippets}/create-team/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/create-team/http-response.adoc[]
+[width="40%"]
+[cols="^,^,^",options="headers"]
+include::{snippets}/create-team/response-fields.adoc[]
