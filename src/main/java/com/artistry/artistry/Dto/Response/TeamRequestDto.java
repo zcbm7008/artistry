@@ -14,8 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class TeamRequestDto {
     private Long teamId;
+    private String teamName;
     private Long hostId;
-    private List<Member> members;
-    private List<Role> roles;
     private List<Tag> tags;
 }

@@ -31,7 +31,7 @@ public class TeamService {
     public TeamResponseDto create(TeamRequestDto teamRequestDto){
         Team team = Team.builder()
                 .host(memberService.findById(teamRequestDto.getHostId()))
-                .roles(teamRequestDto.getRoles())
+                .name(teamRequestDto.getTeamName())
                 .tags(teamRequestDto.getTags())
                 .build();
         return TeamResponseDto.from(teamRepository.save(team));

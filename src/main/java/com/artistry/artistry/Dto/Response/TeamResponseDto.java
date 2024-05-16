@@ -30,10 +30,8 @@ public class TeamResponseDto {
         return TeamResponseDto.builder()
                 .teamId(team.getId())
                 .createdAt(team.getCreatedAt().toString())
-                .members(memberNames(team.getMembers()))
                 .host(HostResponseDto.from(team.getHost()))
                 .tags(tagNames(team.getTags()))
-                .roles(roleNames(team.getRoles()))
                 .build();
     }
 
