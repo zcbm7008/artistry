@@ -22,10 +22,9 @@ public class Role {
     @OneToMany(mappedBy = "role")
     private List<TeamRole> teamRoles = new ArrayList<>();
 
-    public static Role of(@NonNull String roleName) {
-        return Role.builder()
-                .roleName(roleName)
-                .build();
+    public Role(final String roleName) {
+        this(null,roleName,null);
     }
+
 
 }

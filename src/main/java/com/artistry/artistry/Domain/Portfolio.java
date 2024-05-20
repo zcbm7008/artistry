@@ -25,7 +25,15 @@ public class Portfolio {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public Portfolio(String title, Role role, Member member){
+        this(null,title,role,member);
+    }
 
 
-
+    public Portfolio(Long id, String title, Role role, Member member) {
+        this.id = id;
+        this.title = title;
+        this.role = role;
+        this.member = member;
+    }
 }

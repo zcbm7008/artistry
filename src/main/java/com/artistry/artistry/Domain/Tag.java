@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
-@Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,10 +19,9 @@ public class Tag {
     @NonNull
     private String name;
 
-    public static Tag of(@NonNull String name) {
-        return Tag.builder()
-                .name(name)
-                .build();
+    public Tag(final String name) {
+        this(null,name);
     }
+
 
 }
