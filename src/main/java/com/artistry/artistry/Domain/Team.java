@@ -58,11 +58,16 @@ public class Team {
     }
 
     public void apply(TeamRole teamRole, Application application){
-        if(teamRole.getApplications().contains(application)){
+        if(isDuplicatedMemberInTeamRole(teamRole,application.getMember())){
             throw new ArtistryDuplicatedException("이미 해당 역할에 지원한 포트폴리오가 있습니다.");
         }
         teamRole.getApplications().add(application);
         application.setTeamRole(teamRole);
+    }
+
+    private boolean isDuplicatedMemberInTeamRole(TeamRole teamRole,Member member){
+        return teamRole.getApplications().stream()
+                .anyMatch(application -> application.getMember().equals(member));
     }
 
     public void addRoles(List<Role> roles){
