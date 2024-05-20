@@ -3,6 +3,7 @@ package com.artistry.artistry.Domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -19,5 +20,12 @@ public class Role {
     private String roleName;
 
     @OneToMany(mappedBy = "role")
-    List<Portfolio> portfolios;
+    private List<TeamRole> teamRoles = new ArrayList<>();
+
+    public static Role of(@NonNull String roleName) {
+        return Role.builder()
+                .roleName(roleName)
+                .build();
+    }
+
 }
