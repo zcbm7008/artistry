@@ -20,8 +20,10 @@ public class Tag {
     @NonNull
     private String name;
 
-    public Tag(String name){
-        this(null,name);
+    public static Tag of(@NonNull String name) {
+        return Tag.builder()
+                .name(name)
+                .build();
     }
 
 }
