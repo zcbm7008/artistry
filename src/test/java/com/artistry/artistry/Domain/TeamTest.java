@@ -75,9 +75,24 @@ public class TeamTest {
     @Test
     @DisplayName("지원한 application의 상태는 PENDING이어야 한다.")
     public void isStatusPending(){
-        team.apply(team.getTeamRoles().get(0), application);
+        team.apply(team.findTeamRoleByRole(appliedRole), application);
         assertEquals(application.getStatus(),ApplicationStatus.PENDING);
 
+    }
+    @Test
+    @DisplayName("한 포지션에 같은 멤버의 신청서가 여러개면 중복처리한다.")
+    public void DuplicatedWhenApplication(){
+        Application application2 = Application.builder()
+                .team(team)
+                .role(appliedRole)
+                .member(member)
+                .status(ApplicationStatus.PENDING)
+                .build();
+
+        team.apply(team.findTeamRoleByRole(appliedRole), application);
+
+        assertThatThrownBy(() -> team.apply(team.findTeamRoleByRole(appliedRole), application2))
+                .isInstanceOf(ArtistryDuplicatedException.class);
     }
 
 
