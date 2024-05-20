@@ -12,12 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HostResponse {
     private Long id;
-    private String name;
+    private String nickName;
 
-    public static HostResponse from(Member host){
-        return HostResponse.builder()
-                .id(host.getId())
-                .name(host.getNickname())
-                .build();
+    public static HostResponse from(Member member){
+        return new HostResponse(member.getId(), member.getNickname());
     }
 }

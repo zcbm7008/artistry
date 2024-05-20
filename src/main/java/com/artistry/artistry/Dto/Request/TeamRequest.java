@@ -16,8 +16,9 @@ import java.util.List;
 public class TeamRequest {
     @NonNull
     private String teamName;
-    private List<Role> roles;
     @NonNull
     private Long hostId;
-    private List<Tag> tags;
+    private List<TagRequest> tags;
+    private List<RoleRequest> roles;
+
 }

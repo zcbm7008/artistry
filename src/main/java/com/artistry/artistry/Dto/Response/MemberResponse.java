@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
-@Builder
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,9 +16,6 @@ public class MemberResponse {
     private String name;
 
     public static MemberResponse from(Member member){
-        return MemberResponse.builder()
-                .id(member.getId())
-                .name(member.getNickname())
-                .build();
+        return new MemberResponse(member.getId(), member.getNickname());
     }
 }

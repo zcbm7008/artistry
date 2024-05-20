@@ -1,9 +1,6 @@
 package com.artistry.artistry.Dto.Response;
 
-import com.artistry.artistry.Domain.Member;
-import com.artistry.artistry.Domain.Role;
-import com.artistry.artistry.Domain.Tag;
-import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Domain.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +28,7 @@ public class TeamResponse {
                 .teamId(team.getId())
                 .createdAt(team.getCreatedAt().toString())
                 .host(HostResponse.from(team.getHost()))
+                .roles(roleNames(team.getTeamRoles()))
                 .tags(tagNames(team.getTags()))
                 .build();
     }
@@ -56,8 +54,8 @@ public class TeamResponse {
         return objectsToString(tags,Tag::getName);
     }
 
-    private static List<String> roleNames(List<Role> roles){
-        return objectsToString(roles, Role::getRoleName);
+    private static List<String> roleNames(List<TeamRole> roles){
+        return objectsToString(roles, TeamRole::getRoleName);
     }
 
 }
