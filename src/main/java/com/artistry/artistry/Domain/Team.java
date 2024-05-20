@@ -7,10 +7,10 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.sound.sampled.Port;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 @Getter
@@ -66,13 +66,19 @@ public class Team {
     }
 
     public void addRoles(List<Role> roles){
-        for (Role role : roles){
-            this.teamRoles.add(TeamRole.builder()
-                    .team(this)
-                    .role(role)
-                    .applications(new ArrayList<>())
-                    .build());
-        }
+        this.teamRoles.addAll(
+                roles.stream()
+                        .map(this::roleToTeamRole)
+                        .toList()
+        );
+    }
+
+    public TeamRole roleToTeamRole(Role role){
+        return(TeamRole.builder()
+                .team(this)
+                .role(role)
+                .applications(new ArrayList<>())
+                .build());
     }
 
     public TeamRole findTeamRoleByRole(Role role){
