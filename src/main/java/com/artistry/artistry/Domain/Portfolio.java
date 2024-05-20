@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Builder
+@Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +22,7 @@ public class Portfolio {
 
     @NonNull
     @ManyToOne
+    @JoinColumn(name = "member_id")
     private Member member;
 
 

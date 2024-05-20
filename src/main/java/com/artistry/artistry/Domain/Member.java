@@ -30,8 +30,12 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Portfolio> portfolios = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Application> applications;
+
     public void addPortfolio(Portfolio portfolio){
         this.portfolios.add(portfolio);
+        portfolio.setMember(this);
     }
 
 
