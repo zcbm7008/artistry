@@ -6,19 +6,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberResponseDto {
+public class HostResponse {
     private Long id;
     private String name;
 
-    public static MemberResponseDto from(Member member){
-        return MemberResponseDto.builder()
-                .id(member.getId())
-                .name(member.getNickname())
+    public static HostResponse from(Member host){
+        return HostResponse.builder()
+                .id(host.getId())
+                .name(host.getNickname())
                 .build();
     }
 }

@@ -17,20 +17,20 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeamResponseDto {
+public class TeamResponse {
     private Long teamId;
     private String createdAt;
 
-    private HostResponseDto host;
-    private List<MemberResponseDto> members;
+    private HostResponse host;
+    private List<MemberResponse> members;
     private List<String> tags;
     private List<String> roles;
 
-    public static TeamResponseDto from(Team team){
-        return TeamResponseDto.builder()
+    public static TeamResponse from(Team team){
+        return TeamResponse.builder()
                 .teamId(team.getId())
                 .createdAt(team.getCreatedAt().toString())
-                .host(HostResponseDto.from(team.getHost()))
+                .host(HostResponse.from(team.getHost()))
                 .tags(tagNames(team.getTags()))
                 .build();
     }
@@ -41,10 +41,10 @@ public class TeamResponseDto {
                 .collect(Collectors.toList());
     }
 
-    private static List<MemberResponseDto> memberNames(List<Member> applicants){
+    private static List<MemberResponse> memberNames(List<Member> applicants){
         if(applicants != null){
             return applicants.stream()
-                    .map(MemberResponseDto::from)
+                    .map(MemberResponse::from)
                     .collect(Collectors.toList());
         }
         else{
