@@ -1,14 +1,8 @@
 package com.artistry.artistry.Service;
 
-import com.artistry.artistry.Domain.Application;
-import com.artistry.artistry.Domain.Team;
-import com.artistry.artistry.Dto.Response.ApplicationRequestDto;
-import com.artistry.artistry.Dto.Response.ApplicationResponseDto;
-import com.artistry.artistry.Dto.Response.TeamRequestDto;
-import com.artistry.artistry.Dto.Response.TeamResponseDto;
+import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
-import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.RoleRepository;
 import com.artistry.artistry.Repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +24,8 @@ public class ApplicationService {
 
 
 
-    public TeamResponseDto findById(Long id){
-        return TeamResponseDto.from(teamRepository.findById(id)
+    public TeamResponse findById(Long id){
+        return TeamResponse.from(teamRepository.findById(id)
                 .orElseThrow(TeamNotFoundException::new));
     }
 
