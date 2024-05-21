@@ -3,7 +3,6 @@ package com.artistry.artistry.Service;
 import com.artistry.artistry.Domain.*;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
-import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import com.artistry.artistry.Repository.*;
 import org.junit.jupiter.api.DisplayName;
@@ -51,9 +50,9 @@ public class TeamRoleServiceTest {
         Tag tag1 = tagRepository.save(new Tag(tagName1));
         Tag tag2 = tagRepository.save(new Tag(tagName2));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(1L, "portfolio1 for composer", role1, member2));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(2L, "portfolio2 for drummer", role2, applicant1));
-        Portfolio portfolio3 = portfolioRepository.save(new Portfolio(3L, "portfolio3 for drummer", role2, applicant2));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(1L, "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(2L, "portfolio2 for drummer", role2));
+        Portfolio portfolio3 = portfolioRepository.save(new Portfolio(3L, "portfolio3 for drummer", role2));
 
         Team team = new Team(teamName, member1, Arrays.asList(tag1, tag2), Arrays.asList(role1, role2));
 

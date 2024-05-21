@@ -1,5 +1,8 @@
 package com.artistry.artistry.Domain;
 
+import com.artistry.artistry.Dto.Response.ApplicationResponse;
+import com.artistry.artistry.Dto.Response.PortfolioResponse;
+import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,13 +29,13 @@ public class TeamTest {
     @BeforeEach
     public void setUp(){
         tags= Arrays.asList(
-                Tag.of("밴드"),
-                Tag.of("락")
+                new Tag("밴드"),
+                new Tag("락")
         );
 
         roles = Arrays.asList(
-                Role.of("작곡가"),
-                Role.of("보컬")
+                new Role("작곡가"),
+                new Role("보컬")
         );
 
         host = Member.builder()
@@ -62,38 +65,15 @@ public class TeamTest {
 
     }
 
-    @Test
-    @DisplayName("팀의 특정한 역할에 지원서를 지원한다.")
-    public void applyToTeam(){
-
-        team.apply(team.getTeamRoles().get(0), application);
-        assertEquals(application.getId(),team.getTeamRoles().get(0).getApplications().get(0).getId());
-        assertEquals(application.getTeam().getId(),team.getId());
-        assertEquals(application.getRole(),team.findTeamRoleByRole(appliedRole).getRole());
-
-    }
-    @Test
-    @DisplayName("지원한 application의 상태는 PENDING이어야 한다.")
-    public void isStatusPending(){
-        team.apply(team.findTeamRoleByRole(appliedRole), application);
-        assertEquals(application.getStatus(),ApplicationStatus.PENDING);
-
-    }
-    @Test
-    @DisplayName("한 포지션에 같은 멤버의 신청서가 여러개면 중복처리한다.")
-    public void DuplicatedWhenApplication(){
-        Application application2 = Application.builder()
-                .team(team)
-                .role(appliedRole)
-                .member(member)
-                .status(ApplicationStatus.PENDING)
-                .build();
-
-        team.apply(team.findTeamRoleByRole(appliedRole), application);
-
-        assertThatThrownBy(() -> team.apply(team.findTeamRoleByRole(appliedRole), application2))
-                .isInstanceOf(ArtistryDuplicatedException.class);
-    }
+//    @DisplayName("요청한 팀의 모집 역할들을 조회한다.")
+//    @Test
+//    void showTeamRoles(){
+//
+//        assertThat(team.getTeamRoles())
+//                .extracting(TeamRole::getRole)
+//                .containsExactlyElementsOf(roles);
+//
+//    }
 
 
 

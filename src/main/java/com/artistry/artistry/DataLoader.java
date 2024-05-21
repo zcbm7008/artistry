@@ -27,21 +27,15 @@ public class DataLoader implements CommandLineRunner {
 
         prepareDummyTags();
         prepareDummyMembers();
-        prepareDummyPortfolios();
         prepareDummyRoles();
+        prepareDummyPortfolios();
         prepareDummyTeams();
     }
 
 
     private void prepareDummyTags(){
-
-        tagRepository.save(Tag.builder()
-                .name("band")
-                .build());
-
-        tagRepository.save(Tag.builder()
-                .name("edm")
-                .build());
+        tagRepository.save(new Tag("band"));
+        tagRepository.save(new Tag("edm"));
     }
 
     private void prepareDummyMembers(){
@@ -56,16 +50,17 @@ public class DataLoader implements CommandLineRunner {
                 .nickname("member3")
                 .build());
     }
+
     private void prepareDummyPortfolios(){
 
         portfolioRepository.save(Portfolio.builder()
                 .title("Portfolio1")
-                .member(memberRepository.findById(1L).orElseThrow(MemberNotFoundException::new))
+                .role(roleRepository.findById(1L).orElseThrow(RoleNotFoundException::new))
                 .build());
 
         portfolioRepository.save(Portfolio.builder()
                 .title("Portfolio2")
-                .member(memberRepository.findById(2L).orElseThrow(MemberNotFoundException::new))
+                .role(roleRepository.findById(2L).orElseThrow(RoleNotFoundException::new))
                 .build());
     }
 
@@ -92,21 +87,29 @@ public class DataLoader implements CommandLineRunner {
                 .asList(roleRepository.findById(1L).orElseThrow(RoleNotFoundException::new),
                         roleRepository.findById(2L).orElseThrow(RoleNotFoundException::new));
 
+        Member teamMember1 = Member.builder()
+                .nickname("멤버1")
+                .build();
 
-        teamRepository.save(Team.builder()
-                .host(memberRepository.findById(1L).orElseThrow(MemberNotFoundException::new))
-                .name("team1")
-                .tags(tags)
-                .members(members)
-                .roles(roles)
-                .build());
+        Member teamMember2 = Member.builder()
+                .nickname("멤버2")
+                .build();
 
-        teamRepository.save(Team.builder()
-                .host(memberRepository.findById(3L).orElseThrow(MemberNotFoundException::new))
-                .name("team2")
-                .tags(tags)
-                .members(members)
-                .roles(roles)
-                .build());
+        List<Member> teamMembers = Arrays
+                .asList(teamMember1,teamMember2);
+
+//        teamRepository.save(Team.builder()
+//                .host(memberRepository.findById(1L).orElseThrow(MemberNotFoundException::new))
+//                .name("team1")
+//                .tags(tags)
+//                .teamRoles(roles)
+//                .build());
+//
+//        teamRepository.save(Team.builder()
+//                .host(memberRepository.findById(3L).orElseThrow(MemberNotFoundException::new))
+//                .name("team2")
+//                .tags(tags)
+//                .teamRoles(roles)
+//                .build());
     }
 }

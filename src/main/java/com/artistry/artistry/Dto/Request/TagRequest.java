@@ -10,6 +10,6 @@ import lombok.NonNull;
 @NoArgsConstructor
 public class TagRequest {
     @NonNull
-    private long id;
+    private Long id;
 
 }
