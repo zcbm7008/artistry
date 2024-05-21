@@ -20,10 +20,7 @@ public class Member {
     @NonNull
     private String nickname;
 
-    @ManyToMany
-    @JoinTable(name = "team_member",
-            joinColumns = @JoinColumn(name="member_id"),
-            inverseJoinColumns = @JoinColumn(name="team_id"))
+    @OneToMany(mappedBy = "host")
     private List<Team> teams;
 
     @OneToMany(mappedBy = "member")
