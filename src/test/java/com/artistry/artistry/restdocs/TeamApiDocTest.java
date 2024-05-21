@@ -1,9 +1,13 @@
 package com.artistry.artistry.restdocs;
 
+import com.artistry.artistry.Domain.Member;
 import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Domain.Tag;
+import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.RoleRepository;
 import com.artistry.artistry.Repository.TagRepository;
+import com.artistry.artistry.Repository.TeamRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.hasItem;
@@ -45,6 +50,10 @@ public class TeamApiDocTest {
     private TagRepository tagRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    TeamRepository teamRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
     @BeforeEach
     public void setUp(WebApplicationContext webApplicationContext,
@@ -55,12 +64,26 @@ public class TeamApiDocTest {
                         preprocessResponse(prettyPrint())))
                 .build();
 
+        Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
+        Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
+        Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
+        Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
+        Member member1 = memberRepository.save(new Member("member1"));
+
+        // 더미 팀 생성
+        String dummyTeamName = "더미 팀";
+        List<Role> roles = Arrays.asList(role1, role2);
+        List<Tag> tags = Arrays.asList(tag1, tag2);
+        Team dummyTeam = new Team(dummyTeamName, member1, tags, roles);
+        teamRepository.save(dummyTeam);
+
 
     }
 
     @DisplayName("팀을 생성한다")
     @Test
-    void createTeam() throws Exception{
+    void createTeamTest() throws Exception{
+
         Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
         Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
@@ -68,7 +91,6 @@ public class TeamApiDocTest {
 
 
         Map<String, Object> body = new HashMap<>();
-        body.put("teamId", 1L);
         body.put("teamName", "팀1");
         body.put("hostId",1L);
         body.put("roles",Arrays.asList(role1,role2));
@@ -91,13 +113,11 @@ public class TeamApiDocTest {
                 .andExpect(jsonPath("$.teamRoles",hasSize(2)))
                 .andDo(document("create-team",
                         requestFields(fieldWithPath("teamName").description("팀 이름"),
-                                fieldWithPath("teamId").description("팀 Id"),
                                 fieldWithPath("hostId").description("호스트 Id"),
                                 fieldWithPath("tags").description("태그 리스트"),
                                 fieldWithPath("roles").description("역할 리스트"),
                                 fieldWithPath("roles[].id").description("역할 Id"),
                                 fieldWithPath("roles[].roleName").description("역할 이름"),
-                                fieldWithPath("roles[].teamRoles").ignored(),
                                 fieldWithPath("tags[].id").description("태그 Id"),
                                 fieldWithPath("tags[].name").description("태그 리스트")),
                         responseFields(fieldWithPath("teamId").description("팀 Id"),
@@ -106,9 +126,9 @@ public class TeamApiDocTest {
                                 fieldWithPath("host.nickName").description("호스트 닉네임"),
                                 fieldWithPath("teamRoles").description("팀 역할 리스트"),
                                 fieldWithPath("teamRoles[].id").description("팀 역할 Id"),
-                                fieldWithPath("teamRoles[].teamId").description("팀 Id"),
-                                fieldWithPath("teamRoles[].role").description("역할"),
-                                fieldWithPath("teamRoles[].role.id").description("역할 Id"),
+                                fieldWithPath("teamRoles[].teamId").ignored(),
+                                fieldWithPath("teamRoles[].role").ignored(),
+                                fieldWithPath("teamRoles[].role.id").ignored(),
                                 fieldWithPath("teamRoles[].role.roleName").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
                                 fieldWithPath("tags").description("태그 리스트"))));
@@ -118,7 +138,7 @@ public class TeamApiDocTest {
     @DisplayName("팀을 조회한다")
     @Test
     void readTeamTest() throws Exception{
-        mockMvc.perform(get("/api/rooms/1")
+        mockMvc.perform(get("/api/teams/1")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.teamId").exists())
@@ -135,7 +155,14 @@ public class TeamApiDocTest {
                         responseFields(fieldWithPath("teamId").description("팀 Id"),
                                 fieldWithPath("createdAt").description("팀 생성 시각"),
                                 fieldWithPath("host.id").description("호스트 Id"),
-                                fieldWithPath("host.nickName").description("호스트 닉네임")
-                                                )));
+                                fieldWithPath("host.nickName").description("호스트 닉네임"),
+                                fieldWithPath("tags").description("팀 태그"),
+                                fieldWithPath("teamRoles").description("팀 역할"),
+                                fieldWithPath("teamRoles[].id").description("팀 역할 Id"),
+                                fieldWithPath("teamRoles[].teamId").ignored(),
+                                fieldWithPath("teamRoles[].role").ignored(),
+                                fieldWithPath("teamRoles[].role.id").ignored(),
+                                fieldWithPath("teamRoles[].role.roleName").description("역할 이름"),
+                                fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"))));
     }
 }
