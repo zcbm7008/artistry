@@ -1,13 +1,10 @@
 package com.artistry.artistry.Controller;
 
-import com.artistry.artistry.Dto.Response.TeamRequestDto;
-import com.artistry.artistry.Dto.Response.TeamResponseDto;
+import com.artistry.artistry.Dto.Request.TeamRequest;
+import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Service.TeamService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -22,8 +19,16 @@ public class TeamController {
     }
 
    @PostMapping
-   public ResponseEntity<TeamResponseDto> createTeam(@RequestBody TeamRequestDto teamRequestDto){
-        TeamResponseDto teamResponseDto = teamService.create(teamRequestDto);
-        return ResponseEntity.created(URI.create("api/teams/" + teamResponseDto.getTeamId())).body(teamResponseDto);
+   public ResponseEntity<TeamResponse> createTeam(@RequestBody TeamRequest teamRequest){
+        TeamResponse teamResponse = teamService.create(teamRequest);
+        return ResponseEntity.created(URI.create("api/teams/" + teamResponse.getTeamId())).body(teamResponse);
    }
+
+   @GetMapping("/{teamId}")
+    public ResponseEntity<TeamResponse> readTeam(@PathVariable Long teamId){
+        TeamResponse teamResponse = teamService.findById(teamId);
+        return ResponseEntity.ok(teamResponse);
+   }
+
+
 }
