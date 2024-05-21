@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -112,5 +113,29 @@ public class TeamApiDocTest {
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
                                 fieldWithPath("tags").description("태그 리스트"))));
 
+    }
+    
+    @DisplayName("팀을 조회한다")
+    @Test
+    void readTeamTest() throws Exception{
+        mockMvc.perform(get("/api/rooms/1")
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teamId").exists())
+                .andExpect(jsonPath("$.createdAt").exists())
+                .andExpect(jsonPath("$.host.id").exists())
+                .andExpect(jsonPath("$.host.nickName").exists())
+                .andExpect(jsonPath("$.tags").isArray())
+                .andExpect(jsonPath("$.tags",hasSize(2)))
+                .andExpect(jsonPath("$.tags",hasItem("band")))
+                .andExpect(jsonPath("$.tags",hasItem("edm")))
+                .andExpect(jsonPath("$.teamRoles").exists())
+                .andExpect(jsonPath("$.teamRoles",hasSize(2)))
+                .andDo(document("read-room",
+                        responseFields(fieldWithPath("teamId").description("팀 Id"),
+                                fieldWithPath("createdAt").description("팀 생성 시각"),
+                                fieldWithPath("host.id").description("호스트 Id"),
+                                fieldWithPath("host.nickName").description("호스트 닉네임")
+                                                )));
     }
 }
