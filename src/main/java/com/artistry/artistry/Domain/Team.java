@@ -1,7 +1,7 @@
 package com.artistry.artistry.Domain;
 
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
-import com.artistry.artistry.Exceptions.RoleNotFoundException;
+import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -57,18 +57,40 @@ public class Team {
         addRoles(roles);
     }
 
-    public void apply(TeamRole teamRole, Application application){
-        if(isDuplicatedMemberInTeamRole(teamRole,application.getMember())){
-            throw new ArtistryDuplicatedException("이미 해당 역할에 지원한 포트폴리오가 있습니다.");
-        }
+    public void apply(Application application){
+        validateApplication(application);
+        TeamRole teamRole = findTeamRoleByRole(application.getRole());
         teamRole.getApplications().add(application);
         application.setTeamRole(teamRole);
     }
 
-    private boolean isDuplicatedMemberInTeamRole(TeamRole teamRole,Member member){
-        return teamRole.getApplications().stream()
+    private void validateApplication(Application application){
+        isMemberDuplicatedInRole(application.getRole(), application.getMember());
+        isValidRole(application.getRole());
+    }
+
+    private void isMemberDuplicatedInRole(Role role, Member member){
+        if (isDuplicated(role,member)) {
+            throw new ArtistryDuplicatedException("멤버의 지원서가 이미 지원한 역할에 있습니다.");
+        }
+    }
+
+    private boolean isDuplicated(Role role, Member member){
+        return findTeamRoleByRole(role).getApplications().stream()
                 .anyMatch(application -> application.getMember().equals(member));
     }
+
+    private void isValidRole(Role role){
+        if(!isRoleInTeam(role)){
+            throw new TeamRoleNotFoundException(String.format("[%s]는 팀의 역할에 없습니다.", role.getRoleName()));
+        }
+    }
+    private boolean isRoleInTeam(Role role){
+        return teamRoles.stream()
+                .anyMatch(teamRole -> teamRole.getRole().equals(role));
+    }
+
+
 
     public void addRoles(List<Role> roles){
         this.teamRoles.addAll(
@@ -87,10 +109,11 @@ public class Team {
     }
 
     public TeamRole findTeamRoleByRole(Role role){
+        isValidRole(role);
         return teamRoles.stream()
                 .filter(teamRole -> teamRole.getRole().equals(role))
                 .findFirst()
-                .orElseThrow(RoleNotFoundException::new);
+                .orElseThrow(TeamRoleNotFoundException::new);
     }
 
 
