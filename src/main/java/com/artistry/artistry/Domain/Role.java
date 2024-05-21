@@ -1,8 +1,8 @@
 package com.artistry.artistry.Domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.repository.cdi.Eager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,7 @@ public class Role {
     private String roleName;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<TeamRole> teamRoles = new ArrayList<>();
 
     public Role(final String roleName) {
