@@ -21,5 +21,5 @@ public class MemberServiceTest {
         assertThatThrownBy(() -> memberService.findById(Long.MAX_VALUE))
                 .isInstanceOf(MemberNotFoundException.class);
     }
-
+    
 }
