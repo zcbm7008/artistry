@@ -147,8 +147,8 @@ public class TeamApiDocTest {
                 .andExpect(jsonPath("$.host.nickName").exists())
                 .andExpect(jsonPath("$.tags").isArray())
                 .andExpect(jsonPath("$.tags",hasSize(2)))
-                .andExpect(jsonPath("$.tags",hasItem("band")))
-                .andExpect(jsonPath("$.tags",hasItem("edm")))
+                .andExpect(jsonPath("$.tags",hasItem("밴드")))
+                .andExpect(jsonPath("$.tags",hasItem("락")))
                 .andExpect(jsonPath("$.teamRoles").exists())
                 .andExpect(jsonPath("$.teamRoles",hasSize(2)))
                 .andDo(document("read-room",
