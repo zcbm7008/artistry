@@ -12,7 +12,7 @@
 	<artifactId>artistry</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>artistry</name>
-	<description>artistry bavckend project</description>
+	<description>artistry backend project</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>

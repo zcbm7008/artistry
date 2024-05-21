@@ -28,7 +28,7 @@ public class Team {
 
     @NonNull
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "host_id")
     private Member host;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
