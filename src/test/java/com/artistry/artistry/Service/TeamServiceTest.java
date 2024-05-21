@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Arrays;
 
 
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -57,7 +58,9 @@ public class TeamServiceTest {
         TeamResponse responseDto = teamService.create(teamRequest);
 
         assertThat(responseDto.getTeamId()).isNotNull();
-        assertThat(responseDto.getRoles()).containsExactly(roleName1,roleName2);
+        assertThat(responseDto.getTeamRoles())
+                .extracting(teamRole -> teamRole.getRole().getRoleName())
+                .containsExactly(roleName1, roleName2);
         assertThat(responseDto.getTags()).containsExactly(tagName1,tagName2);
         assertThat(responseDto.getHost().getId()).isEqualTo(member1.getId());
         assertThat(responseDto.getCreatedAt()).isNotNull();

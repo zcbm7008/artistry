@@ -17,18 +17,16 @@ import java.util.stream.Collectors;
 public class TeamResponse {
     private Long teamId;
     private String createdAt;
-
     private HostResponse host;
-    private List<MemberResponse> members;
     private List<String> tags;
-    private List<String> roles;
+    private List<TeamRoleResponse> teamRoles;
 
     public static TeamResponse from(Team team){
         return TeamResponse.builder()
                 .teamId(team.getId())
                 .createdAt(team.getCreatedAt().toString())
                 .host(HostResponse.from(team.getHost()))
-                .roles(roleNames(team.getTeamRoles()))
+                .teamRoles(team.getTeamRoles().stream().map(TeamRoleResponse::from).collect(Collectors.toList()))
                 .tags(tagNames(team.getTags()))
                 .build();
     }

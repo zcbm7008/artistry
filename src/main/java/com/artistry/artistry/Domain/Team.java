@@ -31,30 +31,30 @@ public class Team {
     @JoinColumn(name="member_id")
     private Member host;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<TeamRole> teamRoles = new ArrayList<>();
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "team_tag",
             joinColumns = @JoinColumn(name="team_id"),
             inverseJoinColumns = @JoinColumn(name="tag_id"))
     private List<Tag> tags;
 
-
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Application> applications;
+    public Team(final String name,final Member host,final List<Tag> tags, List<Role> roles){
+        this(null,name,host,tags,roles);
+    }
 
     @Builder
-    public Team(Long id, @NonNull Member host, @NonNull String name,List<TeamRole> teamRoles,List<Tag> tags){
+    public Team(Long id, @NonNull String name, @NonNull Member host, List<Tag> tags, List<Role> roles){
         this.id = id;
-        this.host = host;
         this.name = name;
+        this.host = host;
         this.tags=tags;
-        this.teamRoles = new ArrayList<>();
+        addRoles(roles);
     }
 
     public void apply(TeamRole teamRole, Application application){
@@ -92,6 +92,7 @@ public class Team {
                 .findFirst()
                 .orElseThrow(RoleNotFoundException::new);
     }
+
 
     public boolean isHostMember(Member member){
         return host.equals(member);

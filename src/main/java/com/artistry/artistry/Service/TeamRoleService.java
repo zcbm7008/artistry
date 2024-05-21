@@ -2,6 +2,8 @@ package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.TeamRole;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
+import com.artistry.artistry.Dto.Response.TeamResponse;
+import com.artistry.artistry.Dto.Response.TeamRoleResponse;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import com.artistry.artistry.Repository.TeamRoleRepository;
 import org.springframework.stereotype.Service;
@@ -18,16 +20,14 @@ public class TeamRoleService {
         this.teamRoleRepository = teamRoleRepository;
     }
 
-    public TeamRole findById(Long id){
-        return teamRoleRepository.findById(id)
-                .orElseThrow(TeamRoleNotFoundException::new);
+    public TeamRoleResponse findById(Long id){
+        return TeamRoleResponse.from(teamRoleRepository.findById(id)
+                .orElseThrow(TeamRoleNotFoundException::new));
     }
 
     public List<ApplicationResponse> getApplications(Long TeamRoleId){
-        TeamRole teamRole = this.findById(TeamRoleId);
+        TeamRoleResponse teamRoleResponse = this.findById(TeamRoleId);
 
-        return teamRole.getApplications().stream()
-                .map(ApplicationResponse::from)
-                .collect(Collectors.toList());
+        return teamRoleResponse.getApplications();
     }
 }

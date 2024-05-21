@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -18,7 +19,7 @@ public class TeamRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="team_id")
     private Team team;
 
@@ -30,8 +31,24 @@ public class TeamRole {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<Application> applications = new ArrayList<>();
 
+    public List<Portfolio> getPortfolios(ApplicationStatus status) {
+        return applications.stream()
+                .filter(application -> status == null || application.getStatus() == status)
+                .map(Application::getPortfolio)
+                .collect(Collectors.toList());
+    }
+
+    public void addApplication(Application application){
+        application.setStatus(ApplicationStatus.APPROVED);
+        this.getApplications().add(application);
+    }
+
+
+    public String getRoleName(){
+        return role.getRoleName();
+    }
 
 }
