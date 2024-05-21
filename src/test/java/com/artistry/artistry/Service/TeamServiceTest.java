@@ -86,8 +86,8 @@ public class TeamServiceTest {
 
         Tag tag1 = tagRepository.save(new Tag(tagName1));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(1L, "portfolio1 for composer", role1, member2));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(2L, "portfolio2 for drummer", invalidRole, applicant1));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(1L, "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(2L, "portfolio2 for drummer", invalidRole));
 
         Team team = new Team(teamName, member1, List.of(tag1), List.of(role1));
 

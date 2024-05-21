@@ -12,16 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PortfolioResponse {
     private Long id;
-    private String role;
+    private String roleName;
     private String title;
-    private String memberNickname;
 
     public static PortfolioResponse from(Portfolio portfolio){
         return PortfolioResponse.builder()
                 .id(portfolio.getId())
                 .title(portfolio.getTitle())
-                .role(portfolio.getRole().toString())
-                .memberNickname(portfolio.getMember().getNickname())
+                .roleName(portfolio.getRole().getRoleName())
                 .build();
     }
 

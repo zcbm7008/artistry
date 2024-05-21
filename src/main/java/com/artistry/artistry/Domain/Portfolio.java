@@ -20,20 +20,14 @@ public class Portfolio {
     @ManyToOne
     private Role role;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
-
     public Portfolio(String title, Role role, Member member){
-        this(null,title,role,member);
+        this(null,title,role);
     }
 
 
-    public Portfolio(Long id, String title, Role role, Member member) {
+    public Portfolio(Long id, String title, Role role) {
         this.id = id;
         this.title = title;
         this.role = role;
-        this.member = member;
     }
 }
