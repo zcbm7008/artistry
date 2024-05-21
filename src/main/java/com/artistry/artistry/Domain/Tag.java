@@ -6,6 +6,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.util.Objects;
+
+@EqualsAndHashCode
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

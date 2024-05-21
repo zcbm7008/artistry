@@ -2,10 +2,12 @@ package com.artistry.artistry.Domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.repository.cdi.Eager;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode
 @Builder
 @Getter
 @AllArgsConstructor
@@ -19,7 +21,7 @@ public class Role {
     @NonNull
     private String roleName;
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
     private List<TeamRole> teamRoles = new ArrayList<>();
 
     public Role(final String roleName) {
