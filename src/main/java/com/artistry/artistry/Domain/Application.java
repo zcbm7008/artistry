@@ -39,6 +39,10 @@ public class Application {
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
+    public Application(Team team, Role role, Member member, Portfolio portfolio){
+        this(null,team,role,null,member,portfolio,ApplicationStatus.PENDING);
+    }
+
     public Application(Team team, Role role, TeamRole teamRole,Member member, Portfolio portfolio){
         this(null,team,role,teamRole,member,portfolio,ApplicationStatus.PENDING);
     }
