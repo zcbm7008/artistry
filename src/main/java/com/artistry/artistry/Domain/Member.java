@@ -1,5 +1,6 @@
 package com.artistry.artistry.Domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,30 +22,21 @@ public class Member {
     private String nickname;
 
     @OneToMany(mappedBy = "host")
+    @JsonIgnore
     private List<Team> teams;
-
-    @OneToMany(mappedBy = "member")
-    private List<Portfolio> portfolios = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Application> applications;
 
     public Member(String nickName){
-        this(null,nickName,null,null,null);
+        this(null,nickName,null,null);
     }
 
-    public Member(final Long id, final String nickName, final List<Team> teams, List<Portfolio> portfolios, List<Application> applications) {
+    public Member(final Long id, final String nickName, final List<Team> teams, List<Application> applications) {
         this.id = id;
         this.nickname = nickName;
         this.teams = teams;
-        this.portfolios = portfolios;
         this.applications = applications;
     }
-
-    public void addPortfolio(Portfolio portfolio){
-        this.portfolios.add(portfolio);
-        portfolio.setMember(this);
-    }
-
 
 }

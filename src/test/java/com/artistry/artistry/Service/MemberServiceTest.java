@@ -1,7 +1,6 @@
-package com.artistry.artistry.service;
+package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
-import com.artistry.artistry.Service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
