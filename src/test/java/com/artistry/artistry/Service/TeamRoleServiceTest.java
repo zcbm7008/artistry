@@ -67,8 +67,6 @@ public class TeamRoleServiceTest {
         team.findTeamRoleByRole(role2).getApplications().add(application2);
         team.findTeamRoleByRole(role2).getApplications().add(application3);
 
-        teamRepository.save(team);
-
         List<ApplicationResponse> role1Applications = teamRoleService.getApplications(team.findTeamRoleByRole(role1).getId());
         List<ApplicationResponse> role2Applications = teamRoleService.getApplications(team.findTeamRoleByRole(role2).getId());
 
