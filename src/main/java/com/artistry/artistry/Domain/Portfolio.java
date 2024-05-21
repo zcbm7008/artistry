@@ -20,7 +20,7 @@ public class Portfolio {
     @ManyToOne
     private Role role;
 
-    public Portfolio(String title, Role role, Member member){
+    public Portfolio(String title, Role role){
         this(null,title,role);
     }
 

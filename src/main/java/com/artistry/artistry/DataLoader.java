@@ -16,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 public class DataLoader implements CommandLineRunner {
 
-    private final TeamRepository teamRepository;
     private final TagRepository tagRepository;
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
@@ -24,12 +23,10 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
         prepareDummyTags();
         prepareDummyMembers();
         prepareDummyRoles();
         prepareDummyPortfolios();
-        prepareDummyTeams();
     }
 
 
@@ -72,44 +69,5 @@ public class DataLoader implements CommandLineRunner {
         roleRepository.save(Role.builder()
                 .roleName("composer")
                 .build());
-    }
-
-    private void prepareDummyTeams(){
-        List<Tag> tags = Arrays
-                .asList(tagRepository.findById(1L).orElseThrow(TagNotFoundException::new),
-                        tagRepository.findById(2L).orElseThrow(TagNotFoundException::new));
-
-        List<Member> members = Arrays
-                .asList(memberRepository.findById(1L).orElseThrow(MemberNotFoundException::new),
-                        memberRepository.findById(2L).orElseThrow(MemberNotFoundException::new));
-
-        List<Role> roles = Arrays
-                .asList(roleRepository.findById(1L).orElseThrow(RoleNotFoundException::new),
-                        roleRepository.findById(2L).orElseThrow(RoleNotFoundException::new));
-
-        Member teamMember1 = Member.builder()
-                .nickname("멤버1")
-                .build();
-
-        Member teamMember2 = Member.builder()
-                .nickname("멤버2")
-                .build();
-
-        List<Member> teamMembers = Arrays
-                .asList(teamMember1,teamMember2);
-
-//        teamRepository.save(Team.builder()
-//                .host(memberRepository.findById(1L).orElseThrow(MemberNotFoundException::new))
-//                .name("team1")
-//                .tags(tags)
-//                .teamRoles(roles)
-//                .build());
-//
-//        teamRepository.save(Team.builder()
-//                .host(memberRepository.findById(3L).orElseThrow(MemberNotFoundException::new))
-//                .name("team2")
-//                .tags(tags)
-//                .teamRoles(roles)
-//                .build());
     }
 }

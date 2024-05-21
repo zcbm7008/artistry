@@ -9,13 +9,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+@Transactional
 @SpringBootTest
 public class TeamRoleServiceTest {
     @Autowired
@@ -50,9 +51,9 @@ public class TeamRoleServiceTest {
         Tag tag1 = tagRepository.save(new Tag(tagName1));
         Tag tag2 = tagRepository.save(new Tag(tagName2));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(1L, "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(2L, "portfolio2 for drummer", role2));
-        Portfolio portfolio3 = portfolioRepository.save(new Portfolio(3L, "portfolio3 for drummer", role2));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", role2));
+        Portfolio portfolio3 = portfolioRepository.save(new Portfolio( "portfolio3 for drummer", role2));
 
         Team team = new Team(teamName, member1, Arrays.asList(tag1, tag2), Arrays.asList(role1, role2));
 

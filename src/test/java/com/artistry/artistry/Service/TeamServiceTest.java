@@ -12,12 +12,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Arrays;
 import java.util.List;
 
 
 import static org.assertj.core.api.Assertions.*;
-
+@Transactional
 @SpringBootTest
 public class TeamServiceTest {
     @Autowired
@@ -86,8 +88,8 @@ public class TeamServiceTest {
 
         Tag tag1 = tagRepository.save(new Tag(tagName1));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(1L, "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(2L, "portfolio2 for drummer", invalidRole));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", invalidRole));
 
         Team team = new Team(teamName, member1, List.of(tag1), List.of(role1));
 
