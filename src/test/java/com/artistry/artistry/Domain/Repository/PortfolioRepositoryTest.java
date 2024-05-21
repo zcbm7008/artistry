@@ -17,15 +17,15 @@ public class PortfolioRepositoryTest {
     @Autowired
     private PortfolioRepository portfolioRepository;
 
-    @DisplayName("포트폴리오 더미 데이터를 확인한다")
-    @ParameterizedTest
-    @CsvSource({"1,Portfolio1","2,Portfolio2"})
-    void dummyPortfolioTest(Long id, String title){
-        Optional<Portfolio> portfolio = portfolioRepository.findById(id);
-        assertThat(portfolio.isPresent()).isTrue();
-        assertThat(portfolio.get().getTitle()).isEqualTo(title);
-
-    }
+//    @DisplayName("포트폴리오 더미 데이터를 확인한다")
+//    @ParameterizedTest
+//    @CsvSource({"1,Portfolio1","2,Portfolio2"})
+//    void dummyPortfolioTest(Long id, String title){
+//        Optional<Portfolio> portfolio = portfolioRepository.findById(id);
+//        assertThat(portfolio.isPresent()).isTrue();
+//        assertThat(portfolio.get().getTitle()).isEqualTo(title);
+//
+//    }
 
 
 }

@@ -6,13 +6,12 @@ import lombok.*;
 @Builder
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Portfolio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NonNull
     private String title;
@@ -20,12 +19,12 @@ public class Portfolio {
     @ManyToOne
     private Role role;
 
-    public Portfolio(String title, Role role, Member member){
+    public Portfolio(String title, Role role){
         this(null,title,role);
     }
 
 
-    public Portfolio(Long id, String title, Role role) {
+    public Portfolio(Long id, @NonNull String title, Role role) {
         this.id = id;
         this.title = title;
         this.role = role;

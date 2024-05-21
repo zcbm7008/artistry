@@ -21,6 +21,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest
 public class TeamApiDocTest {
@@ -54,6 +56,7 @@ public class TeamApiDocTest {
     TeamRepository teamRepository;
     @Autowired
     MemberRepository memberRepository;
+    private Team dummyTeam;
 
     @BeforeEach
     public void setUp(WebApplicationContext webApplicationContext,
@@ -66,17 +69,18 @@ public class TeamApiDocTest {
 
         Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
         Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
+
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
+
         Member member1 = memberRepository.save(new Member("member1"));
 
         // 더미 팀 생성
         String dummyTeamName = "더미 팀";
         List<Role> roles = Arrays.asList(role1, role2);
         List<Tag> tags = Arrays.asList(tag1, tag2);
-        Team dummyTeam = new Team(dummyTeamName, member1, tags, roles);
+        dummyTeam = new Team(dummyTeamName, member1, tags, roles);
         teamRepository.save(dummyTeam);
-
 
     }
 
@@ -86,6 +90,7 @@ public class TeamApiDocTest {
 
         Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
         Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
+
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
 
@@ -138,7 +143,7 @@ public class TeamApiDocTest {
     @DisplayName("팀을 조회한다")
     @Test
     void readTeamTest() throws Exception{
-        mockMvc.perform(get("/api/teams/1")
+        mockMvc.perform(get("/api/teams/" + dummyTeam.getId())
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.teamId").exists())
@@ -147,8 +152,8 @@ public class TeamApiDocTest {
                 .andExpect(jsonPath("$.host.nickName").exists())
                 .andExpect(jsonPath("$.tags").isArray())
                 .andExpect(jsonPath("$.tags",hasSize(2)))
-                .andExpect(jsonPath("$.tags",hasItem("밴드")))
-                .andExpect(jsonPath("$.tags",hasItem("락")))
+                .andExpect(jsonPath("$.tags",hasItem("band")))
+                .andExpect(jsonPath("$.tags",hasItem("edm")))
                 .andExpect(jsonPath("$.teamRoles").exists())
                 .andExpect(jsonPath("$.teamRoles",hasSize(2)))
                 .andDo(document("read-room",
