@@ -24,3 +24,8 @@ spring:
           format_sql: true
           use_sql_comment: false
 
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
