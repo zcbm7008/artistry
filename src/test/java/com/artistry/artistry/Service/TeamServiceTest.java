@@ -6,13 +6,14 @@ import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
+import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import com.artistry.artistry.Repository.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Arrays;
-
+import java.util.List;
 
 
 import static org.assertj.core.api.Assertions.*;
@@ -35,6 +36,8 @@ public class TeamServiceTest {
     PortfolioRepository portfolioRepository;
     @Autowired
     TeamRoleRepository teamRoleRepository;
+    @Autowired
+    ApplicationRepository applicationRepository;
 
     @DisplayName("팀을 생성한다")
     @Test
@@ -64,6 +67,38 @@ public class TeamServiceTest {
         assertThat(responseDto.getTags()).containsExactly(tagName1,tagName2);
         assertThat(responseDto.getHost().getId()).isEqualTo(member1.getId());
         assertThat(responseDto.getCreatedAt()).isNotNull();
+    }
+
+    @DisplayName("팀에 없는 역할에 대한 지원서를 신청 때 예외를 던진다.")
+    @Test
+    void applicationRoleNotInTeam(){
+        String teamName = "밴드 팀";
+        String roleName1 = "작곡가";
+        String invalidRoleName = "일러스트레이터";
+        String tagName1 = "밴드";
+        Member member1 = memberRepository.save(new Member("member1"));
+        Member member2 = memberRepository.save(new Member("member2"));
+        Member applicant1 = memberRepository.save(new Member("applicant1"));
+
+
+        Role role1 = roleRepository.save(new Role(roleName1));
+        Role invalidRole = roleRepository.save(new Role(invalidRoleName));
+
+        Tag tag1 = tagRepository.save(new Tag(tagName1));
+
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(1L, "portfolio1 for composer", role1, member2));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(2L, "portfolio2 for drummer", invalidRole, applicant1));
+
+        Team team = new Team(teamName, member1, List.of(tag1), List.of(role1));
+
+        teamRepository.save(team);
+
+        Application application1 = applicationRepository.save(new Application(team, role1, member2, portfolio1));
+        Application application2 = applicationRepository.save(new Application(team, invalidRole, applicant1, portfolio2));
+
+        team.findTeamRoleByRole(role1).addApplication(application1);
+        assertThatThrownBy(() -> team.findTeamRoleByRole(invalidRole).getApplications().add(application2)).isInstanceOf(TeamRoleNotFoundException.class);
+
     }
 
     @DisplayName("요청한 팀 Id가 없을경우 예외를 던짐.")
