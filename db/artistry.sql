@@ -6,7 +6,7 @@ CREATE TABLE `member` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
-INSERT INTO `member` (`id`, `nickName`) VALUES (0,'composer1'),(1,'art1'),(2,'movieman1') gg;
+INSERT INTO `member` (`id`, `nickName`) VALUES (0,'composer1'),(1,'art1'),(2,'movieman1');
 
 DROP Table IF EXISTS `tag`;
 
@@ -36,7 +36,7 @@ CREATE TABLE `team`(
     `host_id` bigint(20) NOT NULL,
     `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    KEY `fk_team_hosy` (`host_id`),
+    KEY `fk_team_host` (`host_id`),
     CONSTRAINT `fk_team_host` FOREIGN KEY (`host_id`) REFERENCES `member` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
