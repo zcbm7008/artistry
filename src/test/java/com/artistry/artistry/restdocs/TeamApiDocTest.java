@@ -4,50 +4,55 @@ import com.artistry.artistry.Domain.Member;
 import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.RoleRepository;
 import com.artistry.artistry.Repository.TagRepository;
 import com.artistry.artistry.Repository.TeamRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
+import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
+import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@SpringBootTest
-public class TeamApiDocTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class TeamApiDocTest {
+    @LocalServerPort
+    private int port;
+
 
     @Autowired
     private ObjectMapper objectMapper;
-    private MockMvc mockMvc;
     @Autowired
     private TagRepository tagRepository;
     @Autowired
@@ -58,17 +63,28 @@ public class TeamApiDocTest {
     MemberRepository memberRepository;
     private Team dummyTeam;
 
+
+    protected static RequestSpecification specification;
+
     @BeforeEach
-    public void setUp(WebApplicationContext webApplicationContext,
-                      RestDocumentationContextProvider restDocumentation) {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentation))
-                .alwaysDo(document("{method-name}", preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint())))
+    public void setUp(final RestDocumentationContextProvider restDocumentation) {
+        RestAssured.port = port;
+        specification = new RequestSpecBuilder()
+                .addFilter(documentationConfiguration(restDocumentation).operationPreprocessors()
+                        .withRequestDefaults(prettyPrint())
+                        .withResponseDefaults(prettyPrint()))
                 .build();
+
+
+        tagRepository.save(new Tag(1L,"band"));
+        tagRepository.save(new Tag(2L,"edm"));
+        roleRepository.save(new Role(1L,"작곡가"));
+        roleRepository.save(new Role(2L,"보컬"));
 
         Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
         Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
+
+
 
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
@@ -98,25 +114,19 @@ public class TeamApiDocTest {
         Map<String, Object> body = new HashMap<>();
         body.put("teamName", "팀1");
         body.put("hostId",1L);
-        body.put("roles",Arrays.asList(role1,role2));
-        body.put("tags", Arrays.asList(tag1,tag2));
+        body.put("roles", Arrays.asList(Map.of("id", role1.getId(), "roleName", role1.getRoleName()),
+                Map.of("id", role2.getId(), "roleName", role2.getRoleName())));
+        body.put("tags", Arrays.asList(Map.of("id", tag1.getId(), "name", tag1.getName()),
+                Map.of("id", tag2.getId(), "name", tag2.getName())));
 
-        mockMvc.perform(post("/api/teams")
+
+        RestAssured.given(specification)
+                .contentType(ContentType.JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.teamId").exists())
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.host.id").value(1))
-                .andExpect(jsonPath("$.host.nickName").exists())
-                .andExpect(jsonPath("$.tags").isArray())
-                .andExpect(jsonPath("$.tags",hasSize(2)))
-                .andExpect(jsonPath("$.tags",hasItem("band")))
-                .andExpect(jsonPath("$.tags",hasItem("edm")))
-                .andExpect(jsonPath("$.teamRoles").isArray())
-                .andExpect(jsonPath("$.teamRoles",hasSize(2)))
-                .andDo(document("create-team",
+                .body(body)
+                .filter(RestAssuredRestDocumentation.document("create-team",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint()),
                         requestFields(fieldWithPath("teamName").description("팀 이름"),
                                 fieldWithPath("hostId").description("호스트 Id"),
                                 fieldWithPath("tags").description("태그 리스트"),
@@ -136,27 +146,24 @@ public class TeamApiDocTest {
                                 fieldWithPath("teamRoles[].role.id").ignored(),
                                 fieldWithPath("teamRoles[].role.roleName").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
-                                fieldWithPath("tags").description("태그 리스트"))));
-
+                                fieldWithPath("tags").description("태그 리스트"))))
+                .when().post("/api/teams")
+                .then().statusCode(201)
+                .extract().body().as(TeamResponse.class);
     }
+
     
     @DisplayName("팀을 조회한다")
     @Test
     void readTeamTest() throws Exception{
-        mockMvc.perform(get("/api/teams/" + dummyTeam.getId())
-                .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.teamId").exists())
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.host.id").exists())
-                .andExpect(jsonPath("$.host.nickName").exists())
-                .andExpect(jsonPath("$.tags").isArray())
-                .andExpect(jsonPath("$.tags",hasSize(2)))
-                .andExpect(jsonPath("$.tags",hasItem("band")))
-                .andExpect(jsonPath("$.tags",hasItem("edm")))
-                .andExpect(jsonPath("$.teamRoles").exists())
-                .andExpect(jsonPath("$.teamRoles",hasSize(2)))
-                .andDo(document("read-room",
+
+        TeamResponse teamResponse =
+                RestAssured.given(specification)
+                .contentType(ContentType.JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(RestAssuredRestDocumentation.document("read-team",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint()),
                         responseFields(fieldWithPath("teamId").description("팀 Id"),
                                 fieldWithPath("createdAt").description("팀 생성 시각"),
                                 fieldWithPath("host.id").description("호스트 Id"),
@@ -168,6 +175,9 @@ public class TeamApiDocTest {
                                 fieldWithPath("teamRoles[].role").ignored(),
                                 fieldWithPath("teamRoles[].role.id").ignored(),
                                 fieldWithPath("teamRoles[].role.roleName").description("역할 이름"),
-                                fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"))));
+                                fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"))))
+                .when().get("/api/teams/{id}",dummyTeam.getId())
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(TeamResponse.class);
     }
 }
