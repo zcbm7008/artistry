@@ -9,6 +9,7 @@ import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.RoleRepository;
 import com.artistry.artistry.Repository.TagRepository;
 import com.artistry.artistry.Repository.TeamRepository;
+import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -26,26 +28,20 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
-import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation;
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import static io.restassured.RestAssured.given;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureRestDocs(outputDir = "target/generated-snippets")
 class TeamApiDocTest {
     @LocalServerPort
     private int port;
@@ -64,13 +60,13 @@ class TeamApiDocTest {
     private Team dummyTeam;
 
 
-    protected static RequestSpecification specification;
+    private RequestSpecification specification;
 
     @BeforeEach
-    public void setUp(final RestDocumentationContextProvider restDocumentation) {
+    public void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
         specification = new RequestSpecBuilder()
-                .addFilter(documentationConfiguration(restDocumentation).operationPreprocessors()
+                .addFilter(RestAssuredRestDocumentation.documentationConfiguration(restDocumentation).operationPreprocessors()
                         .withRequestDefaults(prettyPrint())
                         .withResponseDefaults(prettyPrint()))
                 .build();
@@ -95,7 +91,7 @@ class TeamApiDocTest {
         String dummyTeamName = "더미 팀";
         List<Role> roles = Arrays.asList(role1, role2);
         List<Tag> tags = Arrays.asList(tag1, tag2);
-        dummyTeam = new Team(dummyTeamName, member1, tags, roles);
+        dummyTeam = new Team(1L,dummyTeamName, member1, tags, roles);
         teamRepository.save(dummyTeam);
 
     }
@@ -120,13 +116,12 @@ class TeamApiDocTest {
                 Map.of("id", tag2.getId(), "name", tag2.getName())));
 
 
-        RestAssured.given(specification)
+        given(specification).log().all()
                 .contentType(ContentType.JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
-                .filter(RestAssuredRestDocumentation.document("create-team",
-                        Preprocessors.preprocessRequest(prettyPrint()),
-                        Preprocessors.preprocessResponse(prettyPrint()),
+                .filter(RestAssuredRestDocumentationWrapper.document("create-team",
+                        "팀 생성 API",
                         requestFields(fieldWithPath("teamName").description("팀 이름"),
                                 fieldWithPath("hostId").description("호스트 Id"),
                                 fieldWithPath("tags").description("태그 리스트"),
@@ -158,12 +153,11 @@ class TeamApiDocTest {
     void readTeamTest() throws Exception{
 
         TeamResponse teamResponse =
-                RestAssured.given(specification)
+                RestAssured.given(specification).log().all()
                 .contentType(ContentType.JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .filter(RestAssuredRestDocumentation.document("read-team",
-                        Preprocessors.preprocessRequest(prettyPrint()),
-                        Preprocessors.preprocessResponse(prettyPrint()),
+                .filter(RestAssuredRestDocumentationWrapper.document("read-team",
+                        "팀 조회 API",
                         responseFields(fieldWithPath("teamId").description("팀 Id"),
                                 fieldWithPath("createdAt").description("팀 생성 시각"),
                                 fieldWithPath("host.id").description("호스트 Id"),
