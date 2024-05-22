@@ -98,3 +98,19 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+      #docker-compose 파일을 ec2 서버에 배포
+      - name: Deploy to Prod
+        uses: appleboy/ssh-action@master
+        id: deploy-prod
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs: GITHUB_SHA
+          script: |
+             docker stop artistry
+             docker rm artistry
+             sudo docker pull ${{ secrets.DOCKER_HUB_IMAGENAME }}
+             docker run -d --name artistry -p 8080:8080 ${{ secrets.DOCKER_HUB_IMAGENAME }}
+             docker rmi -f $(docker images -f "dangling=true" -q)
