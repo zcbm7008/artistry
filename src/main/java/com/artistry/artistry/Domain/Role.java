@@ -28,6 +28,9 @@ public class Role {
     public Role(final String roleName) {
         this(null,roleName,null);
     }
+    public Role(final Long id, final String roleName) {
+        this(id,roleName,null);
+    }
 
 
 }
