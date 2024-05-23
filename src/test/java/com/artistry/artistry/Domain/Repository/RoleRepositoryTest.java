@@ -20,7 +20,7 @@ public class RoleRepositoryTest {
 
     @DisplayName("역할 더미 데이터를 확인한다.")
     @ParameterizedTest
-    @CsvSource({"1,vocal","2,composer"})
+    @CsvSource({"1,작곡가","2,일러스트레이터"})
     void dummyRoleTest(Long id, String roleName){
         Optional<Role> role = roleRepository.findById(id);
         assertThat(role.isPresent()).isTrue();
