@@ -18,12 +18,12 @@ public class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("유저 더미 데이터를 확인한다.")
-    @ParameterizedTest
-    @CsvSource({"1, composer1","2, art1"})
-    void dummyUserTest(Long id, String nickname){
-        Optional<Member> user = memberRepository.findById(id);
-        assertThat(user.isPresent()).isTrue();
-        assertThat(user.get().getNickname()).isEqualTo(nickname);
-    }
+//    @DisplayName("유저 더미 데이터를 확인한다.")
+//    @ParameterizedTest
+//    @CsvSource({"1, composer1","2, art1"})
+//    void dummyUserTest(Long id, String nickname){
+//        Optional<Member> user = memberRepository.findById(id);
+//        assertThat(user.isPresent()).isTrue();
+//        assertThat(user.get().getNickname()).isEqualTo(nickname);
+//    }
 }

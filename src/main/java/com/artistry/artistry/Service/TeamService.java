@@ -32,7 +32,7 @@ public class TeamService {
 
     public TeamResponse create(TeamRequest teamRequest){
         Member host = memberService.findById(teamRequest.getHostId());
-        List<Tag> tags = tagService.findAllById(teamRequest.getTags());
+        List<Tag> tags = tagService.findAllEntityById(teamRequest.getTags());
         List<Role> roles = roleService.findAllById(teamRequest.getRoles());
 
         Team team = new Team(teamRequest.getTeamName(),host,tags,roles);

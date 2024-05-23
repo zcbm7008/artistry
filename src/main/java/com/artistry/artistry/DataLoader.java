@@ -7,11 +7,15 @@ import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Profile("test")
+@Transactional
 @Component
 @AllArgsConstructor
 public class DataLoader implements CommandLineRunner {
