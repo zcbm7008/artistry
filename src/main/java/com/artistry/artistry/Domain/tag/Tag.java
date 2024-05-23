@@ -10,7 +10,6 @@ import java.util.Objects;
 
 @EqualsAndHashCode
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Tag {
@@ -20,11 +19,18 @@ public class Tag {
     private Long id;
 
     @NonNull
-    private String name;
+    private TagName name;
 
     public Tag(final String name) {
         this(null,name);
     }
+    public Tag(final Long id, final String name) {
+        this.id = id;
+        this.name = new TagName(name);
+    }
 
+    public String getName(){
+        return name.getValue();
+    }
 
 }
