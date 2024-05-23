@@ -4,6 +4,7 @@ import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class TagServiceTest {
     private TagService tagService;
     @Autowired
     private TagRepository tagRepository;
+
+    @BeforeEach
+    void setUp() {
+        tagRepository.deleteAll(); // 기존 데이터 삭제
+    }
 
 
     @DisplayName("Tag Id가 없을경우 예외를 던짐.")

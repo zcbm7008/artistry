@@ -5,6 +5,7 @@ import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class TagService {
 
+    @Autowired
     private final TagRepository tagRepository;
 
     public TagService(TagRepository tagRepository){
@@ -26,11 +28,11 @@ public class TagService {
 
     public TagResponse findById(Long id){
         return TagResponse.from(findEntityById(id));
-
     }
 
     public List<TagResponse> findAll() {
         List <Tag> tags = tagRepository.findAll();
+
         return tags.stream()
                 .map(TagResponse::from)
                 .collect(Collectors.toList());
