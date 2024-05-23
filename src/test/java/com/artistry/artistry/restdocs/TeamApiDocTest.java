@@ -1,20 +1,20 @@
 package com.artistry.artistry.restdocs;
 
+import com.artistry.artistry.DataLoader;
 import com.artistry.artistry.Domain.Member;
 import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
-import com.artistry.artistry.Repository.MemberRepository;
-import com.artistry.artistry.Repository.RoleRepository;
-import com.artistry.artistry.Repository.TagRepository;
-import com.artistry.artistry.Repository.TeamRepository;
+import com.artistry.artistry.Repository.*;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,15 +25,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
@@ -43,38 +50,19 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestDocs(outputDir = "target/generated-snippets")
-class TeamApiDocTest {
-    @LocalServerPort
-    private int port;
+class TeamApiDocTest extends ApiTest{
 
-
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private TagRepository tagRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    TeamRepository teamRepository;
-    @Autowired
-    MemberRepository memberRepository;
     private Team dummyTeam;
     TeamResponse teamResponse1;
-
-    private RequestSpecification specification;
-
     @BeforeEach
-    public void setUp(RestDocumentationContextProvider restDocumentation) {
-        RestAssured.port = port;
-        specification = new RequestSpecBuilder()
-                .addFilter(RestAssuredRestDocumentation.documentationConfiguration(restDocumentation).operationPreprocessors()
-                        .withRequestDefaults(prettyPrint())
-                        .withResponseDefaults(prettyPrint()))
-                .build();
-
+    public void setUpData() {
+        roleRepository.save(new Role("작곡가"));
+        roleRepository.save(new Role("일러스트레이터"));
         Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
         Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
 
+        tagRepository.save(new Tag("힙합"));
+        tagRepository.save(new Tag("퓨처"));
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
 
@@ -84,13 +72,10 @@ class TeamApiDocTest {
         String dummyTeamName = "더미 팀";
         List<Role> roles = Arrays.asList(role1, role2);
         List<Tag> tags = Arrays.asList(tag1, tag2);
-        dummyTeam = new Team(0L,dummyTeamName, member1, tags, roles);
+        dummyTeam = new Team(member1.getId(),dummyTeamName, member1, tags, roles);
         teamRepository.save(dummyTeam);
 
         teamResponse1 = create_team(dummyTeamName,member1.getId(),roles,tags);
-
-
-
     }
 
     public static TeamResponse create_team(String teamName,Long hostId, List<Role> roles,List<Tag> tags){
@@ -98,9 +83,10 @@ class TeamApiDocTest {
         body.put("teamName", teamName);
         body.put("hostId",hostId);
         body.put("roles", roles.stream().map(role -> Map.of("id",role.getId(),"roleName",role.getRoleName())).collect(Collectors.toList()));
-        body.put("tags", roles.stream().map(tag -> Map.of("id",tag.getId(),"roleName",tag.getRoleName())).collect(Collectors.toList()));
+        body.put("tags", tags.stream().map(tag -> Map.of("id",tag.getId(),"roleName",tag.getName())).collect(Collectors.toList()));
 
-        return   given().log().all()
+        return  given().log().all()
+                .body(body)
                 .contentType(ContentType.JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
@@ -130,10 +116,7 @@ class TeamApiDocTest {
                 Map.of("id", tag2.getId(), "name", tag2.getName())));
 
 
-        given(specification).log().all()
-                .contentType(ContentType.JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .body(body)
+        given().body(body)
                 .filter(RestAssuredRestDocumentationWrapper.document("create-team",
                         "팀 생성 API",
                         requestFields(fieldWithPath("teamName").description("팀 이름"),
@@ -170,9 +153,7 @@ class TeamApiDocTest {
     void readTeamTest() throws Exception{
 
         TeamResponse teamResponse =
-                RestAssured.given(specification).log().all()
-                .contentType(ContentType.JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
+                given()
                 .filter(RestAssuredRestDocumentationWrapper.document("read-team",
                         "팀 조회 API",
                         responseFields(fieldWithPath("teamId").description("팀 Id"),
@@ -191,4 +172,7 @@ class TeamApiDocTest {
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(TeamResponse.class);
     }
+
+
+
 }
