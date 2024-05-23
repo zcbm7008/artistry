@@ -31,21 +31,15 @@ public class DataLoader implements CommandLineRunner {
 
 
     private void prepareDummyTags(){
-        tagRepository.save(new Tag("band"));
-        tagRepository.save(new Tag("edm"));
+        tagRepository.save(new Tag("밴드"));
+        tagRepository.save(new Tag("재즈"));
     }
 
     private void prepareDummyMembers(){
-        memberRepository.save(Member.builder()
-                .nickname("member1")
-                .build());
+        memberRepository.save(new Member("composer1"));
+        memberRepository.save(new Member("art1"));
+        memberRepository.save(new Member("movieman1"));
 
-        memberRepository.save(Member.builder()
-                .nickname("member2")
-                .build());
-        memberRepository.save(Member.builder()
-                .nickname("member3")
-                .build());
     }
 
     private void prepareDummyPortfolios(){
@@ -62,12 +56,7 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void prepareDummyRoles(){
-        roleRepository.save(Role.builder()
-                .roleName("vocal")
-                .build());
-
-        roleRepository.save(Role.builder()
-                .roleName("composer")
-                .build());
+        roleRepository.save(new Role("작곡가"));
+        roleRepository.save(new Role("일러스트레이터"));
     }
 }

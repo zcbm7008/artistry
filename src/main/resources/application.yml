@@ -29,3 +29,11 @@ logging:
     org:
       hibernate:
         SQL: DEBUG
+
+springdoc:
+  swagger-ui:
+    url: /docs/openapi-3.0.json
+    path: /docs/swagger
+
+server:
+  port=0:

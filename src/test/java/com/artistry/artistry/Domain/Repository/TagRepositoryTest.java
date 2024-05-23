@@ -20,7 +20,7 @@ public class TagRepositoryTest {
 
     @DisplayName("태그 더미 데이터를 확인한다.")
     @ParameterizedTest
-    @CsvSource({"1,band","2,edm"})
+    @CsvSource({"1,밴드","2,재즈"})
     void dummyTagTest(Long id,String name){
         Optional<Tag> tag = tagRepository.findById(id);
         assertThat(tag.isPresent()).isTrue();

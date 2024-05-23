@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class DocsController {
 
-    private static final String API_DOCS_PATH = "docs/api-docs.html";
+    private static final String API_DOCS_PATH = "generated-docs/api-docs.html";
 
     @GetMapping("/")
     public String getApiDocs() {return API_DOCS_PATH; }
