@@ -1,4 +1,4 @@
-package com.artistry.artistry.Domain;
+package com.artistry.artistry.Domain.tag;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
