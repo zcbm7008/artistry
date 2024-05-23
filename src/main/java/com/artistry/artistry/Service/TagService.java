@@ -19,9 +19,14 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
-    public Tag findById(Long id){
+    public Tag findEntityById(Long id){
         return tagRepository.findById(id)
                 .orElseThrow(TagNotFoundException::new);
+    }
+
+    public TagResponse findById(Long id){
+        return TagResponse.from(findEntityById(id));
+
     }
 
     public List<TagResponse> findAll() {
@@ -31,9 +36,15 @@ public class TagService {
                 .collect(Collectors.toList());
     }
 
-    public List<Tag> findAllById(final List<TagRequest> tagRequests){
+    public List<TagResponse> findAllById(final List<TagRequest> tagRequests){
         return tagRequests.stream()
                 .map(tagRequest -> findById(tagRequest.getId()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Tag> findAllEntityById(final List<TagRequest> tagRequests){
+        return tagRequests.stream()
+                .map(tagRequest -> findEntityById(tagRequest.getId()))
                 .collect(Collectors.toList());
     }
 }
