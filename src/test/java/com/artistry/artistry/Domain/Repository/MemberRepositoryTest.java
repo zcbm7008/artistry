@@ -20,7 +20,7 @@ public class MemberRepositoryTest {
 
     @DisplayName("유저 더미 데이터를 확인한다.")
     @ParameterizedTest
-    @CsvSource({"1, member1","2, member2"})
+    @CsvSource({"1, composer1","2, art1"})
     void dummyUserTest(Long id, String nickname){
         Optional<Member> user = memberRepository.findById(id);
         assertThat(user.isPresent()).isTrue();
