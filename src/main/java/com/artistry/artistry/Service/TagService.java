@@ -2,6 +2,7 @@ package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Tag;
 import com.artistry.artistry.Dto.Request.TagRequest;
+import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,13 @@ public class TagService {
     public Tag findById(Long id){
         return tagRepository.findById(id)
                 .orElseThrow(TagNotFoundException::new);
+    }
+
+    public List<TagResponse> findAll() {
+        List <Tag> tags = tagRepository.findAll();
+        return tags.stream()
+                .map(TagResponse::from)
+                .collect(Collectors.toList());
     }
 
     public List<Tag> findAllById(final List<TagRequest> tagRequests){
