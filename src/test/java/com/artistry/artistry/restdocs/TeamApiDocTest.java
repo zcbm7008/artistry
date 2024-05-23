@@ -27,14 +27,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -58,7 +60,7 @@ class TeamApiDocTest {
     @Autowired
     MemberRepository memberRepository;
     private Team dummyTeam;
-
+    TeamResponse teamResponse1;
 
     private RequestSpecification specification;
 
@@ -80,8 +82,6 @@ class TeamApiDocTest {
         Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
         Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
 
-
-
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
 
@@ -91,10 +91,31 @@ class TeamApiDocTest {
         String dummyTeamName = "더미 팀";
         List<Role> roles = Arrays.asList(role1, role2);
         List<Tag> tags = Arrays.asList(tag1, tag2);
-        dummyTeam = new Team(1L,dummyTeamName, member1, tags, roles);
+        dummyTeam = new Team(0L,dummyTeamName, member1, tags, roles);
         teamRepository.save(dummyTeam);
 
+        teamResponse1 = create_team(dummyTeamName,member1.getId(),roles,tags);
+
+
+
     }
+
+    public static TeamResponse create_team(String teamName,Long hostId, List<Role> roles,List<Tag> tags){
+        Map<String, Object> body = new HashMap<>();
+        body.put("teamName", teamName);
+        body.put("hostId",hostId);
+        body.put("roles", roles.stream().map(role -> Map.of("id",role.getId(),"roleName",role.getRoleName())).collect(Collectors.toList()));
+        body.put("tags", roles.stream().map(tag -> Map.of("id",tag.getId(),"roleName",tag.getRoleName())).collect(Collectors.toList()));
+
+        return   given().log().all()
+                .contentType(ContentType.JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(body)
+                .when().post("/api/teams")
+                .then().statusCode(201)
+                .extract().body().as(TeamResponse.class);
+    }
+
 
     @DisplayName("팀을 생성한다")
     @Test
@@ -147,6 +168,9 @@ class TeamApiDocTest {
                 .extract().body().as(TeamResponse.class);
     }
 
+
+
+
     
     @DisplayName("팀을 조회한다")
     @Test
@@ -170,7 +194,7 @@ class TeamApiDocTest {
                                 fieldWithPath("teamRoles[].role.id").ignored(),
                                 fieldWithPath("teamRoles[].role.roleName").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"))))
-                .when().get("/api/teams/{id}",dummyTeam.getId())
+                .when().get("/api/teams/{id}",teamResponse1.getTeamId())
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(TeamResponse.class);
     }
