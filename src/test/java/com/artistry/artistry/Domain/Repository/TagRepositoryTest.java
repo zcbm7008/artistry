@@ -1,15 +1,8 @@
 package com.artistry.artistry.Domain.Repository;
 
-import com.artistry.artistry.Domain.Tag;
-import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Repository.TagRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

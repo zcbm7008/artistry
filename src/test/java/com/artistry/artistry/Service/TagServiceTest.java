@@ -1,6 +1,6 @@
 package com.artistry.artistry.Service;
 
-import com.artistry.artistry.Domain.Tag;
+import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;

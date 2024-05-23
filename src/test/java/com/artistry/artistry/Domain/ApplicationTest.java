@@ -1,5 +1,6 @@
 package com.artistry.artistry.Domain;
 
+import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.RoleRepository;
 import com.artistry.artistry.Repository.TagRepository;

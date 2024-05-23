@@ -2,10 +2,7 @@ package com.artistry.artistry.Domain.Repository;
 
 
 import com.artistry.artistry.Domain.*;
-import com.artistry.artistry.Dto.Request.RoleRequest;
-import com.artistry.artistry.Dto.Request.TagRequest;
-import com.artistry.artistry.Dto.Request.TeamRequest;
-import com.artistry.artistry.Dto.Response.TeamResponse;
+import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.RoleRepository;
 import com.artistry.artistry.Repository.TagRepository;
@@ -15,15 +12,12 @@ import com.artistry.artistry.Service.RoleService;
 import com.artistry.artistry.Service.TagService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
