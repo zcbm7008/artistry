@@ -4,6 +4,7 @@ public enum ContentsType {
     IMAGE,
     AUDIO,
     VIDEO,
-    TEXT
+    TEXT,
+    UNKNOWN
 
 }

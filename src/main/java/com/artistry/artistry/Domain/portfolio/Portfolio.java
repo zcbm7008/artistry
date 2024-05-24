@@ -24,18 +24,23 @@ public class Portfolio {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="portfolio_contents", joinColumns = @JoinColumn(name = "portfolio_id"))
-    private List<PortfolioContent> contents = new ArrayList<>();
+    private List<Content> contents = new ArrayList<>();
 
-    public void addContents(PortfolioContent portfolioContent){
-        this.contents.add(portfolioContent);
+    public void addContents(List<Content> contents){
+        this.contents.addAll(contents);
     }
+
+    public void removeContents(Content content){
+            this.contents.remove(content);
+    }
+
 
 
     public Portfolio(String title,Role role){
         this(null,title,role,null);
     }
 
-    public Portfolio(Long id, @NonNull String title, @NonNull Role role,List<PortfolioContent> contents) {
+    public Portfolio(Long id, @NonNull String title, @NonNull Role role,List<Content> contents) {
         this.id = id;
         this.title = title;
         this.role = role;

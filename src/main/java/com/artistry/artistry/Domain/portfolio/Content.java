@@ -6,7 +6,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @Embeddable
-public class PortfolioContent {
+public class Content {
 
     private String url;
     private String comment;
@@ -14,7 +14,11 @@ public class PortfolioContent {
     @Enumerated(EnumType.STRING)
     private ContentsType type;
 
-    public PortfolioContent(String url,String comment, ContentsType type){
+    public Content(String url, String comment){
+        this(url,comment,ContentsType.UNKNOWN);
+    }
+
+    public Content(String url, String comment, ContentsType type){
         this.url = url;
         this.comment = comment;
         this.type = type;
