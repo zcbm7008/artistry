@@ -1,13 +1,12 @@
 package com.artistry.artistry.Controller;
 
+import com.artistry.artistry.Dto.Request.TagCreateRequest;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Service.TagService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +28,11 @@ public class TagController {
     @GetMapping("/{tagId}")
     public ResponseEntity<TagResponse> getTag(@PathVariable final Long tagId) {
         return ResponseEntity.ok(tagService.findById(tagId));
+    }
+
+    @PostMapping
+    public ResponseEntity<TagResponse> createTag(@Valid @RequestBody final TagCreateRequest request){
+        TagResponse response = tagService.createTag(request);
+        return ResponseEntity.ok(response);
     }
 }

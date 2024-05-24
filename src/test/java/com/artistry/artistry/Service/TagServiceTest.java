@@ -1,6 +1,7 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.tag.Tag;
+import com.artistry.artistry.Dto.Request.TagCreateRequest;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;
@@ -57,6 +58,18 @@ public class TagServiceTest {
         tagRepository.save(new Tag("트랩"));
         tagRepository.save(new Tag("힙합"));
         tagRepository.save(new Tag("밴드"));
+    }
+
+    @DisplayName("태그를 생성한다.")
+    @Test
+    void createTag(){
+        String tagName = "퓨처리딤";
+        TagCreateRequest request = new TagCreateRequest(tagName);
+
+        TagResponse response = tagService.createTag(request);
+
+        assertThat(response.getId()).isNotNull();
+        assertThat(response.getName()).isEqualTo(tagName);
     }
 
 

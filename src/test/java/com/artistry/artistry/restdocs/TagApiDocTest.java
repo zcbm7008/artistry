@@ -2,6 +2,7 @@ package com.artistry.artistry.restdocs;
 
 
 import com.artistry.artistry.Domain.tag.Tag;
+import com.artistry.artistry.Dto.Request.TagCreateRequest;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 
@@ -14,11 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -44,7 +46,31 @@ public class TagApiDocTest extends ApiTest{
                         .extract().body().jsonPath().getList(".", TagResponse.class);
 
         assertThat(responses).isNotEmpty();
+    }
+    @DisplayName("태그를 생성한다.")
+    @Test
+    void createTag(){
+        String tagName = "퓨처베이스";
 
+        Map<String,Object> body =new HashMap<>();
+        body.put("name",tagName);
+
+        TagResponse response =
+                given().body(body)
+                    .filter(RestAssuredRestDocumentationWrapper.document("create-tag",
+                            "태그 생성 API",
+                requestFields(
+                        fieldWithPath("name").description("태그 Id")
+                ),
+                responseFields(
+                        fieldWithPath("id").description("태그 Id"),
+                        fieldWithPath("name").description("태그 이름"))))
+                        .when().post("/api/tags")
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().as(TagResponse.class);
+
+        assertThat(response.getId()).isNotNull();
+        assertThat(response.getName()).isEqualTo(tagName);
 
     }
 }
