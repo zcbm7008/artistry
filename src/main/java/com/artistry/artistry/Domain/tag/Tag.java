@@ -29,6 +29,10 @@ public class Tag {
         this.name = new TagName(name);
     }
 
+    public void update(String name){
+        this.name = new TagName(name);
+    }
+
     public String getName(){
         return name.getValue();
     }

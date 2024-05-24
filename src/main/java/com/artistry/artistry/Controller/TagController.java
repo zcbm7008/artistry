@@ -1,6 +1,7 @@
 package com.artistry.artistry.Controller;
 
 import com.artistry.artistry.Dto.Request.TagCreateRequest;
+import com.artistry.artistry.Dto.Request.TagUpdateRequest;
 import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Service.TagService;
@@ -41,4 +42,12 @@ public class TagController {
         TagResponse response = tagService.createTag(request);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping(value = "/{tagId}")
+    public ResponseEntity<TagResponse> updateTag(@PathVariable final Long tagId,
+                                                 @Valid @RequestBody final TagUpdateRequest request){
+        TagResponse response = tagService.updateTag(tagId,request);
+        return ResponseEntity.ok(response);
+    }
+
 }

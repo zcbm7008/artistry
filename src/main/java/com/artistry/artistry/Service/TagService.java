@@ -3,12 +3,14 @@ package com.artistry.artistry.Service;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.TagCreateRequest;
 import com.artistry.artistry.Dto.Request.TagRequest;
+import com.artistry.artistry.Dto.Request.TagUpdateRequest;
 import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,5 +64,13 @@ public class TagService {
         Tag tag = tagRepository.save(request.toEntity());
 
         return TagResponse.from(tag);
+    }
+
+    @Transactional
+    public TagResponse updateTag(final Long tagId, final TagUpdateRequest request){
+        Tag tag = findEntityById(tagId);
+        tag.update(request.getName());
+
+        return TagResponse.from(findEntityById(tagId));
     }
 }

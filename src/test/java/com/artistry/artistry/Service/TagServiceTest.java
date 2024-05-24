@@ -2,12 +2,14 @@ package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.TagCreateRequest;
+import com.artistry.artistry.Dto.Request.TagUpdateRequest;
 import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,8 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+
 @Transactional
 @SpringBootTest
 public class TagServiceTest {
@@ -86,6 +88,38 @@ public class TagServiceTest {
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getName()).isEqualTo(tagName);
+    }
+
+    @DisplayName("태그 정보를 수정할 때")
+    @Nested
+    class UpdateTag{
+
+        @DisplayName("id에 해당하는 태그가 존재하면 해당 태그 정보를 수정한다.")
+        @Test
+        void updateTag(){
+
+            // given
+            Tag tag = tagRepository.save(new Tag("태그1"));
+            String updatedTagName = "태그1업데이트";
+
+            //when
+            TagUpdateRequest request = new TagUpdateRequest(updatedTagName);
+            TagResponse response = tagService.updateTag(tag.getId(),request);
+
+            // then
+            assertThat(response.getId()).isEqualTo(tag.getId());
+            assertThat(response.getName()).isEqualTo(updatedTagName);
+        }
+        
+        @DisplayName("id에 해당하는 태그가 없으면 예외가 발생한다.")
+        @Test
+        void updateTagException() {
+            String updateTagName = "태그1업데이트";
+
+            TagUpdateRequest request = new TagUpdateRequest(updateTagName);
+            assertThatThrownBy(()->tagService.updateTag(Long.MAX_VALUE,request))
+                    .isExactlyInstanceOf(TagNotFoundException.class);
+        }
     }
 
 

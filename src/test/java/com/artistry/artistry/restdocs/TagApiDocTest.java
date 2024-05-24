@@ -41,6 +41,7 @@ public class TagApiDocTest extends ApiTest{
         createTags.add(tagSave("트랩"));
         createTags.add(tagSave("퓨처베이스"));
         createTags.add(tagSave("퓨처리딤"));
+        createTags.add(tagSave("JPOPPP"));
 
     }
 
@@ -140,6 +141,34 @@ public class TagApiDocTest extends ApiTest{
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getName()).isEqualTo(tagName);
+
+    }
+
+    @DisplayName("태그를 수정한다.")
+    @Test
+    void updateTag(){
+
+        String updateTagName = "JPOP";
+        Map<String,Object> body = new HashMap<>();
+        body.put("name",updateTagName);
+        Long idToUpdate = createTags.get(3).getId();
+
+        TagResponse response = given().body(body)
+                .filter(RestAssuredRestDocumentationWrapper.document("update-tag",
+                        "태그 업데이트 API",
+                        requestFields(
+                                fieldWithPath("name").description("태그 이름")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("태그 ID"),
+                                fieldWithPath("name").description("태그 이름"))))
+                .when().put("/api/tags/{id}", idToUpdate)
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(TagResponse.class);
+
+
+        assertThat(response.getId()).isEqualTo(idToUpdate);
+        assertThat(response.getName()).isEqualTo(updateTagName);
 
     }
 }
