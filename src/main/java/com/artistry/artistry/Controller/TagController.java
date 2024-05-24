@@ -1,6 +1,7 @@
 package com.artistry.artistry.Controller;
 
 import com.artistry.artistry.Dto.Request.TagCreateRequest;
+import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Service.TagService;
 import jakarta.validation.Valid;
@@ -28,6 +29,11 @@ public class TagController {
     @GetMapping("/{tagId}")
     public ResponseEntity<TagResponse> getTag(@PathVariable final Long tagId) {
         return ResponseEntity.ok(tagService.findById(tagId));
+    }
+
+    @GetMapping("/name")
+    public ResponseEntity<List<TagNameResponse>> findTagNames(@RequestParam(defaultValue = "") final String name){
+        return ResponseEntity.ok(tagService.findTagNames(name));
     }
 
     @PostMapping

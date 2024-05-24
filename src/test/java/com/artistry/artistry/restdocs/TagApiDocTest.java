@@ -4,6 +4,7 @@ package com.artistry.artistry.restdocs;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.TagCreateRequest;
 import com.artistry.artistry.Dto.Request.TagRequest;
+import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -38,6 +40,7 @@ public class TagApiDocTest extends ApiTest{
 
         createTags.add(tagSave("트랩"));
         createTags.add(tagSave("퓨처베이스"));
+        createTags.add(tagSave("퓨처리딤"));
 
     }
 
@@ -89,6 +92,29 @@ public class TagApiDocTest extends ApiTest{
         assertThat(response.getName()).isEqualTo(expectedTag.getName());
     }
 
+    @DisplayName("태그 이름 검색")
+    @Test
+    void getTagNames(){
+        String name = "퓨처";
+
+        List <TagNameResponse> responses = given().
+                filter(RestAssuredRestDocumentationWrapper.document("read-tags-by-name",
+                "태그 이름 조회 API",
+                responseFields(
+                        fieldWithPath("[].id").description("태그 Id"),
+                        fieldWithPath("[].name").description("태그 이름"))))
+                .when().get("/api/tags/name?name={name}", name)
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().jsonPath().getList(".", TagNameResponse.class);
+
+        List<String> foundNames = responses.stream()
+                .map(TagNameResponse::getName)
+                .toList();
+
+        assertThat(foundNames).hasSize(2)
+                .contains("퓨처베이스","퓨처리딤");
+
+    }
 
     @DisplayName("태그를 생성한다.")
     @Test

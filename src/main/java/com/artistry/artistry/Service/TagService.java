@@ -3,12 +3,12 @@ package com.artistry.artistry.Service;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.TagCreateRequest;
 import com.artistry.artistry.Dto.Request.TagRequest;
+import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +52,12 @@ public class TagService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    public List <TagNameResponse> findTagNames(final String name){
+        List <Tag> tags = tagRepository.findAllByName(name);
+
+        return tags.stream().map(TagNameResponse::from).collect(Collectors.toList());
+    }
+
     public TagResponse createTag(final TagCreateRequest request){
         Tag tag = tagRepository.save(request.toEntity());
 

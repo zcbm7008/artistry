@@ -2,6 +2,7 @@ package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.TagCreateRequest;
+import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.TagRepository;
@@ -58,6 +59,21 @@ public class TagServiceTest {
         tagRepository.save(new Tag("트랩"));
         tagRepository.save(new Tag("힙합"));
         tagRepository.save(new Tag("밴드"));
+        tagRepository.save(new Tag("재즈밴드"));
+    }
+    
+    @DisplayName("태그 이름으로 검색한다.")
+    @Test
+    void findTagNameByName(){
+        prepareDummyTags();
+        String findName = "밴드";
+        List <String> foundTagNames = tagService.findTagNames(findName)
+                .stream()
+                .map(TagNameResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(foundTagNames).hasSize(2)
+                .contains("밴드","재즈밴드");
     }
 
     @DisplayName("태그를 생성한다.")
