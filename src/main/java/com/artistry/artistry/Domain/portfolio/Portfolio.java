@@ -22,18 +22,24 @@ public class Portfolio {
     @ManyToOne
     private Role role;
 
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="portfolio_contents", joinColumns = @JoinColumn(name = "portfolio_id"))
     private List<PortfolioContent> contents = new ArrayList<>();
 
-    public Portfolio(String title, Role role){
+    public void addContents(PortfolioContent portfolioContent){
+        this.contents.add(portfolioContent);
+    }
+
+
+    public Portfolio(String title,Role role){
         this(null,title,role,null);
     }
 
-    public Portfolio(Long id, @NonNull String title, Role role,List<PortfolioContent> contents) {
+    public Portfolio(Long id, @NonNull String title, @NonNull Role role,List<PortfolioContent> contents) {
         this.id = id;
         this.title = title;
         this.role = role;
-        this.contents = contents;
+        this.contents = (contents != null) ? contents : new ArrayList<>();
     }
 
 }

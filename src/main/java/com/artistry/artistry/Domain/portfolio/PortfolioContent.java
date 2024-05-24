@@ -1,20 +1,12 @@
 package com.artistry.artistry.Domain.portfolio;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 @Getter
-@Entity
-@AllArgsConstructor
 @NoArgsConstructor
+@Embeddable
 public class PortfolioContent {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     private String url;
     private String comment;
@@ -22,7 +14,10 @@ public class PortfolioContent {
     @Enumerated(EnumType.STRING)
     private ContentsType type;
 
-    @ManyToOne
-    @JoinColumn(name = "portfolio_id")
-    private Portfolio portfolio;
+    public PortfolioContent(String url,String comment, ContentsType type){
+        this.url = url;
+        this.comment = comment;
+        this.type = type;
+    }
+
 }
