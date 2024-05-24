@@ -1,6 +1,6 @@
 package com.artistry.artistry.Service;
 
-import com.artistry.artistry.Domain.Portfolio;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
 import org.springframework.stereotype.Service;

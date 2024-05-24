@@ -1,6 +1,7 @@
 package com.artistry.artistry;
 
 import com.artistry.artistry.Domain.*;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Exceptions.RoleNotFoundException;
 import com.artistry.artistry.Repository.*;
