@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +28,7 @@ public class TagService {
 
     public Tag findEntityById(Long id){
         return tagRepository.findById(id)
-                .orElseThrow(TagNotFoundException::new);
+                .orElseThrow(() -> new TagNotFoundException(String.format("[%d]는 존재하지 않는 태그 ID입니다.", id)));
     }
 
     public TagResponse findById(Long id){
@@ -72,5 +73,11 @@ public class TagService {
         tag.update(request.getName());
 
         return TagResponse.from(findEntityById(tagId));
+    }
+
+    @Transactional
+    public void deleteTag(final Long tagId){
+        Tag tag = findEntityById(tagId);
+        tagRepository.delete(tag);
     }
 }

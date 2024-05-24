@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
@@ -169,6 +170,24 @@ public class TagApiDocTest extends ApiTest{
 
         assertThat(response.getId()).isEqualTo(idToUpdate);
         assertThat(response.getName()).isEqualTo(updateTagName);
+    }
 
+    @DisplayName("태그를 삭제한다")
+    @Test
+    void deleteTag(){
+        long idToDelete = createTags.get(0).getId();
+
+        given().filter(RestAssuredRestDocumentationWrapper.document("delete-tag",
+                "태그 삭제 API"))
+                .when().delete("/api/tags/{id}",idToDelete)
+                .then().statusCode(HttpStatus.NO_CONTENT.value());
+
+
+
+        int statusCode =  given()
+                .when().get("/api/tags/{id}", idToDelete)
+                .then().extract().statusCode();
+
+        assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

@@ -47,7 +47,7 @@ public class TagServiceTest {
     void getAllTags(){
         prepareDummyTags();
 
-        List<String> expectedTags = Arrays.asList("트랩","힙합","밴드");
+        List<String> expectedTags = Arrays.asList("트랩","힙합","밴드","재즈밴드");
 
         List<String> allTags = tagService.findAll()
                 .stream()
@@ -118,6 +118,32 @@ public class TagServiceTest {
 
             TagUpdateRequest request = new TagUpdateRequest(updateTagName);
             assertThatThrownBy(()->tagService.updateTag(Long.MAX_VALUE,request))
+                    .isExactlyInstanceOf(TagNotFoundException.class);
+        }
+    }
+
+    @DisplayName("태그를 삭제할 때")
+    @Nested
+    class DeleteTag{
+        @DisplayName("id에 해당하는 태그가 존재하면 해당 태그를 삭제한다.")
+        @Test
+        void deleteTag() {
+            //given
+            Tag tag = tagRepository.save(new Tag("잘못만든태그"));
+
+            //when
+            assertThat(tagRepository.findById(tag.getId())).isPresent();
+            tagService.deleteTag(tag.getId());
+
+            //Then
+            assertThat(tagRepository.findById(tag.getId())).isNotPresent();
+
+        }
+        
+        @DisplayName("id에 해당하는 태그가 없으면 예외가 발생한다.")
+        @Test
+        void deleteTagException() {
+            assertThatThrownBy(() -> tagService.deleteTag(Long.MAX_VALUE))
                     .isExactlyInstanceOf(TagNotFoundException.class);
         }
     }
