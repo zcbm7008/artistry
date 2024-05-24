@@ -1,18 +1,14 @@
 package com.artistry.artistry;
 
 import com.artistry.artistry.Domain.*;
-import com.artistry.artistry.Exceptions.MemberNotFoundException;
+import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Exceptions.RoleNotFoundException;
-import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Profile("test")
 @Transactional

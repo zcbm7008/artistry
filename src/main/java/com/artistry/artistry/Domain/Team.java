@@ -1,5 +1,6 @@
 package com.artistry.artistry.Domain;
 
+import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import jakarta.persistence.*;

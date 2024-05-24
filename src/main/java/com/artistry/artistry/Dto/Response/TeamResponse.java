@@ -1,6 +1,7 @@
 package com.artistry.artistry.Dto.Response;
 
 import com.artistry.artistry.Domain.*;
+import com.artistry.artistry.Domain.tag.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

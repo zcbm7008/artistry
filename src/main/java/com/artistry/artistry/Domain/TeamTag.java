@@ -1,5 +1,6 @@
 package com.artistry.artistry.Domain;
 
+import com.artistry.artistry.Domain.tag.Tag;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

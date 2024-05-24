@@ -8,13 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TagResponse {
+public class TagNameResponse {
     private Long id;
     private String name;
-    public static TagResponse from(Tag tag){
-        return new TagResponse(
-                tag.getId(),
-                tag.getName()
-        );
-    }
+    public static TagNameResponse from(final Tag tag){return new TagNameResponse(tag.getId(), tag.getName());}
 }

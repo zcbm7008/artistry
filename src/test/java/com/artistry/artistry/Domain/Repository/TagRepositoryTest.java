@@ -1,15 +1,13 @@
 package com.artistry.artistry.Domain.Repository;
 
-import com.artistry.artistry.Domain.Tag;
-import com.artistry.artistry.Dto.Response.TagResponse;
+import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Repository.TagRepository;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,12 +17,25 @@ public class TagRepositoryTest {
     @Autowired
     private TagRepository tagRepository;
 
-//    @DisplayName("태그 더미 데이터를 확인한다.")
-//    @ParameterizedTest
-//    @CsvSource({"1,밴드","2,재즈"})
-//    void dummyTagTest(Long id,String name){
-//        Optional<TagResponse> tag = tagRepository.findById(id);
-//        assertThat(tag.isPresent()).isTrue();
-//        assertThat(tag.get().getName()).isEqualTo(name);
-//    }
+    @DisplayName("태그를 생성한다.")
+    @Test
+    void saveTag() {
+        Tag tag = new Tag("새 태그1");
+        Tag savedTag = tagRepository.save(tag);
+
+        assertThat(savedTag.getId()).isNotNull();
+        assertThat(savedTag.getName()).isEqualTo(tag.getName());
+    }
+
+    @DisplayName("태그 이름을 검색한다.")
+    @Test
+    void findByName(){
+        Tag tag1 = tagRepository.save(new Tag("힙합"));
+        Tag tag2 = tagRepository.save(new Tag("재즈힙합"));
+
+        List <Tag> foundTags = tagRepository.findAllByName("힙합");
+
+        assertThat(foundTags).hasSize(2)
+                .contains(tag1,tag2);
+    }
 }
