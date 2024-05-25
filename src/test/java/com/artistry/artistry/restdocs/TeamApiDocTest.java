@@ -59,7 +59,7 @@ class TeamApiDocTest extends ApiTest{
         Map<String, Object> body = new HashMap<>();
         body.put("teamName", teamName);
         body.put("hostId",hostId);
-        body.put("roles", roles.stream().map(role -> Map.of("id",role.getId(),"roleName",role.getRoleName())).collect(Collectors.toList()));
+        body.put("roles", roles.stream().map(role -> Map.of("id",role.getId(),"roleName",role.getName())).collect(Collectors.toList()));
         body.put("tags", tags.stream().map(tag -> Map.of("id",tag.getId(),"roleName",tag.getName())).collect(Collectors.toList()));
 
         return  given().log().all()
@@ -87,8 +87,8 @@ class TeamApiDocTest extends ApiTest{
         Map<String, Object> body = new HashMap<>();
         body.put("teamName", "팀1");
         body.put("hostId",1L);
-        body.put("roles", Arrays.asList(Map.of("id", role1.getId(), "roleName", role1.getRoleName()),
-                Map.of("id", role2.getId(), "roleName", role2.getRoleName())));
+        body.put("roles", Arrays.asList(Map.of("id", role1.getId(), "roleName", role1.getName()),
+                Map.of("id", role2.getId(), "roleName", role2.getName())));
         body.put("tags", Arrays.asList(Map.of("id", tag1.getId(), "name", tag1.getName()),
                 Map.of("id", tag2.getId(), "name", tag2.getName())));
 

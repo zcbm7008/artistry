@@ -76,7 +76,7 @@ public class PortfolioRepositoryTest {
 
         assertThat(savedPortfolio.getId()).isNotNull();
         assertThat(savedPortfolio.getTitle()).isEqualTo(portfolio.getTitle());
-        assertThat(savedPortfolio.getRole().getRoleName()).isEqualTo(role.getRoleName());
+        assertThat(savedPortfolio.getRole().getName()).isEqualTo(role.getName());
         assertThat(savedPortfolio.getContents()).hasSize(2).contains(content1, content2);
         assertThat(savedPortfolio.getPortfolioAccess()).isEqualTo(PortfolioAccess.PRIVATE);
     }

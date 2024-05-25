@@ -15,6 +15,6 @@ public class RoleResponse {
     private String roleName;
 
     public static RoleResponse from(Role role){
-        return new RoleResponse(role.getId(), role.getRoleName());
+        return new RoleResponse(role.getId(), role.getName());
     }
 }

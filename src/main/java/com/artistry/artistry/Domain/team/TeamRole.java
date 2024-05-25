@@ -53,7 +53,7 @@ public class TeamRole {
 
 
     public String getRoleName(){
-        return role.getRoleName();
+        return role.getName();
     }
 
 }

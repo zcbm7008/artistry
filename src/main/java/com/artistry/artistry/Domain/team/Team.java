@@ -86,7 +86,7 @@ public class Team {
 
     private void isValidRole(Role role){
         if(!isRoleInTeam(role)){
-            throw new TeamRoleNotFoundException(String.format("[%s]는 팀의 역할에 없습니다.", role.getRoleName()));
+            throw new TeamRoleNotFoundException(String.format("[%s]는 팀의 역할에 없습니다.", role.getName()));
         }
     }
     private boolean isRoleInTeam(Role role){

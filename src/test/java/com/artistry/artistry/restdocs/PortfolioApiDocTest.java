@@ -139,7 +139,7 @@ public class PortfolioApiDocTest extends ApiTest{
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getTitle()).isEqualTo(title);
-        assertThat(response.getRoleName()).isEqualTo(role1.getRoleName());
+        assertThat(response.getRoleName()).isEqualTo(role1.getName());
         //컨텐츠 테스트코드
         assertThat(response.getAccess()).isEqualTo("PUBLIC");
     }
@@ -183,7 +183,7 @@ public class PortfolioApiDocTest extends ApiTest{
 
         Assertions.assertThat(response.getId()).isEqualTo(idToUpdate);
         Assertions.assertThat(response.getTitle()).isEqualTo(title);
-        Assertions.assertThat(response.getRoleName()).isEqualTo(role1.getRoleName());
+        Assertions.assertThat(response.getRoleName()).isEqualTo(role1.getName());
         Assertions.assertThat(response.getAccess()).isEqualTo(accessToChange.toString());
     }
 

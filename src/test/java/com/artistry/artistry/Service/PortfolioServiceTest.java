@@ -130,7 +130,7 @@ public class PortfolioServiceTest {
         //then
         assertThat(response.getId()).isNotNull();
         assertThat(response.getTitle()).isEqualTo(title);
-        assertThat(response.getRoleName()).isEqualTo(savedRole.getRoleName());
+        assertThat(response.getRoleName()).isEqualTo(savedRole.getName());
         assertThat(response.getContents()).hasSize(2)
                 .extracting(ContentResponse::getUrl, ContentResponse::getComment)
                 .containsExactlyInAnyOrder(
