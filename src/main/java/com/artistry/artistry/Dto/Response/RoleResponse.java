@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoleResponse {
     private Long id;
-    private String roleName;
+    private String name;
 
     public static RoleResponse from(Role role){
         return new RoleResponse(role.getId(), role.getName());
