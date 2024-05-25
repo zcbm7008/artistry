@@ -26,6 +26,9 @@ public class Portfolio {
     @CollectionTable(name="portfolio_contents", joinColumns = @JoinColumn(name = "portfolio_id"))
     private List<Content> contents = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private PortfolioAccess portfolioAccess = PortfolioAccess.PRIVATE;
+
     public void addContents(List<Content> contents){
         this.contents.addAll(contents);
     }
@@ -37,14 +40,15 @@ public class Portfolio {
 
 
     public Portfolio(String title,Role role){
-        this(null,title,role,null);
+        this(null,title,role,null,PortfolioAccess.PRIVATE);
     }
 
-    public Portfolio(Long id, @NonNull String title, @NonNull Role role,List<Content> contents) {
+    public Portfolio(Long id, @NonNull String title, @NonNull Role role,List<Content> contents,PortfolioAccess portfolioAccess) {
         this.id = id;
         this.title = title;
         this.role = role;
         this.contents = (contents != null) ? contents : new ArrayList<>();
+        this.portfolioAccess = portfolioAccess;
     }
 
 }

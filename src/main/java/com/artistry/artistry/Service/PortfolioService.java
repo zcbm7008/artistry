@@ -3,9 +3,12 @@ package com.artistry.artistry.Service;
 import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
+import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
+import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.ContentRequest;
 import com.artistry.artistry.Dto.Request.PortfolioRequest;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
+import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,22 @@ public class PortfolioService {
     public Portfolio findById(Long id){
         return portfolioRepository.findById(id)
                 .orElseThrow(PortfolioNotFoundException::new);
+    }
+
+    public List<PortfolioResponse> findAll() {
+        List <Portfolio> portfolios = portfolioRepository.findAll();
+
+        return portfolios.stream()
+                .map(PortfolioResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<PortfolioResponse> findAllPublic() {
+        List <Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(PortfolioAccess.PUBLIC);
+
+        return portfolios.stream()
+                .map(PortfolioResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional
