@@ -18,6 +18,7 @@ public class PortfolioResponse {
     private String roleName;
     private String title;
     private List<ContentResponse> contents;
+    private String access;
 
     public static PortfolioResponse from(Portfolio portfolio){
         return PortfolioResponse.builder()
@@ -25,6 +26,7 @@ public class PortfolioResponse {
                 .title(portfolio.getTitle())
                 .roleName(portfolio.getRole().getRoleName())
                 .contents(portfolio.getContents().stream().map(ContentResponse::from).collect(Collectors.toList()))
+                .access(portfolio.getPortfolioAccess().toString())
                 .build();
     }
 

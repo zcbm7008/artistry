@@ -26,10 +26,16 @@ public class PortfolioService {
         this.roleService = roleService;
     }
 
+    public PortfolioResponse findPortfolioById(Long id){
+        return PortfolioResponse.from(findById(id));
+    }
+
     public Portfolio findById(Long id){
         return portfolioRepository.findById(id)
                 .orElseThrow(PortfolioNotFoundException::new);
     }
+
+
 
     public List<PortfolioResponse> findAll() {
         List <Portfolio> portfolios = portfolioRepository.findAll();
@@ -39,8 +45,8 @@ public class PortfolioService {
                 .collect(Collectors.toList());
     }
 
-    public List<PortfolioResponse> findAllPublic() {
-        List <Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(PortfolioAccess.PUBLIC);
+    public List<PortfolioResponse> findAllByAccess(PortfolioAccess portfolioAccess) {
+        List <Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(portfolioAccess);
 
         return portfolios.stream()
                 .map(PortfolioResponse::from)
@@ -53,6 +59,7 @@ public class PortfolioService {
 
         Portfolio portfolio = new Portfolio(request.getTitle(),role);
         portfolio.addContents(ContentToEntity(request.getContents()));
+        portfolio.setPortfolioAccess(PortfolioAccess.valueOf(request.getAccess()));
 
         return PortfolioResponse.from(portfolioRepository.save(portfolio));
     }

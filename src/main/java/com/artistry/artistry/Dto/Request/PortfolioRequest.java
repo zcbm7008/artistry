@@ -15,5 +15,6 @@ public class PortfolioRequest {
     private String title;
     private RoleRequest role;
     private List<ContentRequest> contents;
+    private String access;
 
 }
