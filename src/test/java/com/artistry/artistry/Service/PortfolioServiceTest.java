@@ -43,12 +43,8 @@ public class PortfolioServiceTest {
     private RoleRepository roleRepository;
     PortfolioResponse response;
 
-    @DisplayName("porfolio Id가 없을경우 예외를 던짐.")
-    @Test
-    void PortfolioNotFound(){
-        assertThatThrownBy(() -> portfolioService.findById(Long.MAX_VALUE))
-                .isInstanceOf(PortfolioNotFoundException.class);
-    }
+
+
 
     @BeforeEach
     void setUp(){
@@ -83,6 +79,36 @@ public class PortfolioServiceTest {
         //when
         portfolioService.create(request2);
     }
+
+    @DisplayName("portfolio Id가 없을경우 예외를 던짐.")
+    @Test
+    void PortfolioNotFound(){
+        assertThatThrownBy(() -> portfolioService.findById(Long.MAX_VALUE))
+                .isInstanceOf(PortfolioNotFoundException.class);
+    }
+
+    @DisplayName("Access 값이 존재하지 않을 때 예외를 던짐")
+    @Test
+    void acessNotExists() {
+        String title = "작곡가 포트폴리오";
+        Role role = new Role("작곡가");
+        Role savedRole = roleRepository.save(role);
+
+        RoleRequest roleRequest = new RoleRequest(savedRole.getId());
+
+        ContentRequest contentRequest1 = new ContentRequest("https://www.youtube.com/watch?v=lzQpS1rH3zI", "Fast");
+        ContentRequest contentRequest2 = new ContentRequest("https://www.youtube.com/watch?v=9LSyWM2CL-U", "Empty");
+
+        List<ContentRequest> contents = Arrays.asList(contentRequest1, contentRequest2);
+
+        PortfolioRequest request = new PortfolioRequest(title, roleRequest, contents, "imimimimi");
+        //when
+
+        assertThatThrownBy(() -> portfolioService.create(request))
+                .isInstanceOf(IllegalArgumentException.class);
+
+    }
+
 
     @DisplayName("portfolio를 생성한다")
     @Test
