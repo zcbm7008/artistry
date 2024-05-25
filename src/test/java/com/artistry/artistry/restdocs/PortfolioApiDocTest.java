@@ -1,6 +1,6 @@
 package com.artistry.artistry.restdocs;
 
-import com.artistry.artistry.Domain.Role;
+import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Dto.Request.ContentRequest;
 import com.artistry.artistry.Dto.Request.RoleRequest;

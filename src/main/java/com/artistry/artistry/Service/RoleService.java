@@ -1,6 +1,6 @@
 package com.artistry.artistry.Service;
 
-import com.artistry.artistry.Domain.Role;
+import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Response.RoleResponse;
 import com.artistry.artistry.Exceptions.RoleNotFoundException;

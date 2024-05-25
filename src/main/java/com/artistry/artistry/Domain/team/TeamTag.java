@@ -1,4 +1,4 @@
-package com.artistry.artistry.Domain;
+package com.artistry.artistry.Domain.team;
 
 import com.artistry.artistry.Domain.tag.Tag;
 import jakarta.persistence.*;

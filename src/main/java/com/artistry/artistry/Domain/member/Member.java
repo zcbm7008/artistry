@@ -1,11 +1,12 @@
-package com.artistry.artistry.Domain;
+package com.artistry.artistry.Domain.member;
 
+import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Domain.application.Application;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Builder

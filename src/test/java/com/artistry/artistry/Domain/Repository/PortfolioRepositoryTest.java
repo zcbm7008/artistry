@@ -1,6 +1,6 @@
 package com.artistry.artistry.Domain.Repository;
 
-import com.artistry.artistry.Domain.Role;
+import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.portfolio.ContentsType;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.Content;

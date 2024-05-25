@@ -1,4 +1,4 @@
-package com.artistry.artistry.Domain;
+package com.artistry.artistry.Domain.Role;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
 package com.artistry.artistry.Dto.Response;
 
-import com.artistry.artistry.Domain.TeamRole;
+import com.artistry.artistry.Domain.team.TeamRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

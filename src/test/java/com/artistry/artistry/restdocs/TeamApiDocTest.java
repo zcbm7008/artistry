@@ -1,9 +1,9 @@
 package com.artistry.artistry.restdocs;
 
-import com.artistry.artistry.Domain.Member;
-import com.artistry.artistry.Domain.Role;
+import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.tag.Tag;
-import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import io.restassured.http.ContentType;

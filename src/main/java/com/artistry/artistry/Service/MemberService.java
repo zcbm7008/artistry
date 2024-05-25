@@ -1,6 +1,6 @@
 package com.artistry.artistry.Service;
 
-import com.artistry.artistry.Domain.Member;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
 import com.artistry.artistry.Repository.MemberRepository;
 import org.springframework.stereotype.Service;
