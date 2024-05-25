@@ -38,6 +38,13 @@ public class Portfolio {
     }
 
 
+    public void update(final String title, Role role, List<Content> contents,PortfolioAccess portfolioAccess){
+        this.title = title;
+        this.role = role;
+        this.contents = contents;
+        this.portfolioAccess = portfolioAccess;
+    }
+
 
     public Portfolio(String title,Role role){
         this(null,title,role,null,PortfolioAccess.PRIVATE);

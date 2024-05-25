@@ -4,11 +4,10 @@ import com.artistry.artistry.Domain.Role;
 import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
-import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.ContentRequest;
 import com.artistry.artistry.Dto.Request.PortfolioRequest;
+import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
-import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
 import org.springframework.stereotype.Service;
@@ -27,10 +26,10 @@ public class PortfolioService {
     }
 
     public PortfolioResponse findPortfolioById(Long id){
-        return PortfolioResponse.from(findById(id));
+        return PortfolioResponse.from(findEntityById(id));
     }
 
-    public Portfolio findById(Long id){
+    public Portfolio findEntityById(Long id){
         return portfolioRepository.findById(id)
                 .orElseThrow(PortfolioNotFoundException::new);
     }
@@ -62,6 +61,21 @@ public class PortfolioService {
         portfolio.setPortfolioAccess(PortfolioAccess.valueOf(request.getAccess()));
 
         return PortfolioResponse.from(portfolioRepository.save(portfolio));
+    }
+
+    @Transactional
+    public PortfolioResponse update(final PortfolioUpdateRequest request){
+        Portfolio portfolio = findEntityById(request.getId());
+        Role role = roleService.findRoleById(request.getRole().getId());
+        portfolio.update(request.getTitle(),role,ContentToEntity(request.getContents()),PortfolioAccess.valueOf(request.getAccess()));
+
+        return PortfolioResponse.from(portfolio);
+    }
+
+    @Transactional
+    public void delete(final Long id){
+        Portfolio portfolio = findEntityById(id);
+        portfolioRepository.delete(portfolio);
     }
 
     public static List<Content> ContentToEntity(List<ContentRequest> contents){

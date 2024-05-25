@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class PortfolioResponse {
     private Long id;
-    private String roleName;
     private String title;
+    private String roleName;
     private List<ContentResponse> contents;
     private String access;
 

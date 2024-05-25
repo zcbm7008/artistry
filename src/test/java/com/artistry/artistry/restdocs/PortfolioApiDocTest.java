@@ -7,6 +7,7 @@ import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import lombok.NonNull;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ public class PortfolioApiDocTest extends ApiTest{
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().as(PortfolioResponse.class);
 
+        createdPortfolios.add(response);
+
         super.setUp(restDocumentation);
 
         String title2 = "보컬 포트폴리오1";
@@ -53,6 +56,7 @@ public class PortfolioApiDocTest extends ApiTest{
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().as(PortfolioResponse.class);
 
+        createdPortfolios.add(response2);
     }
 
     @DisplayName("전체 포트폴리오를 가져온다.")
@@ -138,6 +142,67 @@ public class PortfolioApiDocTest extends ApiTest{
         assertThat(response.getRoleName()).isEqualTo(role1.getRoleName());
         //컨텐츠 테스트코드
         assertThat(response.getAccess()).isEqualTo("PUBLIC");
+    }
+
+    @DisplayName("포트폴리오를 수정한다.")
+    @Test
+    void updatePost() {
+        Long idToUpdate = createdPortfolios.get(0).getId();
+
+        String title = "수정된 포트폴리오";
+        Role role1 = roleRepository.save(new Role("수정된 역할"));
+        PortfolioAccess accessToChange = PortfolioAccess.PUBLIC;
+
+        Map<String, Object> body = getStringObjectMap(role1, title,accessToChange.toString());
+        body.put("id",idToUpdate);
+
+        PortfolioResponse response = given().body(body)
+                .filter(RestAssuredRestDocumentationWrapper.document("update-portfolio",
+                        "포트폴리오 수정 API",
+                        requestFields(
+                                fieldWithPath("id").description("포트폴리오 Id"),
+                                fieldWithPath("title").description("포트폴리오 제목"),
+                                fieldWithPath("role").description("포트폴리오 역할"),
+                                fieldWithPath("role.id").description("역할 Id"),
+                                fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
+                                fieldWithPath("contents[].url").description("컨텐츠 url"),
+                                fieldWithPath("contents[].comment").description("컨텐츠 설명"),
+                                fieldWithPath("access").description("포트폴리오 접근권한")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("포트폴리오 Id"),
+                                fieldWithPath("roleName").description("포트폴리오 역할"),
+                                fieldWithPath("title").description("포트폴리오 제목"),
+                                fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
+                                fieldWithPath("contents[].url").description("컨텐츠 url"),
+                                fieldWithPath("contents[].comment").description("컨텐츠 설명"),
+                                fieldWithPath("access").description("포트폴리오 접근권한"))))
+                .when().put("/api/portfolios")
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(PortfolioResponse.class);
+
+        Assertions.assertThat(response.getId()).isEqualTo(idToUpdate);
+        Assertions.assertThat(response.getTitle()).isEqualTo(title);
+        Assertions.assertThat(response.getRoleName()).isEqualTo(role1.getRoleName());
+        Assertions.assertThat(response.getAccess()).isEqualTo(accessToChange.toString());
+    }
+
+
+    @DisplayName("포트폴리오를 삭제한다.")
+    @Test
+    void deletePortfolio() {
+        long idToDelete = createdPortfolios.get(0).getId();
+
+        given().filter(RestAssuredRestDocumentationWrapper.document("delete-portfolio",
+                        "포트폴리오 삭제 API"))
+                .when().delete("/api/portfolios/{id}",idToDelete)
+                .then().statusCode(HttpStatus.NO_CONTENT.value());
+
+        int statusCode =  given()
+                .when().get("/api/portfolios/{id}", idToDelete)
+                .then().extract().statusCode();
+
+        assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @NonNull
