@@ -43,7 +43,7 @@ public class Portfolio {
         this(null,title,role,null,PortfolioAccess.PRIVATE);
     }
 
-    public Portfolio(Long id, @NonNull String title, @NonNull Role role,List<Content> contents,PortfolioAccess portfolioAccess) {
+    public Portfolio(Long id, @NonNull String title, Role role,List<Content> contents,PortfolioAccess portfolioAccess) {
         this.id = id;
         this.title = title;
         this.role = role;

@@ -183,8 +183,6 @@ public class PortfolioServiceTest {
 
     }
 
-
-
     @DisplayName("모든 포트폴리오를 조회한다.")
     @Test
     void findPortfolios(){
