@@ -45,15 +45,15 @@ public class DataLoader implements CommandLineRunner {
 
     private void prepareDummyPortfolios(){
 
-        portfolioRepository.save(Portfolio.builder()
-                .title("Portfolio1")
-                .role(roleRepository.findById(1L).orElseThrow(RoleNotFoundException::new))
-                .build());
-
-        portfolioRepository.save(Portfolio.builder()
-                .title("Portfolio2")
-                .role(roleRepository.findById(2L).orElseThrow(RoleNotFoundException::new))
-                .build());
+//        portfolioRepository.save(Portfolio.builder()
+//                .title("Portfolio1")
+//                .role(roleRepository.findById(1L).orElseThrow(RoleNotFoundException::new))
+//                .build());
+//
+//        portfolioRepository.save(Portfolio.builder()
+//                .title("Portfolio2")
+//                .role(roleRepository.findById(2L).orElseThrow(RoleNotFoundException::new))
+//                .build());
     }
 
     private void prepareDummyRoles(){
