@@ -21,15 +21,8 @@ public class Role {
     @NonNull
     private String roleName;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
-    @JsonIgnore
-    private List<TeamRole> teamRoles = new ArrayList<>();
-
     public Role(final String roleName) {
-        this(null,roleName,null);
-    }
-    public Role(final Long id, final String roleName) {
-        this(id,roleName,null);
+        this(null,roleName);
     }
 
 

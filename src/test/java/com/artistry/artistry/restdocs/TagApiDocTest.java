@@ -1,9 +1,5 @@
 package com.artistry.artistry.restdocs;
 
-
-import com.artistry.artistry.Domain.tag.Tag;
-import com.artistry.artistry.Dto.Request.TagCreateRequest;
-import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
@@ -23,10 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})

@@ -1,4 +1,5 @@
 package com.artistry.artistry.Domain;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import jakarta.persistence.*;
 import lombok.*;
 @Getter

@@ -1,6 +1,7 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.*;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
