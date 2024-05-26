@@ -1,16 +1,10 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
-import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.RoleCreateRequest;
 import com.artistry.artistry.Dto.Request.RoleUpdateRequest;
-import com.artistry.artistry.Dto.Request.TagCreateRequest;
-import com.artistry.artistry.Dto.Request.TagUpdateRequest;
 import com.artistry.artistry.Dto.Response.RoleResponse;
-import com.artistry.artistry.Dto.Response.TagNameResponse;
-import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.RoleNotFoundException;
-import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

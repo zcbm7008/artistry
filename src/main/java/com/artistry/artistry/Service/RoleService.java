@@ -1,11 +1,8 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
-import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.RoleResponse;
-import com.artistry.artistry.Dto.Response.TagNameResponse;
-import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.RoleNotFoundException;
 import com.artistry.artistry.Repository.RoleRepository;
 import org.springframework.stereotype.Service;
