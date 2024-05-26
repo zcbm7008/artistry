@@ -1,5 +1,8 @@
-package com.artistry.artistry.Domain;
+package com.artistry.artistry.Domain.team;
 
+import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.Application;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
@@ -83,7 +86,7 @@ public class Team {
 
     private void isValidRole(Role role){
         if(!isRoleInTeam(role)){
-            throw new TeamRoleNotFoundException(String.format("[%s]는 팀의 역할에 없습니다.", role.getRoleName()));
+            throw new TeamRoleNotFoundException(String.format("[%s]는 팀의 역할에 없습니다.", role.getName()));
         }
     }
     private boolean isRoleInTeam(Role role){

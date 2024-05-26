@@ -1,9 +1,9 @@
 package com.artistry.artistry.restdocs;
 
-import com.artistry.artistry.Domain.Member;
-import com.artistry.artistry.Domain.Role;
+import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.tag.Tag;
-import com.artistry.artistry.Domain.Team;
+import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import io.restassured.http.ContentType;
@@ -59,8 +59,8 @@ class TeamApiDocTest extends ApiTest{
         Map<String, Object> body = new HashMap<>();
         body.put("teamName", teamName);
         body.put("hostId",hostId);
-        body.put("roles", roles.stream().map(role -> Map.of("id",role.getId(),"roleName",role.getRoleName())).collect(Collectors.toList()));
-        body.put("tags", tags.stream().map(tag -> Map.of("id",tag.getId(),"roleName",tag.getName())).collect(Collectors.toList()));
+        body.put("roles", roles.stream().map(role -> Map.of("id",role.getId(),"name",role.getName())).collect(Collectors.toList()));
+        body.put("tags", tags.stream().map(tag -> Map.of("id",tag.getId(),"name",tag.getName())).collect(Collectors.toList()));
 
         return  given().log().all()
                 .body(body)
@@ -87,8 +87,8 @@ class TeamApiDocTest extends ApiTest{
         Map<String, Object> body = new HashMap<>();
         body.put("teamName", "팀1");
         body.put("hostId",1L);
-        body.put("roles", Arrays.asList(Map.of("id", role1.getId(), "roleName", role1.getRoleName()),
-                Map.of("id", role2.getId(), "roleName", role2.getRoleName())));
+        body.put("roles", Arrays.asList(Map.of("id", role1.getId(), "name", role1.getName()),
+                Map.of("id", role2.getId(), "name", role2.getName())));
         body.put("tags", Arrays.asList(Map.of("id", tag1.getId(), "name", tag1.getName()),
                 Map.of("id", tag2.getId(), "name", tag2.getName())));
 
@@ -101,7 +101,7 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("tags").description("태그 리스트"),
                                 fieldWithPath("roles").description("역할 리스트"),
                                 fieldWithPath("roles[].id").description("역할 Id"),
-                                fieldWithPath("roles[].roleName").description("역할 이름"),
+                                fieldWithPath("roles[].name").description("역할 이름"),
                                 fieldWithPath("tags[].id").description("태그 Id"),
                                 fieldWithPath("tags[].name").description("태그 리스트")),
                         responseFields(fieldWithPath("teamId").description("팀 Id"),
@@ -113,7 +113,7 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("teamRoles[].teamId").ignored(),
                                 fieldWithPath("teamRoles[].role").ignored(),
                                 fieldWithPath("teamRoles[].role.id").ignored(),
-                                fieldWithPath("teamRoles[].role.roleName").description("역할 이름"),
+                                fieldWithPath("teamRoles[].role.name").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
                                 fieldWithPath("tags").description("태그 리스트"))))
                 .when().post("/api/teams")
@@ -143,7 +143,7 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("teamRoles[].teamId").ignored(),
                                 fieldWithPath("teamRoles[].role").ignored(),
                                 fieldWithPath("teamRoles[].role.id").ignored(),
-                                fieldWithPath("teamRoles[].role.roleName").description("역할 이름"),
+                                fieldWithPath("teamRoles[].role.name").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"))))
                 .when().get("/api/teams/{id}",teamResponse1.getTeamId())
                 .then().statusCode(HttpStatus.OK.value())

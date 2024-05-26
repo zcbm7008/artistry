@@ -1,8 +1,7 @@
 package com.artistry.artistry.Dto.Response;
 
-import com.artistry.artistry.Domain.Member;
+import com.artistry.artistry.Domain.member.Member;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

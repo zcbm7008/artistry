@@ -1,7 +1,9 @@
 package com.artistry.artistry.Dto.Response;
 
-import com.artistry.artistry.Domain.*;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
+import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Domain.team.TeamRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,12 @@
 package com.artistry.artistry.Domain;
 
+import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.Application;
+import com.artistry.artistry.Domain.application.ApplicationStatus;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
+import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.RoleRepository;
 import com.artistry.artistry.Repository.TagRepository;

@@ -1,7 +1,6 @@
 package com.artistry.artistry.Dto.Response;
 
-import com.artistry.artistry.Domain.Member;
-import com.artistry.artistry.Domain.Role;
+import com.artistry.artistry.Domain.Role.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,9 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoleResponse {
     private Long id;
-    private String roleName;
+    private String name;
 
     public static RoleResponse from(Role role){
-        return new RoleResponse(role.getId(), role.getRoleName());
+        return new RoleResponse(role.getId(), role.getName());
     }
 }

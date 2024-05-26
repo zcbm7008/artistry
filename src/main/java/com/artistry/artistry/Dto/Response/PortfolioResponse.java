@@ -24,7 +24,7 @@ public class PortfolioResponse {
         return PortfolioResponse.builder()
                 .id(portfolio.getId())
                 .title(portfolio.getTitle())
-                .roleName(portfolio.getRole().getRoleName())
+                .roleName(portfolio.getRole().getName())
                 .contents(portfolio.getContents().stream().map(ContentResponse::from).collect(Collectors.toList()))
                 .access(portfolio.getPortfolioAccess().toString())
                 .build();

@@ -1,5 +1,9 @@
-package com.artistry.artistry.Domain;
+package com.artistry.artistry.Domain.team;
 
+import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.Application;
+import com.artistry.artistry.Domain.application.ApplicationStatus;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,7 +53,7 @@ public class TeamRole {
 
 
     public String getRoleName(){
-        return role.getRoleName();
+        return role.getName();
     }
 
 }

@@ -1,6 +1,6 @@
 package com.artistry.artistry.Domain.portfolio;
 
-import com.artistry.artistry.Domain.Role;
+import com.artistry.artistry.Domain.Role.Role;
 import jakarta.persistence.*;
 import lombok.*;
 

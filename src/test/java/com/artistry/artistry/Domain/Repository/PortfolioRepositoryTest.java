@@ -1,6 +1,6 @@
 package com.artistry.artistry.Domain.Repository;
 
-import com.artistry.artistry.Domain.Role;
+import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.portfolio.ContentsType;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.Content;
@@ -76,7 +76,7 @@ public class PortfolioRepositoryTest {
 
         assertThat(savedPortfolio.getId()).isNotNull();
         assertThat(savedPortfolio.getTitle()).isEqualTo(portfolio.getTitle());
-        assertThat(savedPortfolio.getRole().getRoleName()).isEqualTo(role.getRoleName());
+        assertThat(savedPortfolio.getRole().getName()).isEqualTo(role.getName());
         assertThat(savedPortfolio.getContents()).hasSize(2).contains(content1, content2);
         assertThat(savedPortfolio.getPortfolioAccess()).isEqualTo(PortfolioAccess.PRIVATE);
     }

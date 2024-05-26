@@ -1,9 +1,8 @@
 package com.artistry.artistry;
 
-import com.artistry.artistry.Domain.*;
-import com.artistry.artistry.Domain.portfolio.Portfolio;
+import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
-import com.artistry.artistry.Exceptions.RoleNotFoundException;
 import com.artistry.artistry.Repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

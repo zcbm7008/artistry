@@ -1,8 +1,11 @@
 package com.artistry.artistry.Service;
 
-import com.artistry.artistry.Domain.*;
+import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.Application;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
+import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
@@ -66,7 +69,7 @@ public class TeamServiceTest {
 
         assertThat(responseDto.getTeamId()).isNotNull();
         assertThat(responseDto.getTeamRoles())
-                .extracting(teamRole -> teamRole.getRole().getRoleName())
+                .extracting(teamRole -> teamRole.getRole().getName())
                 .containsExactly(roleName1, roleName2);
         assertThat(responseDto.getTags()).containsExactly(tagName1,tagName2);
         assertThat(responseDto.getHost().getId()).isEqualTo(member1.getId());
