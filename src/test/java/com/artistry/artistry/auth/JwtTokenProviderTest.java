@@ -1,6 +1,6 @@
 package com.artistry.artistry.auth;
 
-import com.artistry.artistry.auth.properties.JwtTokenProvider;
+import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class JwtTokenProviderTest {
         String email = "aa@a.com";
 
         //when
-        String accessToken = jwtTokenProvider.generateToken(email);
+        String accessToken = jwtTokenProvider.generateEmailToken(email);
 
         //then
         assertThat(accessToken).isNotNull();
@@ -32,10 +32,10 @@ public class JwtTokenProviderTest {
     void extractEmailFromAccessToken() {
         //given
         String expectedEmail = "ab@c.com";
-        String accessToken = jwtTokenProvider.generateToken(expectedEmail);
+        String accessToken = jwtTokenProvider.generateEmailToken(expectedEmail);
 
         //when
-        String email = jwtTokenProvider.extractEamilFromToken(accessToken);
+        String email = jwtTokenProvider.extractEmailFromToken(accessToken);
 
         //then
         assertThat(expectedEmail).isEqualTo(email);
