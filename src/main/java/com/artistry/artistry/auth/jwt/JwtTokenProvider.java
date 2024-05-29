@@ -34,17 +34,24 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateEmailToken(final String email) {
-        return generateToken(EMAIL_KEY, email);
-    }
+    public String extractValueFromToken(String key, String token) {
+        final Date now = new Date();
+        final Date expiryDate = new Date(now.getTime() + validityInMilliSeconds);
 
-    public String extractEmailFromToken(String token){
         Jws<Claims> claims = Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token);
 
-        return claims.getPayload().get(EMAIL_KEY,String.class);
+        return claims.getPayload().get(key, String.class);
+    }
+
+    public String generateEmailToken(final String email) {
+        return generateToken(EMAIL_KEY, email);
+    }
+
+    public String extractEmailFromToken(String token){
+        return extractValueFromToken(EMAIL_KEY,token);
 
     }
 
