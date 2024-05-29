@@ -33,15 +33,20 @@ jobs:
         cache: maven
 
     - name: Use secrets in a script
-      run: echo $MY_SECRET
+      run: |
+        echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID"
+        echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET"
+        echo "GOOGLE_REDIRECT_URI=$GOOGLE_REDIRECT_URI"
+        echo "NAVER_CLIENT_ID=$NAVER_CLIENT_ID"
+        echo "NAVER_CLIENT_SECRET=$NAVER_CLIENT_SECRET"
+        echo "NAVER_REDIRECT_URI=$NAVER_REDIRECT_URI"
       env:
         GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET}}
-        GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI}}
-        NAVER_CLIENT_ID : ${{secrets.NAVER_CLIENT_ID}}
-        NAVER_CLIENT_SECRET : ${{secrets.NAVER_CLIENT_SECRET}}
-        NAVER_REDIRECT_URI : ${{secrets.NAVER_REDIRECT_URI}}
-    
+        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+        NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+        NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
