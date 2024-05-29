@@ -1,7 +1,6 @@
 package com.artistry.artistry.Controller;
 
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
-import com.artistry.artistry.Dto.Request.PortfolioDeleteRequest;
 import com.artistry.artistry.Dto.Request.PortfolioRequest;
 import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;

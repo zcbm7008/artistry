@@ -1,7 +1,7 @@
 package com.artistry.artistry.restdocs;
 
-import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Response.TeamResponse;
@@ -18,10 +18,12 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
@@ -43,7 +45,7 @@ class TeamApiDocTest extends ApiTest{
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
 
-        Member member1 = memberRepository.save(new Member("member1"));
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
 
         // 더미 팀 생성
         String dummyTeamName = "더미 팀";

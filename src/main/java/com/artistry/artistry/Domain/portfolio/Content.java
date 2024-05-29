@@ -1,7 +1,10 @@
 package com.artistry.artistry.Domain.portfolio;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor

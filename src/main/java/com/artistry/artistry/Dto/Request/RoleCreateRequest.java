@@ -1,7 +1,6 @@
 package com.artistry.artistry.Dto.Request;
 
 import com.artistry.artistry.Domain.Role.Role;
-import com.artistry.artistry.Domain.tag.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

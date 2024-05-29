@@ -21,7 +21,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 public class PortfolioApiDocTest extends ApiTest{
     private List<PortfolioResponse> createdPortfolios = new ArrayList<>();

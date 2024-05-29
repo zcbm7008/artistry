@@ -4,20 +4,11 @@ import com.artistry.artistry.Repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 public class MemberRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
 
-//    @DisplayName("유저 더미 데이터를 확인한다.")
-//    @ParameterizedTest
-//    @CsvSource({"1, composer1","2, art1"})
-//    void dummyUserTest(Long id, String nickname){
-//        Optional<Member> user = memberRepository.findById(id);
-//        assertThat(user.isPresent()).isTrue();
-//        assertThat(user.get().getNickname()).isEqualTo(nickname);
-//    }
+
 }

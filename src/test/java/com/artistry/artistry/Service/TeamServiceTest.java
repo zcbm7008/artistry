@@ -22,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 @SpringBootTest
 public class TeamServiceTest {
@@ -54,7 +54,7 @@ public class TeamServiceTest {
         String roleName2 = "드럼";
         String tagName1 = "밴드";
         String tagName2 = "락";
-        Member member1 = memberRepository.save(new Member("member1"));
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
         Role role1 = roleRepository.save(new Role(roleName1));
         Role role2 = roleRepository.save(new Role(roleName2));
         Tag tag1 = tagRepository.save(new Tag(tagName1));
@@ -83,9 +83,9 @@ public class TeamServiceTest {
         String roleName1 = "작곡가";
         String invalidRoleName = "일러스트레이터";
         String tagName1 = "밴드";
-        Member member1 = memberRepository.save(new Member("member1"));
-        Member member2 = memberRepository.save(new Member("member2"));
-        Member applicant1 = memberRepository.save(new Member("applicant1"));
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+        Member member2 = memberRepository.save(new Member("member2","b@b.com"));
+        Member applicant1 = memberRepository.save(new Member("applicant1","c@c.com"));
 
 
         Role role1 = roleRepository.save(new Role(roleName1));

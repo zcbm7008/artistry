@@ -3,7 +3,10 @@ package com.artistry.artistry;
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
-import com.artistry.artistry.Repository.*;
+import com.artistry.artistry.Repository.MemberRepository;
+import com.artistry.artistry.Repository.PortfolioRepository;
+import com.artistry.artistry.Repository.RoleRepository;
+import com.artistry.artistry.Repository.TagRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -36,9 +39,9 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void prepareDummyMembers(){
-        memberRepository.save(new Member("composer1"));
-        memberRepository.save(new Member("art1"));
-        memberRepository.save(new Member("movieman1"));
+        memberRepository.save(new Member("composer1","a@a.com"));
+        memberRepository.save(new Member("art1","b@b.com"));
+        memberRepository.save(new Member("movieman1","c@c.com"));
 
     }
 
