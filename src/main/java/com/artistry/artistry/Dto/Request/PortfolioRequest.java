@@ -1,6 +1,5 @@
 package com.artistry.artistry.Dto.Request;
 
-import com.artistry.artistry.Domain.portfolio.Portfolio;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

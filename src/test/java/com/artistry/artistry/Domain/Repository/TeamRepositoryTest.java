@@ -61,7 +61,7 @@ public class TeamRepositoryTest {
         String roleName2 = "드럼";
         String tagName1 = "밴드";
         String tagName2 = "락";
-        Member member1 = memberRepository.save(new Member("member1"));
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
         List <Role> roles = Arrays.asList( roleRepository.save(new Role(roleName1)), roleRepository.save(new Role(roleName2)));
         List <Tag> tags = Arrays.asList(tagRepository.save(new Tag(tagName1)),tagRepository.save(new Tag(tagName2)));
 
@@ -81,7 +81,7 @@ public class TeamRepositoryTest {
         String roleName2 = "드럼";
         String tagName1 = "밴드";
         String tagName2 = "락";
-        Member member1 = memberRepository.save(new Member("member1"));
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
         List <Role> roles = Arrays.asList( roleRepository.save(new Role(roleName1)), roleRepository.save(new Role(roleName2)));
         List <Tag> tags = Arrays.asList(tagRepository.save(new Tag(tagName1)),tagRepository.save(new Tag(tagName2)));
 

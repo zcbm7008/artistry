@@ -1,8 +1,6 @@
 package com.artistry.artistry.Domain.member;
 
-import com.artistry.artistry.Domain.tag.TagName;
 import com.artistry.artistry.Exceptions.ArtistryInvalidValueException;
-import com.artistry.artistry.Exceptions.ArtistryLengthException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

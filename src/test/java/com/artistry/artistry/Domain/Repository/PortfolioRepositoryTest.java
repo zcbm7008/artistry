@@ -1,9 +1,9 @@
 package com.artistry.artistry.Domain.Repository;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.ContentsType;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
-import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;

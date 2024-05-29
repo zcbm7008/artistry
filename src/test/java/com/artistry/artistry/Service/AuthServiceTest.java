@@ -1,6 +1,7 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.auth.oauth.OAuthService;
+import com.artistry.artistry.auth.oauth.SocialType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class AuthServiceTest {
     @Test
     void 구글_로그인을_위한_링크를_생성한다() {
         // given
-        String link = oAuthService.generateLoginLink();
+        String link = oAuthService.generateLoginLink(SocialType.GOOGLE);
         System.out.println(link);
 
 

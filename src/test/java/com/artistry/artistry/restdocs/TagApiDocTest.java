@@ -3,7 +3,6 @@ package com.artistry.artistry.restdocs;
 import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Dto.Response.TagResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

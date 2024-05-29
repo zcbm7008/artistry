@@ -2,7 +2,6 @@ package com.artistry.artistry.restdocs;
 
 
 import com.artistry.artistry.DataLoader;
-import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Repository.*;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -23,7 +22,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
