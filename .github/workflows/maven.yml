@@ -23,6 +23,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+      NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+      NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+      NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 21
@@ -32,21 +40,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
-    - name: Verify Environment Variables
-      run: |
-        if [ -z "$GOOGLE_CLIENT_ID" ]; then echo "GOOGLE_CLIENT_ID is not set"; else echo "GOOGLE_CLIENT_ID is set"; fi
-        if [ -z "$GOOGLE_CLIENT_SECRET" ]; then echo "GOOGLE_CLIENT_SECRET is not set"; else echo "GOOGLE_CLIENT_SECRET is set"; fi
-        if [ -z "$GOOGLE_REDIRECT_URI" ]; then echo "GOOGLE_REDIRECT_URI is not set"; else echo "GOOGLE_REDIRECT_URI is set"; fi
-        if [ -z "$NAVER_CLIENT_ID" ]; then echo "NAVER_CLIENT_ID is not set"; else echo "NAVER_CLIENT_ID is set"; fi
-        if [ -z "$NAVER_CLIENT_SECRET" ]; then echo "NAVER_CLIENT_SECRET is not set"; else echo "NAVER_CLIENT_SECRET is set"; fi
-        if [ -z "$NAVER_REDIRECT_URI" ]; then echo "NAVER_REDIRECT_URI is not set"; else echo "NAVER_REDIRECT_URI is set"; fi
-      env:
-        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-        GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
-        NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
-        NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
-        NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
         
     - name: Build with Maven
       run: mvn -B package --file pom.xml
