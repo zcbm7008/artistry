@@ -3,6 +3,7 @@ package com.artistry.artistry.auth.oauth;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
+import com.artistry.artistry.auth.oauth.Client.OAuthClient;
 import com.artistry.artistry.auth.properties.AccessTokenResponse;
 import com.artistry.artistry.auth.properties.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
