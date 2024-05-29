@@ -1,23 +1,21 @@
 package com.artistry.artistry.auth.oauth;
 
 import com.artistry.artistry.auth.properties.TokenResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class GoogleOAuthClient implements OAuthClient{
     private static final String JWT_DELIMITER = "\\.";
+    private static final int PAYLOAD_INDEX = 1;
 
     private final String googleRedirectUri;
     private final String googleClientId;
@@ -39,18 +37,22 @@ public class GoogleOAuthClient implements OAuthClient{
         this.objectMapper = objectMapper;
     }
 
-
     @Override
-    public OAuthMember getOAuthMember(final String code) {
-        TokenResponse googleTokenResponse = requestGoogleToken(code);
-        String payload = getPayloadFrom(googleTokenResponse.getId_token());
-        String decodedPayload = decodeJwtPayload(payload);
+    public OAuthMember createOAuthMember(final TokenResponse tokenResponse){
+        final String idToken = tokenResponse.getId_token();
+        final String email = extractElementFromToken(idToken,"email");
+        final String name = extractElementFromToken(idToken,"name");
+        final String picture = extractElementFromToken(idToken, "picture");
 
-        try {
-            return generateOAuthMemberBy(decodedPayload);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException();
-        }
+        return new OAuthMember(email,name,picture);
+    }
+
+    private String extractElementFromToken(final String idToken, final String key) {
+        final String payLoad = idToken.split("\\.")[PAYLOAD_INDEX];
+        final String decodedPayLoad = new String(Base64.getDecoder().decode(payLoad));
+        final JacksonJsonParser jacksonJsonParser = new JacksonJsonParser();
+        return (String) jacksonJsonParser.parseMap(decodedPayLoad)
+                .get(key);
     }
 
     private TokenResponse requestGoogleToken(final String code) {
@@ -60,25 +62,6 @@ public class GoogleOAuthClient implements OAuthClient{
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         return restTemplate.postForEntity(googleTokenUri, request, TokenResponse.class).getBody();
-    }
-
-
-
-    private String getPayloadFrom(final String jwt) {
-        return jwt.split(JWT_DELIMITER)[1];
-    }
-
-    private String decodeJwtPayload(final String payload) {
-        return new String(Base64.getUrlDecoder().decode(payload), StandardCharsets.UTF_8);
-    }
-
-    private OAuthMember generateOAuthMemberBy(final String decodedIdToken) throws JsonProcessingException {
-        Map<String, String> userInfo = objectMapper.readValue(decodedIdToken, HashMap.class);
-        String email = userInfo.get("email");
-        String displayName = userInfo.get("name");
-        String profileImageUrl = userInfo.get("picture");
-
-        return new OAuthMember(email, displayName, profileImageUrl);
     }
 
     @Override
@@ -100,5 +83,7 @@ public class GoogleOAuthClient implements OAuthClient{
         params.add("grant_type", "authorization_code");
         return params;
     }
+
+
 
 }

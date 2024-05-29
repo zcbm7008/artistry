@@ -2,14 +2,17 @@ package com.artistry.artistry.auth.properties;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class TokenResponse {
-    private final String access_token;
-    private final String refresh_token;
-    private final String id_token;
-    private final String expires_in;
-    private final String token_type;
-    private final String scope;
+    private String access_token;
+    private String refresh_token;
+    private String id_token;
+    private String expires_in;
+    private String token_type;
+    private String scope;
 }
