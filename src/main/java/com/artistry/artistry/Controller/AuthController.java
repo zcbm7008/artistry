@@ -2,6 +2,7 @@ package com.artistry.artistry.Controller;
 
 import com.artistry.artistry.Dto.Response.LoginUrlResponse;
 import com.artistry.artistry.auth.oauth.OAuthService;
+import com.artistry.artistry.auth.properties.AccessTokenResponse;
 import com.artistry.artistry.auth.properties.TokenResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AuthController {
 
     @GetMapping("/code/google")
     public void googleRedirect(final HttpServletResponse response, @RequestParam final String code) throws IOException {
-        final TokenResponse tokenResponse = oAuthService.createToken(code);
+        final AccessTokenResponse tokenResponse = oAuthService.createToken(code);
         final String url = "/login" + "?accessToken=" + tokenResponse.getAccessToken();
 
         response.sendRedirect(url);

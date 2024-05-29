@@ -1,5 +1,6 @@
 package com.artistry.artistry.auth.oauth;
 
+import com.artistry.artistry.auth.properties.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +42,7 @@ public class GoogleOAuthClient implements OAuthClient{
 
     @Override
     public OAuthMember getOAuthMember(final String code) {
-        GoogleTokenResponse googleTokenResponse = requestGoogleToken(code);
+        TokenResponse googleTokenResponse = requestGoogleToken(code);
         String payload = getPayloadFrom(googleTokenResponse.getId_token());
         String decodedPayload = decodeJwtPayload(payload);
 
@@ -52,13 +53,13 @@ public class GoogleOAuthClient implements OAuthClient{
         }
     }
 
-    private GoogleTokenResponse requestGoogleToken(final String code) {
+    private TokenResponse requestGoogleToken(final String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> params = generateRequestParams(code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-        return restTemplate.postForEntity(googleTokenUri, request, GoogleTokenResponse.class).getBody();
+        return restTemplate.postForEntity(googleTokenUri, request, TokenResponse.class).getBody();
     }
 
 
@@ -80,12 +81,13 @@ public class GoogleOAuthClient implements OAuthClient{
         return new OAuthMember(email, displayName, profileImageUrl);
     }
 
-    public GoogleTokenResponse getGoogleAccessToken(final String code) {
+    @Override
+    public TokenResponse getAccessToken(final String code) {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         final MultiValueMap<String, String> params = generateRequestParams(code);
         final HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, httpHeaders);
-        final ResponseEntity<GoogleTokenResponse> googleTokenResponseResponseEntity = restTemplate.postForEntity("https://oauth2.googleapis.com/token", request, GoogleTokenResponse.class);
+        final ResponseEntity<TokenResponse> googleTokenResponseResponseEntity = restTemplate.postForEntity("https://oauth2.googleapis.com/token", request, TokenResponse.class);
         return googleTokenResponseResponseEntity.getBody();
 
     }

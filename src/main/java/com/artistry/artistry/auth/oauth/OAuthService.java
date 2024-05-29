@@ -4,6 +4,7 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Service.MemberService;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
+import com.artistry.artistry.auth.properties.AccessTokenResponse;
 import com.artistry.artistry.auth.properties.TokenResponse;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Service;
@@ -37,11 +38,11 @@ public class OAuthService {
         return oAuthEndpoint.generate();
     }
 
-    public TokenResponse createToken(final String code) {
-        final GoogleTokenResponse googleTokenResponse = oAuthClient.getGoogleAccessToken(code);
+    public AccessTokenResponse createToken(final String code) {
+        final TokenResponse googleTokenResponse = oAuthClient.getAccessToken(code);
         final OAuthMember oAuthMember = createOAuthMember(googleTokenResponse.getId_token());
         createMemberIfNotExists(oAuthMember);
-        return new TokenResponse(jwtTokenProvider.generateEmailToken(oAuthMember.getEmail()));
+        return new AccessTokenResponse(jwtTokenProvider.generateEmailToken(oAuthMember.getEmail()));
     }
 
     private String extractElementFromToken(final String googleIdToken, final String key) {
