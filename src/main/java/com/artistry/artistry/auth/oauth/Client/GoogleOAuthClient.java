@@ -27,11 +27,11 @@ public class GoogleOAuthClient extends AbstractOAuthClient{
     @Override
     public OAuthMemberResponse createOAuthMember(final TokenResponse tokenResponse){
         final String idToken = tokenResponse.getId_token();
-        final String email = extractElementFromToken(idToken,"email");
         final String name = extractElementFromToken(idToken,"name");
+        final String email = extractElementFromToken(idToken,"email");
         final String picture = extractElementFromToken(idToken, "picture");
 
-        return new OAuthMemberResponse(email,name,picture);
+        return new OAuthMemberResponse(name,email,picture);
     }
 
     private String extractElementFromToken(final String idToken, final String key) {

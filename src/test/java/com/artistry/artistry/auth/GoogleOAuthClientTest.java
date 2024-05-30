@@ -55,8 +55,8 @@ public class GoogleOAuthClientTest {
         OAuthMemberResponse oAuthMemberResponse = googleOAuthClient.createOAuthMember(tokenResponse);
 
         // Verify the results
-        assertEquals("test@example.com", oAuthMemberResponse.getEmail());
         assertEquals("testName", oAuthMemberResponse.getNickName());
+        assertEquals("test@example.com", oAuthMemberResponse.getEmail());
         assertEquals("testPictureUrl", oAuthMemberResponse.getProfileImageUrl());
     }
 

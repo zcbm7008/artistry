@@ -83,8 +83,8 @@ public class NaverOAuthClientTest {
 
         OAuthMemberResponse oAuthMemberResponse = naverOAuthClient.createOAuthMember(tokenResponse);
 
-        assertEquals("test@example.com", oAuthMemberResponse.getEmail());
         assertEquals("testNickname", oAuthMemberResponse.getNickName());
+        assertEquals("test@example.com", oAuthMemberResponse.getEmail());
         assertEquals("testProfileImage", oAuthMemberResponse.getProfileImageUrl());
     }
 

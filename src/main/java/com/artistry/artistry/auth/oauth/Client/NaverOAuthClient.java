@@ -31,7 +31,7 @@ public class NaverOAuthClient extends AbstractOAuthClient{
     public OAuthMemberResponse createOAuthMember(final TokenResponse tokenResponse) throws JsonProcessingException {
         NaverUserResponse naverUserResponse = getOauthProfile(tokenResponse.getAccess_token());
 
-        return new OAuthMemberResponse(naverUserResponse.getEmail(),naverUserResponse.getNickname(),naverUserResponse.getProfile_image());
+        return new OAuthMemberResponse(naverUserResponse.getNickname(),naverUserResponse.getEmail(),naverUserResponse.getProfile_image());
     }
 
     public NaverUserResponse getOauthProfile(String accessToken) throws JsonProcessingException {
