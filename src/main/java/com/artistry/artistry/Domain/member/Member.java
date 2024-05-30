@@ -54,7 +54,7 @@ public class Member {
         return nickname.getValue();
     }
 
-    public Member(final Long id, @NonNull final String nickName, @NonNull String email,String iconUrl, final List<Team> teams, List<Application> applications,) {
+    public Member(final Long id, @NonNull final String nickName, @NonNull String email,String iconUrl, final List<Team> teams, List<Application> applications) {
         validateEmail(email);
         this.id = id;
         this.nickname = new Nickname(nickName);

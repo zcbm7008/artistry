@@ -38,7 +38,7 @@ public class OAuthService {
 
     public AccessTokenResponse createMemberAccessToken(SocialType socialType, final String code) throws JsonProcessingException {
         OAuthClient oAuthClient = oAuthProviderFactory.createOAuthClient(socialType);
-        TokenResponse tokenResponse = createTokenResponse(oAuthClient,code);
+        TokenResponse tokenResponse = oAuthClient.getAccessToken(code);
         OAuthMemberResponse oAuthMemberResponse = oAuthClient.createOAuthMember(tokenResponse);
 
         createMemberIfNotExists(oAuthMemberResponse);
@@ -49,10 +49,6 @@ public class OAuthService {
     private AccessTokenResponse generateAccessToken(OAuthMemberResponse oAuthMemberResponse) {
         String token = jwtTokenProvider.generateEmailToken(oAuthMemberResponse.getEmail());
         return new AccessTokenResponse(token);
-    }
-
-    private TokenResponse createTokenResponse(OAuthClient oAuthClient, final String code){
-        return oAuthClient.getAccessToken(code);
     }
 
     private void createMemberIfNotExists(final OAuthMemberResponse oAuthMemberResponse){

@@ -30,8 +30,8 @@ public class MemberService {
         return MemberResponse.from(member);
     }
 
-    public Member findByEmail(String email){
-        return memberRepository.findByEmail(email);
+    public MemberResponse findByEmail(String email){
+        return MemberResponse.from(memberRepository.findByEmail(email));
     }
 
 }

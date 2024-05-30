@@ -1,7 +1,9 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Response.AccessTokenResponse;
+import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
@@ -12,6 +14,7 @@ import com.artistry.artistry.auth.oauth.SocialType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,26 +23,27 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
 
 
 @SpringBootTest
 public class OAuthServiceTest {
 
-    @Autowired
-    private MemberRepository memberRepository;
-
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+    @Mock
+    private MemberService memberService;
 
 
-    @Autowired
+    @Mock
     private OAuthProviderFactory oAuthProviderFactory;
     @Mock
     private OAuthClient oAuthClient;
 
     @Autowired
     private OAuthService oAuthService;
-
+    @InjectMocks
+    private OAuthService mockOAuthService;
 
     @DisplayName("provider에 따라 SocialType을 리턴한다.")
     @Test
@@ -66,19 +70,59 @@ public class OAuthServiceTest {
         assertThat(actualUrl).isNotNull();
     }
 
+    @DisplayName("소셜 타입과 코드를 받아 멤버 이메일 Jwt 토큰을 생성한다.")
     @Test
     public void testCreateMemberAccessToken() throws JsonProcessingException {
+        // Given
+        SocialType socialType = SocialType.GOOGLE;
         String code = "authorization_code";
         TokenResponse tokenResponse = TokenResponse.builder().access_token("access_token").build();
-        OAuthMemberResponse oAuthMember = new OAuthMemberResponse("nickname", "email@example.com", "image.url");
+        OAuthMemberResponse oAuthMemberResponse = new OAuthMemberResponse("nickname", "email@example.com", "image.url");
+        AccessTokenResponse expectedAccessTokenResponse = new AccessTokenResponse("access_token");
 
-        when(oAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
-        when(oAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMember);
+        // Mock dependencies
+        OAuthClient mockOAuthClient = mock(OAuthClient.class);
+        when(oAuthProviderFactory.createOAuthClient(eq(socialType))).thenReturn(mockOAuthClient);
+        when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
+        when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
+        when(memberService.findByEmail(any(String.class))).thenReturn(null);
 
-        AccessTokenResponse accessTokenResponse = oAuthService.createMemberAccessToken(SocialType.GOOGLE, code);
+        // When
+        AccessTokenResponse actualAccessTokenResponse = mockOAuthService.createMemberAccessToken(socialType, code);
 
-        assertEquals("jwt_token", accessTokenResponse.getAccessToken());
-        verify(memberRepository, times(1)).save(any(Member.class));
+        // Then
+        verify(oAuthProviderFactory, times(1)).createOAuthClient(eq(socialType));
+        verify(mockOAuthClient, times(1)).getAccessToken(eq(code));
+        verify(mockOAuthClient, times(1)).createOAuthMember(eq(tokenResponse));
+        verify(jwtTokenProvider, times(1)).generateEmailToken(eq("email@example.com"));
+        verify(memberService, times(1)).createMember(any(MemberCreateRequest.class));
+    }
+
+    @DisplayName("같은 이메일의 유저가 있을 경우 멤버를 생성하지 않음.")
+    @Test
+    public void testCreate() throws JsonProcessingException {
+        // Given
+        SocialType socialType = SocialType.GOOGLE;
+        String code = "authorization_code";
+        TokenResponse tokenResponse = TokenResponse.builder().access_token("access_token").build();
+        OAuthMemberResponse oAuthMemberResponse = new OAuthMemberResponse("nickname", "email@example.com", "image.url");
+        AccessTokenResponse expectedAccessTokenResponse = new AccessTokenResponse("access_token");
+
+        // Mock dependencies
+        OAuthClient mockOAuthClient = mock(OAuthClient.class);
+        when(oAuthProviderFactory.createOAuthClient(eq(socialType))).thenReturn(mockOAuthClient);
+        when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
+        when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
+        when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1"));
+
+        // When,Then
+
+        AccessTokenResponse actualAccessTokenResponse = mockOAuthService.createMemberAccessToken(socialType, code);
+
+        // Then
+
+        verify(memberService, times(0)).createMember(any(MemberCreateRequest.class));
     }
 }
