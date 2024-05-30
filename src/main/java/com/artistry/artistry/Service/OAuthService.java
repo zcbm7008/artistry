@@ -1,9 +1,12 @@
-package com.artistry.artistry.auth.oauth;
+package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
+import com.artistry.artistry.auth.oauth.OAuthMember;
+import com.artistry.artistry.auth.oauth.OAuthProviderFactory;
+import com.artistry.artistry.auth.oauth.SocialType;
 import com.artistry.artistry.auth.oauth.endPoint.OAuthEndPoint;
 import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;

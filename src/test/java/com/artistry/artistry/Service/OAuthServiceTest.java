@@ -4,7 +4,6 @@ import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
 import com.artistry.artistry.auth.oauth.OAuthProviderFactory;
-import com.artistry.artistry.auth.oauth.OAuthService;
 import com.artistry.artistry.auth.oauth.SocialType;
 import com.artistry.artistry.auth.oauth.endPoint.OAuthEndPoint;
 import org.junit.jupiter.api.BeforeEach;
