@@ -68,3 +68,7 @@ security:
       expire-length: 3600
 
 
+AWS:
+  ACCESS_KEY: ${AWS_ACCESS_KEY}
+  SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  BUCKET_NAME: ${AWS_BUCKET_NAME}

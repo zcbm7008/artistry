@@ -12,3 +12,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
