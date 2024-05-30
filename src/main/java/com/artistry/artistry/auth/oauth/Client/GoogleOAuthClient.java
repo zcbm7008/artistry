@@ -1,5 +1,6 @@
 package com.artistry.artistry.auth.oauth.Client;
 
+import com.artistry.artistry.Dto.Request.OAuthMemberRequest;
 import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,13 +26,13 @@ public class GoogleOAuthClient extends AbstractOAuthClient{
     }
 
     @Override
-    public OAuthMemberResponse createOAuthMember(final TokenResponse tokenResponse){
+    public OAuthMemberRequest createOAuthMemberRequest(final TokenResponse tokenResponse){
         final String idToken = tokenResponse.getId_token();
         final String name = extractElementFromToken(idToken,"name");
         final String email = extractElementFromToken(idToken,"email");
         final String picture = extractElementFromToken(idToken, "picture");
 
-        return new OAuthMemberResponse(name,email,picture);
+        return new OAuthMemberRequest(name,email,picture);
     }
 
     private String extractElementFromToken(final String idToken, final String key) {

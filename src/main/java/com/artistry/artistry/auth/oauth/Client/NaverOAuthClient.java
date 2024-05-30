@@ -1,5 +1,6 @@
 package com.artistry.artistry.auth.oauth.Client;
 
+import com.artistry.artistry.Dto.Request.OAuthMemberRequest;
 import com.artistry.artistry.Exceptions.ArtistryOAuthException;
 import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.Dto.Response.NaverUserResponse;
@@ -27,11 +28,12 @@ public class NaverOAuthClient extends AbstractOAuthClient{
         super(redirectUri,clientId,clientSecret,tokenUri,restTemplate,objectMapper);
     }
 
+
     @Override
-    public OAuthMemberResponse createOAuthMember(final TokenResponse tokenResponse) throws JsonProcessingException {
+    public OAuthMemberRequest createOAuthMemberRequest(final TokenResponse tokenResponse) throws JsonProcessingException {
         NaverUserResponse naverUserResponse = getOauthProfile(tokenResponse.getAccess_token());
 
-        return new OAuthMemberResponse(naverUserResponse.getNickname(),naverUserResponse.getEmail(),naverUserResponse.getProfile_image());
+        return new OAuthMemberRequest(naverUserResponse.getNickname(),naverUserResponse.getEmail(),naverUserResponse.getProfile_image());
     }
 
     public NaverUserResponse getOauthProfile(String accessToken) throws JsonProcessingException {

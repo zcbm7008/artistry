@@ -1,6 +1,9 @@
 package com.artistry.artistry.auth.oauth.Client;
 
+import com.artistry.artistry.Dto.Request.OAuthMemberRequest;
 import com.artistry.artistry.Dto.Response.TokenResponse;
+import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -20,6 +23,11 @@ public abstract class AbstractOAuthClient implements OAuthClient {
     protected final RestTemplate restTemplate;
     protected final ObjectMapper objectMapper;
 
+    @Override
+    public OAuthMemberResponse createOAuthMember(final TokenResponse tokenResponse) throws JsonProcessingException {
+        OAuthMemberRequest oAuthMemberRequest = createOAuthMemberRequest(tokenResponse);
+        return new OAuthMemberResponse(oAuthMemberRequest.getNickName(),oAuthMemberRequest.getEmail(),oAuthMemberRequest.getIconUrl());
+    }
     @Override
     public TokenResponse getAccessToken(String code) {
         HttpHeaders headers = new HttpHeaders();

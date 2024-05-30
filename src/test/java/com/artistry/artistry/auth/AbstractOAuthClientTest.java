@@ -1,8 +1,10 @@
 package com.artistry.artistry.auth;
 
+import com.artistry.artistry.Dto.Request.OAuthMemberRequest;
 import com.artistry.artistry.auth.oauth.Client.AbstractOAuthClient;
 import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -92,9 +94,14 @@ public class AbstractOAuthClientTest {
             super(redirectUri, clientId, clientSecret, tokenUri, restTemplate, objectMapper);
         }
         @Override
-        public OAuthMemberResponse createOAuthMember(TokenResponse tokenResponse) {
-            // Implement this method as per your requirements
-            return new OAuthMemberResponse("a@a","name","url");
+        public OAuthMemberResponse createOAuthMember(TokenResponse tokenResponse) throws JsonProcessingException {
+            OAuthMemberRequest oAuthMemberRequest = createOAuthMemberRequest(tokenResponse);
+            return new OAuthMemberResponse(oAuthMemberRequest.getNickName(),oAuthMemberRequest.getEmail(),oAuthMemberRequest.getIconUrl());
+        }
+
+        @Override
+        public OAuthMemberRequest createOAuthMemberRequest(TokenResponse tokenResponse) throws JsonProcessingException {
+            return new OAuthMemberRequest("a@a","name","url");
         }
     }
 }
