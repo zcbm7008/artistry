@@ -21,8 +21,8 @@ public class AuthController {
 
     @GetMapping("/oauth/{provider}/login")
     public ResponseEntity<LoginUrlResponse> login(@PathVariable("provider") String provider) {
-
-        String url = oAuthService.generateLoginLink(getSocialType(provider));
+        SocialType socialType = oAuthService.getSocialType(provider);
+        String url = oAuthService.generateLoginLink(socialType);
         return ResponseEntity.ok(new LoginUrlResponse(url));
     }
 
@@ -30,17 +30,12 @@ public class AuthController {
     public void redirect(final HttpServletResponse response,
                                @PathVariable("provider") String provider,
                                @RequestParam final String code) throws IOException {
-        final AccessTokenResponse tokenResponse = oAuthService.createMemberAccessToken(getSocialType(provider),code);
+        SocialType socialType = oAuthService.getSocialType(provider);
+        final AccessTokenResponse tokenResponse = oAuthService.createMemberAccessToken(socialType,code);
         final String url = "/login" + "?accessToken=" + tokenResponse.getAccessToken();
 
         response.sendRedirect(url);
     }
-    public SocialType getSocialType(String provider) {
-        try {
-            return SocialType.valueOf(provider.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("정의되지 않은 소셜 타입입니다.", e);
-        }
-    }
+
 
 }

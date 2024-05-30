@@ -19,6 +19,14 @@ public class OAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final OAuthProviderFactory oAuthProviderFactory;
 
+    public SocialType getSocialType(String provider) {
+        try {
+            return SocialType.valueOf(provider.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("정의되지 않은 소셜 타입입니다.", e);
+        }
+    }
+
     public String generateLoginLink(SocialType socialType) {
         OAuthEndPoint endpoint = oAuthProviderFactory.createOAuthEndPoint(socialType);
         return endpoint.generate();
