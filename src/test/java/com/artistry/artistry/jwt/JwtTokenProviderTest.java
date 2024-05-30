@@ -40,7 +40,6 @@ public class JwtTokenProviderTest {
         String key = "testkey";
         String expectedValue = "testvalue";
         String token = jwtTokenProvider.generateToken(key,expectedValue);
-
         String value = jwtTokenProvider.extractValueFromToken(key,token);
         assertThat(expectedValue).isEqualTo(value);
     }

@@ -8,6 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class OAuthMember {
     private final String email;
-    private final String displayName;
+    private final String nickName;
     private final String profileImageUrl;
 }

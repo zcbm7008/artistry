@@ -4,6 +4,7 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
+import com.artistry.artistry.auth.oauth.endPoint.OAuthEndPoint;
 import com.artistry.artistry.auth.properties.AccessTokenResponse;
 import com.artistry.artistry.auth.properties.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,22 +24,30 @@ public class OAuthService {
         return endpoint.generate();
     }
 
-    public AccessTokenResponse createToken(SocialType socialType, final String code) throws JsonProcessingException {
+    public AccessTokenResponse createMemberAccessToken(SocialType socialType, final String code) throws JsonProcessingException {
         OAuthClient oAuthClient = oAuthProviderFactory.createOAuthClient(socialType);
-        final TokenResponse tokenResponse = oAuthClient.getAccessToken(code);
-        final OAuthMember oAuthMember = oAuthClient.createOAuthMember(tokenResponse);
-        System.out.println(oAuthMember.getDisplayName() + oAuthMember.getEmail());
+        TokenResponse tokenResponse = createTokenResponse(oAuthClient,code);
+        OAuthMember oAuthMember = oAuthClient.createOAuthMember(tokenResponse);
+
         createMemberIfNotExists(oAuthMember);
-        return new AccessTokenResponse(jwtTokenProvider.generateEmailToken(oAuthMember.getEmail()));
+
+        return generateAccessToken(oAuthMember);
     }
 
+    private AccessTokenResponse generateAccessToken(OAuthMember oAuthMember) {
+        String token = jwtTokenProvider.generateEmailToken(oAuthMember.getEmail());
+        return new AccessTokenResponse(token);
+    }
 
+    private TokenResponse createTokenResponse(OAuthClient oAuthClient, final String code){
+        return oAuthClient.getAccessToken(code);
+    }
 
     private void createMemberIfNotExists(final OAuthMember oAuthMember){
         if(memberRepository.findByEmail(oAuthMember.getEmail()) != null){
             return;
         }
-        final Member member = new Member(oAuthMember.getDisplayName(), oAuthMember.getEmail());
+        final Member member = new Member(oAuthMember.getNickName(), oAuthMember.getEmail());
         memberRepository.save(member);
     }
 

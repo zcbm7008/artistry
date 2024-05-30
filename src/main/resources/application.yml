@@ -59,6 +59,7 @@ oauth:
     user_name-attribute: response
     client_secret: ${NAVER_CLIENT_SECRET}
     client_id : ${NAVER_CLIENT_ID}
+    state : ${NAVER_STATE}
 
 security:
   jwt:

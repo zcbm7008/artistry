@@ -91,6 +91,8 @@ public class NaverOAuthClientTest {
     @DisplayName("response의 HttpStatus가 적절하지 않을 경우 예외를 호출한다.")
     @Test
     public void testGetOauthProfileWithNon2xxResponse() {
+
+
         String accessToken = "validAccessToken";
 
         HttpHeaders headers = new HttpHeaders();
@@ -100,8 +102,6 @@ public class NaverOAuthClientTest {
         when(restTemplate.exchange(eq(NAVER_PROFILE_URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("error", HttpStatus.BAD_REQUEST));
 
-        assertThrows(ArtistryOAuthException.class, () -> {
-            naverOAuthClient.getOauthProfile(accessToken);
-        });
+        assertThrows(ArtistryOAuthException.class, () -> naverOAuthClient.getOauthProfile(accessToken));
     }
 }

@@ -3,6 +3,9 @@ package com.artistry.artistry.auth.oauth;
 import com.artistry.artistry.auth.oauth.Client.GoogleOAuthClient;
 import com.artistry.artistry.auth.oauth.Client.NaverOAuthClient;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
+import com.artistry.artistry.auth.oauth.endPoint.GoogleOAuthEndPoint;
+import com.artistry.artistry.auth.oauth.endPoint.NaverOAuthEndPoint;
+import com.artistry.artistry.auth.oauth.endPoint.OAuthEndPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

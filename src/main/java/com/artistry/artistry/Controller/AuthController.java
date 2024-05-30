@@ -4,7 +4,6 @@ import com.artistry.artistry.Dto.Response.LoginUrlResponse;
 import com.artistry.artistry.auth.oauth.OAuthService;
 import com.artistry.artistry.auth.oauth.SocialType;
 import com.artistry.artistry.auth.properties.AccessTokenResponse;
-import com.artistry.artistry.auth.properties.TokenResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,7 @@ public class AuthController {
     public void redirect(final HttpServletResponse response,
                                @PathVariable("provider") String provider,
                                @RequestParam final String code) throws IOException {
-        final AccessTokenResponse tokenResponse = oAuthService.createToken(getSocialType(provider),code);
+        final AccessTokenResponse tokenResponse = oAuthService.createMemberAccessToken(getSocialType(provider),code);
         final String url = "/login" + "?accessToken=" + tokenResponse.getAccessToken();
 
         response.sendRedirect(url);

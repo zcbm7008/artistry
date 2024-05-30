@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NaverUserResponse {
     private String nickname;
-    private String profile_image;
     private String email;
+    private String profile_image;
 
 }
