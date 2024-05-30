@@ -1,14 +1,11 @@
 package com.artistry.artistry.auth.oauth.Client;
 
 import com.artistry.artistry.auth.oauth.OAuthMember;
-import com.artistry.artistry.auth.properties.TokenResponse;
+import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Base64;

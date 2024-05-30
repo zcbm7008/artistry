@@ -1,4 +1,4 @@
-package com.artistry.artistry.auth.properties;
+package com.artistry.artistry.Dto.Response;
 
 import lombok.*;
 

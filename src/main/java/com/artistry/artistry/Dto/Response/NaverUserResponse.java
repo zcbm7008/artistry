@@ -1,4 +1,4 @@
-package com.artistry.artistry.auth.properties;
+package com.artistry.artistry.Dto.Response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.artistry.artistry.auth.oauth.Client;
 
-import com.artistry.artistry.auth.properties.TokenResponse;
+import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;

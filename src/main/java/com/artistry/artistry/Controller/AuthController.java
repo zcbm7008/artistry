@@ -3,7 +3,7 @@ package com.artistry.artistry.Controller;
 import com.artistry.artistry.Dto.Response.LoginUrlResponse;
 import com.artistry.artistry.auth.oauth.OAuthService;
 import com.artistry.artistry.auth.oauth.SocialType;
-import com.artistry.artistry.auth.properties.AccessTokenResponse;
+import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
