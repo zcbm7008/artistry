@@ -1,7 +1,7 @@
 package com.artistry.artistry.auth;
 
 import com.artistry.artistry.auth.oauth.Client.GoogleOAuthClient;
-import com.artistry.artistry.auth.oauth.OAuthMember;
+import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,12 +52,12 @@ public class GoogleOAuthClientTest {
                         .id_token(idToken)
                         .build();
         // Call the method to test
-        OAuthMember oAuthMember = googleOAuthClient.createOAuthMember(tokenResponse);
+        OAuthMemberResponse oAuthMemberResponse = googleOAuthClient.createOAuthMember(tokenResponse);
 
         // Verify the results
-        assertEquals("test@example.com", oAuthMember.getEmail());
-        assertEquals("testName", oAuthMember.getNickName());
-        assertEquals("testPictureUrl", oAuthMember.getProfileImageUrl());
+        assertEquals("test@example.com", oAuthMemberResponse.getEmail());
+        assertEquals("testName", oAuthMemberResponse.getNickName());
+        assertEquals("testPictureUrl", oAuthMemberResponse.getProfileImageUrl());
     }
 
     private String generateIdToken(String email, String name, String picture) throws JsonProcessingException {

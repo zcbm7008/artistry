@@ -1,10 +1,11 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
-import com.artistry.artistry.auth.oauth.OAuthMember;
+import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.auth.oauth.OAuthProviderFactory;
 import com.artistry.artistry.auth.oauth.SocialType;
 import com.artistry.artistry.auth.oauth.endPoint.OAuthEndPoint;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
     private final OAuthProviderFactory oAuthProviderFactory;
 
@@ -38,15 +39,15 @@ public class OAuthService {
     public AccessTokenResponse createMemberAccessToken(SocialType socialType, final String code) throws JsonProcessingException {
         OAuthClient oAuthClient = oAuthProviderFactory.createOAuthClient(socialType);
         TokenResponse tokenResponse = createTokenResponse(oAuthClient,code);
-        OAuthMember oAuthMember = oAuthClient.createOAuthMember(tokenResponse);
+        OAuthMemberResponse oAuthMemberResponse = oAuthClient.createOAuthMember(tokenResponse);
 
-        createMemberIfNotExists(oAuthMember);
+        createMemberIfNotExists(oAuthMemberResponse);
 
-        return generateAccessToken(oAuthMember);
+        return generateAccessToken(oAuthMemberResponse);
     }
 
-    private AccessTokenResponse generateAccessToken(OAuthMember oAuthMember) {
-        String token = jwtTokenProvider.generateEmailToken(oAuthMember.getEmail());
+    private AccessTokenResponse generateAccessToken(OAuthMemberResponse oAuthMemberResponse) {
+        String token = jwtTokenProvider.generateEmailToken(oAuthMemberResponse.getEmail());
         return new AccessTokenResponse(token);
     }
 
@@ -54,12 +55,12 @@ public class OAuthService {
         return oAuthClient.getAccessToken(code);
     }
 
-    private void createMemberIfNotExists(final OAuthMember oAuthMember){
-        if(memberRepository.findByEmail(oAuthMember.getEmail()) != null){
+    private void createMemberIfNotExists(final OAuthMemberResponse oAuthMemberResponse){
+        if(memberService.findByEmail(oAuthMemberResponse.getEmail()) != null){
             return;
         }
-        final Member member = new Member(oAuthMember.getNickName(), oAuthMember.getEmail());
-        memberRepository.save(member);
+        MemberCreateRequest memberCreateRequest = new MemberCreateRequest(oAuthMemberResponse.getNickName(), oAuthMemberResponse.getEmail(),oAuthMemberResponse.getProfileImageUrl());
+        memberService.createMember(memberCreateRequest);
     }
 
 }

@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import com.artistry.artistry.Exceptions.ArtistryOAuthException;
 import com.artistry.artistry.auth.oauth.Client.NaverOAuthClient;
-import com.artistry.artistry.auth.oauth.OAuthMember;
+import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.Dto.Response.NaverUserResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -81,11 +81,11 @@ public class NaverOAuthClientTest {
         when(objectMapper.readTree(responseJson)).thenReturn(responseNode);
         when(objectMapper.treeToValue(responseNode, NaverUserResponse.class)).thenReturn(naverUserResponse);
 
-        OAuthMember oAuthMember = naverOAuthClient.createOAuthMember(tokenResponse);
+        OAuthMemberResponse oAuthMemberResponse = naverOAuthClient.createOAuthMember(tokenResponse);
 
-        assertEquals("test@example.com", oAuthMember.getEmail());
-        assertEquals("testNickname", oAuthMember.getNickName());
-        assertEquals("testProfileImage", oAuthMember.getProfileImageUrl());
+        assertEquals("test@example.com", oAuthMemberResponse.getEmail());
+        assertEquals("testNickname", oAuthMemberResponse.getNickName());
+        assertEquals("testProfileImage", oAuthMemberResponse.getProfileImageUrl());
     }
 
     @DisplayName("response의 HttpStatus가 적절하지 않을 경우 예외를 호출한다.")

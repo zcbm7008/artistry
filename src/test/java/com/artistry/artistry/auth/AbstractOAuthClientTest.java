@@ -1,7 +1,7 @@
 package com.artistry.artistry.auth;
 
 import com.artistry.artistry.auth.oauth.Client.AbstractOAuthClient;
-import com.artistry.artistry.auth.oauth.OAuthMember;
+import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,9 +92,9 @@ public class AbstractOAuthClientTest {
             super(redirectUri, clientId, clientSecret, tokenUri, restTemplate, objectMapper);
         }
         @Override
-        public OAuthMember createOAuthMember(TokenResponse tokenResponse) {
+        public OAuthMemberResponse createOAuthMember(TokenResponse tokenResponse) {
             // Implement this method as per your requirements
-            return new OAuthMember("a@a","name","url");
+            return new OAuthMemberResponse("a@a","name","url");
         }
     }
 }
