@@ -1,6 +1,11 @@
 package com.artistry.artistry.Service;
 
+import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Dto.Request.MemberCreateRequest;
+import com.artistry.artistry.Dto.Request.RoleCreateRequest;
+import com.artistry.artistry.Dto.Response.MemberResponse;
+import com.artistry.artistry.Dto.Response.RoleResponse;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
 import com.artistry.artistry.Repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -19,8 +24,14 @@ public class MemberService {
                 .orElseThrow(MemberNotFoundException::new);
     }
 
-    public Member findByEmail(String email){
-        return memberRepository.findByEmail(email);
+    public MemberResponse createMember(final MemberCreateRequest request){
+        Member member = memberRepository.save(request.toEntity());
+
+        return MemberResponse.from(member);
+    }
+
+    public MemberResponse findByEmail(String email){
+        return MemberResponse.from(memberRepository.findByEmail(email));
     }
 
 }

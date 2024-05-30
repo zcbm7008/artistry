@@ -1,10 +1,8 @@
-package com.artistry.artistry.auth.properties;
+package com.artistry.artistry.Dto.Response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

@@ -1,4 +1,4 @@
-package com.artistry.artistry.auth.properties;
+package com.artistry.artistry.Dto.Response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NaverUserResponse {
     private String nickname;
-    private String profile_image;
     private String email;
+    private String profile_image;
 
 }

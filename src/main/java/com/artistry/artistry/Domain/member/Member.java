@@ -43,14 +43,18 @@ public class Member {
         this(null,nickName,null,null,null,null);
     }
     public Member (String nickName,String email) {
-        this(null,nickName,null,null,email,null);
+        this(null,nickName,email,null,null,null);
+    }
+
+    public Member(String nickName, String email, String iconUrl) {
+        this(null,nickName,email,iconUrl,null,null);
     }
 
     public String getNickname() {
         return nickname.getValue();
     }
 
-    public Member(final Long id, @NonNull final String nickName, final List<Team> teams, List<Application> applications, @NonNull String email,String iconUrl) {
+    public Member(final Long id, @NonNull final String nickName, @NonNull String email,String iconUrl, final List<Team> teams, List<Application> applications) {
         validateEmail(email);
         this.id = id;
         this.nickname = new Nickname(nickName);

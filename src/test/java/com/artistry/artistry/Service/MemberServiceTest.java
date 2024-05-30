@@ -1,5 +1,6 @@
 package com.artistry.artistry.Service;
 
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

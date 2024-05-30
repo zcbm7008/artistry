@@ -1,4 +1,4 @@
-package com.artistry.artistry.auth.oauth;
+package com.artistry.artistry.auth.oauth.endPoint;
 
 @FunctionalInterface
 public interface OAuthEndPoint {
