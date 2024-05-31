@@ -29,9 +29,9 @@ spring:
       credentials:
         access-key: ${AWS_ACCESS_KEY}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
-      region:
-        static: ap-northeast-2
+
       s3:
+        region: ap-northeast-2
         bucket: ${AWS_BUCKET_NAME}
 
 logging:
@@ -40,7 +40,8 @@ logging:
       hibernate:
         SQL: DEBUG
 
-springdoc:
+
+
   swagger-ui:
     url: /docs/openapi-3.0.json
     path: /docs/swagger
@@ -71,11 +72,6 @@ oauth:
     client_id : ${NAVER_CLIENT_ID}
     state : testState
 
-AWS:
-  ACCESS_KEY: ${AWS_ACCESS_KEY}
-  SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-  BUCKET_NAME: ${AWS_BUCKET_NAME}
-
 
 
 security:
@@ -84,3 +80,6 @@ security:
       secret-key: mysecretkeyasdgasdgsadgsdagsdagagsagsagsag
       expire-length: 3600
 
+io:
+  awspring:
+    cloud: debug

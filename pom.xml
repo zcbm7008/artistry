@@ -167,11 +167,11 @@
 			<scope>runtime</scope>
 		</dependency>
 		<!-- aws s3 dependency -->
-		<dependency>
-			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>s3</artifactId>
-			<version>2.25.62</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>software.amazon.awssdk</groupId>-->
+<!--			<artifactId>s3</artifactId>-->
+<!--			<version>2.25.62</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>io.awspring.cloud</groupId>
 			<artifactId>spring-cloud-aws-starter-s3</artifactId>

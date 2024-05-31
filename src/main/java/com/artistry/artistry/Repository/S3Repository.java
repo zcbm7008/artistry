@@ -2,6 +2,7 @@ package com.artistry.artistry.Repository;
 
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -11,14 +12,13 @@ import java.util.List;
 @Repository
 public class S3Repository {
 
-    private final S3Client s3Client;
+    @Autowired
     private final S3Template s3Template;
 
-    @Value("${aws.bucket.name}")
-    private String bucketName;
 
-    public S3Repository(S3Client s3Client, S3Template s3Template) {
-        this.s3Client = s3Client;
+    private static final String bucketName = "artistry-bucket";
+
+    public S3Repository(S3Template s3Template) {
         this.s3Template = s3Template;
     }
 

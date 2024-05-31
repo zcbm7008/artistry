@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url : jdbc:mysql://${SPRING_DATASOURCE_URL}/artistrydb
+    username : ${MYSQL_USER}
+    password : ${MYSQL_PASSWORD}
+    driver-class-name: org.mysql.jdbc.Driver
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: ${AWS_BUCKET_NAME}
+
+  test:
+    database:
+      replace: NONE
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+cloud:
+  aws:
+
+    region:
+      static: ap-northeast-2
+
+AWS:
+  ACCESS_KEY_ID: ${AWS_ACCESS_KEY}
+  SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  BUCKET_NAME: ${AWS_BUCKET_NAME}
+
+AWS_ACCESS_KEY_ID : ${AWS_ACCESS_KEY}
+AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
