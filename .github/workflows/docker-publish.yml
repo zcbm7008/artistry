@@ -24,6 +24,10 @@ env:
   NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
   NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
   NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
+  AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.SECRET_ACCESS_KEY}}
+  AWS_BUCKET_NAME: ${{secrets.AWS_BUCKET_NAME}}
+  
 
 jobs:
   build:
