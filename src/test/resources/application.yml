@@ -24,6 +24,16 @@ spring:
           format_sql: true
           use_sql_comment: false
 
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: ${AWS_BUCKET_NAME}
+
 logging:
   level:
     org:
@@ -60,6 +70,13 @@ oauth:
     client_secret: ${NAVER_CLIENT_SECRET}
     client_id : ${NAVER_CLIENT_ID}
     state : testState
+
+AWS:
+  ACCESS_KEY: ${AWS_ACCESS_KEY}
+  SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  BUCKET_NAME: ${AWS_BUCKET_NAME}
+
+
 
 security:
   jwt:
