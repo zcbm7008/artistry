@@ -32,12 +32,12 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Set up AWS CLI
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-2
+    # - name: Set up AWS CLI
+    #   uses: aws-actions/configure-aws-credentials@v2
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-northeast-2
 
     - name: Build with Maven
       run: mvn package -f pom.xml -Pdev
@@ -51,7 +51,6 @@ jobs:
         NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
         AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
         AWS_SECRET_ACCESS_KEY: ${{secrets.SECRET_ACCESS_KEY}}
-        AWS_BUCKET_NAME: ${{secrets.AWS_BUCKET_NAME}}
 
     - name: Run the Maven verify phase
       run: mvn --batch-mode --update-snapshots verify
