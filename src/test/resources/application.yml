@@ -12,6 +12,7 @@ spring:
       database:
         replace: NONE
 
+
     jpa:
       database-platform: org.hibernate.dialect.H2Dialect
       hibernate:
@@ -24,13 +25,24 @@ spring:
           format_sql: true
           use_sql_comment: false
 
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+
+      s3:
+        region: ap-northeast-2
+        bucket: ${AWS_BUCKET_NAME}
+
 logging:
   level:
     org:
       hibernate:
         SQL: DEBUG
 
-springdoc:
+
+
   swagger-ui:
     url: /docs/openapi-3.0.json
     path: /docs/swagger
@@ -66,4 +78,3 @@ security:
     token:
       secret-key: mysecretkeyasdgasdgsadgsdagsdagagsagsagsag
       expire-length: 3600
-

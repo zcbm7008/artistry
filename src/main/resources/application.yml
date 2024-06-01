@@ -2,12 +2,26 @@ spring:
   application:
     name: artistry
 
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+      region: ap-northeast-2
+      s3:
+        bucket: ${AWS_BUCKET_NAME}
+
+
+  servlet:
+    multipart:
+      max-file-size: 20MB # 최대 파일 사이즈
+      max-request-size: 20MB # 최대 요청 사이즈
+
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL;
     driver-class-name: org.h2.Driver
     username: sa
     password:
-
     test:
       database:
         replace: NONE
@@ -24,6 +38,7 @@ spring:
           format_sql: true
           use_sql_comment: false
 
+
 logging:
   level:
     org:
@@ -37,8 +52,6 @@ springdoc:
 
 server:
   port=0:
-
-
   servlet:
     session:
       cookie:
@@ -51,6 +64,7 @@ oauth:
     client_id: ${GOOGLE_CLIENT_ID}
     client_secret: ${GOOGLE_CLIENT_SECRET}
     token_uri: https://oauth2.googleapis.com/token
+
   naver:
     redirect_uri: ${NAVER_REDIRECT_URI}
     authorization_uri: https://nid.naver.com/oauth2.0/authorize
@@ -66,5 +80,3 @@ security:
     token:
       secret-key: mysecretkeyasdgasdgsadgsdagsdagagsagsagsag
       expire-length: 3600
-
-
