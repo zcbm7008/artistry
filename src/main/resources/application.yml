@@ -1,17 +1,16 @@
 spring:
+  application:
+    name: artistry
 
   cloud:
     aws:
       credentials:
         access-key: ${AWS_ACCESS_KEY}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
-      region:
-        static: ap-northeast-2
+      region: ap-northeast-2
       s3:
         bucket: ${AWS_BUCKET_NAME}
 
-  application:
-    name: artistry
 
   servlet:
     multipart:
@@ -23,7 +22,6 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-
     test:
       database:
         replace: NONE
@@ -54,8 +52,6 @@ springdoc:
 
 server:
   port=0:
-
-
   servlet:
     session:
       cookie:

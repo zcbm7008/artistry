@@ -12,6 +12,7 @@ spring:
       database:
         replace: NONE
 
+
     jpa:
       database-platform: org.hibernate.dialect.H2Dialect
       hibernate:
@@ -72,14 +73,8 @@ oauth:
     client_id : ${NAVER_CLIENT_ID}
     state : testState
 
-
-
 security:
   jwt:
     token:
       secret-key: mysecretkeyasdgasdgsadgsdagsdagagsagsagsag
       expire-length: 3600
-
-io:
-  awspring:
-    cloud: debug
