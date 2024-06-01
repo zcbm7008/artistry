@@ -122,4 +122,11 @@ jobs:
              docker rm artistry
              sudo docker pull ${{ secrets.DOCKER_HUB_IMAGENAME }}
              docker run -d --name artistry -p 8080:8080 ${{ secrets.DOCKER_HUB_IMAGENAME }}
-             docker rmi -f $(docker images -f "dangling=true" -q)
+              dangling_images=$(docker images -f "dangling=true" -q)
+              
+              # 삭제할 이미지가 있는 경우에만 삭제 명령 실행
+              if [ -n "$dangling_images" ]; then
+                  docker rmi -f $dangling_images
+              else
+                  echo "No dangling images to remove."
+              fi
