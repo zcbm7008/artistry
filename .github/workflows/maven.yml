@@ -17,23 +17,22 @@ on:
     branches: [ "master", "feat/*" ]
   pull_request:
     branches: [ "master", "feat/*"  ]
+  
+env:
+  IMAGE_NAME: ${{ secrets.DOCKER_HUB_IMAGENAME }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+  NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+  NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+  NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
+  AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.SECRET_ACCESS_KEY}}
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
-    env:
-      IMAGE_NAME: ${{ secrets.DOCKER_HUB_IMAGENAME }}
-      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-      GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
-      NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
-      NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
-      NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
-      AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
-      AWS_SECRET_ACCESS_KEY: ${{secrets.SECRET_ACCESS_KEY}}
-      AWS_BUCKET_NAME: ${{secrets.AWS_BUCKET_NAME}}
 
     steps:
     - uses: actions/checkout@v4
@@ -43,20 +42,17 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-        
-        
+
+    - name: Set environment variables
+      run: |
+        echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn package -f pom.xml -Pdev
 
     - name: Run the Maven verify phase
       run: mvn --batch-mode --update-snapshots verify
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4.0.1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: build/reports/jacoco/test/jacocoTestReport.xml
-        fail_ci_if_error: true
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.16.1
