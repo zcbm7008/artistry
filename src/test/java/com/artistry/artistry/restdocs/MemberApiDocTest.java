@@ -1,8 +1,11 @@
 package com.artistry.artistry.restdocs;
 
+import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.RoleResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,6 +67,8 @@ public class MemberApiDocTest extends ApiTest{
                         .extract().body().as(MemberResponse.class);
     }
 
+
+
     @DisplayName("멤버 정보를 수정한다.")
     @Test
     void updateMember(){
@@ -96,6 +101,25 @@ public class MemberApiDocTest extends ApiTest{
         assertThat(response.getNickName()).isEqualTo(expectedNickname);
         assertThat(response.getIconUrl()).isEqualTo(expectedUrl);
 
+    }
+
+    @DisplayName("멤버를 삭제한다.")
+    @Test
+    void deleteMember(){
+        long idToDelete = createdMembers.get(0).getId();
+
+        given().filter(RestAssuredRestDocumentationWrapper.document("delete-member",
+                        "멤버 삭제 API"))
+                .when().delete("/api/members/{id}",idToDelete)
+                .then().statusCode(HttpStatus.NO_CONTENT.value());
+
+
+
+        int statusCode =  given()
+                .when().get("/api/tags/{id}", idToDelete)
+                .then().extract().statusCode();
+
+        AssertionsForClassTypes.assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
 }
