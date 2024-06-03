@@ -49,7 +49,7 @@ public class MemberServiceTest {
     @Test
     void getParticipatedTeams() {
         Member hostMember = memberRepository.save(new Member("host","host@a.com","1.url"));
-        Member savedMember = memberRepository.save(new Member("nick1","a@a.com","2.url"));
+        Member savedMember = memberRepository.save(new Member("nick1","savedmember@member.com","2.url"));
         Role role1 = roleRepository.save(new Role("작곡가"));
         Portfolio portfolio1 = portfolioRepository.save(new Portfolio("작곡가포폴1",role1));
 
