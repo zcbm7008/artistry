@@ -20,15 +20,22 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody final MemberCreateRequest request){
-        MemberResponse response = memberService.createMember(request);
+        MemberResponse response = memberService.create(request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping(value = "/{memberId}")
-    public ResponseEntity<MemberResponse> updateTag(@PathVariable final Long memberId,
+    public ResponseEntity<MemberResponse> updateMember(@PathVariable final Long memberId,
                                                  @Valid @RequestBody final MemberUpdateRequest request){
-        MemberResponse response = memberService.updateMember(memberId,request);
+        MemberResponse response = memberService.update(memberId,request);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping(value = "/{memberId}")
+    public ResponseEntity<Void> delete(@PathVariable final long memberId){
+        memberService.delete(memberService.findEntityById(memberId));
+
+        return ResponseEntity.noContent().build();
     }
 
 
