@@ -75,4 +75,9 @@ public class MemberService {
         return MemberResponse.from(memberRepository.findByEmail(email));
     }
 
+    public boolean isEmailExists(String email){
+        return memberRepository.existsByEmail(email);
+    }
+
+
 }
