@@ -1,11 +1,9 @@
 package com.artistry.artistry.Controller;
 
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
-import com.artistry.artistry.Dto.Request.TagCreateRequest;
+import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
 import com.artistry.artistry.Dto.Response.MemberResponse;
-import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Service.MemberService;
-import com.artistry.artistry.Service.PortfolioService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +23,14 @@ public class MemberController {
         MemberResponse response = memberService.createMember(request);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping(value = "/{memberId}")
+    public ResponseEntity<MemberResponse> updateTag(@PathVariable final Long memberId,
+                                                 @Valid @RequestBody final MemberUpdateRequest request){
+        MemberResponse response = memberService.updateMember(memberId,request);
+        return ResponseEntity.ok(response);
+    }
+
 
 
 }

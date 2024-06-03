@@ -64,6 +64,11 @@ public class Member {
         this.iconUrl = iconUrl;
     }
 
+    public void update(String nickName, String iconUrl){
+        this.nickname = new Nickname(nickName);
+        this.iconUrl = iconUrl;
+    }
+
     private void validateEmail(final String email){
         Matcher matcher = EMAIL_PATTERN.matcher(email);
         if(!matcher.matches()){

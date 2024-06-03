@@ -41,7 +41,7 @@ public class MemberServiceTest {
     @DisplayName("Member Id가 없을경우 예외를 던짐.")
     @Test
     void memberNotFound(){
-        assertThatThrownBy(() -> memberService.findById(Long.MAX_VALUE))
+        assertThatThrownBy(() -> memberService.findEntityById(Long.MAX_VALUE))
                 .isInstanceOf(MemberNotFoundException.class);
     }
 

@@ -6,8 +6,10 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Request.MemberInfoRequest;
+import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.MemberTeamsResponse;
+import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
 import com.artistry.artistry.Repository.MemberRepository;
@@ -29,9 +31,13 @@ public class MemberService {
 
 
 
-    public Member findById(Long id){
+    public Member findEntityById(Long id){
         return memberRepository.findById(id)
                 .orElseThrow(MemberNotFoundException::new);
+    }
+
+    public MemberResponse findById(Long id){
+        return MemberResponse.from(findEntityById(id));
     }
 
     @Transactional(readOnly = true)
@@ -51,6 +57,14 @@ public class MemberService {
         Member member = memberRepository.save(request.toEntity());
 
         return MemberResponse.from(member);
+    }
+
+    @Transactional
+    public MemberResponse updateMember(final Long memberId, final MemberUpdateRequest request){
+        Member member = findEntityById(memberId);
+        member.update(request.getNickName(),request.getIconUrl());
+
+        return MemberResponse.from(findEntityById(memberId));
     }
 
     public MemberResponse findByEmail(String email){
