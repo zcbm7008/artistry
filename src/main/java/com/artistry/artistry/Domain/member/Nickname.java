@@ -16,7 +16,7 @@ public class Nickname {
     private static final int MIN_NAME_LENGTH = 1;
     private static final int MAX_NAME_LENGTH = 20;
 
-    @Column(name = "nickname")
+    @Column(name = "nickname", nullable = false, length = MAX_NAME_LENGTH)
     @NonNull
     private String value;
 
@@ -24,6 +24,7 @@ public class Nickname {
         validateValue(nickname);
         this.value = nickname;
     }
+
     private static void validateValue(final String name){
         if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH){
             throw  new ArtistryLengthException(
