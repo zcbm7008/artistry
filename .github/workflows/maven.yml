@@ -19,6 +19,20 @@ on:
     branches: [ "master", "feat/*" ]
   pull_request:
     branches: [ "master", "feat/*"  ]
+env:
+  IMAGE_NAME: ${{ secrets.DOCKER_HUB_IMAGENAME }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+  NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+  NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+  NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
+  # AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
+  # AWS_SECRET_ACCESS_KEY: ${{secrets.SECRET_ACCESS_KEY}}
+  AWS_BUCKET_NAME: ${{secrets.AWS_BUCKET_NAME}}
+
+
+    
 
 jobs:
   build:
@@ -48,20 +62,9 @@ jobs:
 
     - name: Build with Maven
       run: mvn package -f pom.xml -Pdev
-      env:
-        IMAGE_NAME: ${{ secrets.DOCKER_HUB_IMAGENAME }}
-        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-        GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
-        NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
-        NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
-        NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
-        # AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
-        # AWS_SECRET_ACCESS_KEY: ${{secrets.SECRET_ACCESS_KEY}}
-        AWS_BUCKET_NAME: ${{secrets.AWS_BUCKET_NAME}}
 
     - name: Run the Maven verify phase
-      run: mvn --batch-mode --update-snapshots verify
+      run: mvn --batch-mode  --update-snapshots verify
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.16.1
