@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -52,6 +53,9 @@ public class TeamResponse {
     }
 
     private static List<String> tagNames(List<Tag> tags){
+        if(tags == null){
+            return Collections.singletonList(" ");
+        }
         return objectsToString(tags,Tag::getName);
     }
 
