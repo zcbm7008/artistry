@@ -1,8 +1,6 @@
 package com.artistry.artistry.Service;
 
-import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
-import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
 import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
@@ -56,7 +54,7 @@ public class OAuthService {
             return;
         }
         MemberCreateRequest memberCreateRequest = new MemberCreateRequest(oAuthMemberResponse.getNickName(), oAuthMemberResponse.getEmail(),oAuthMemberResponse.getProfileImageUrl());
-        memberService.createMember(memberCreateRequest);
+        memberService.create(memberCreateRequest);
     }
 
 }

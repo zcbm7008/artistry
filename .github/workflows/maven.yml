@@ -9,6 +9,8 @@
 name: Java CI with Maven
 
 permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
   checks: write
   pull-requests: write
   
@@ -17,7 +19,7 @@ on:
     branches: [ "master", "feat/*" ]
   pull_request:
     branches: [ "master", "feat/*"  ]
-  
+
 env:
   IMAGE_NAME: ${{ secrets.DOCKER_HUB_IMAGENAME }}
   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -26,8 +28,6 @@ env:
   NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
   NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
   NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
-  AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
-  AWS_SECRET_ACCESS_KEY: ${{secrets.SECRET_ACCESS_KEY}}
 
 jobs:
   build:
@@ -43,16 +43,25 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::549201086101:role/artistryaces
+        aws-region: ap-northeast-2
+
+
     - name: Set environment variables
       run: |
         echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
         echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
 
+
     - name: Build with Maven
       run: mvn package -f pom.xml -Pdev
 
     - name: Run the Maven verify phase
-      run: mvn --batch-mode --update-snapshots verify
+      run: mvn --batch-mode  --update-snapshots verify
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.16.1

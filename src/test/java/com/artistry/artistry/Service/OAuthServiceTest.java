@@ -1,11 +1,9 @@
 package com.artistry.artistry.Service;
 
-import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
-import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
 import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
@@ -96,7 +94,7 @@ public class OAuthServiceTest {
         verify(mockOAuthClient, times(1)).getAccessToken(eq(code));
         verify(mockOAuthClient, times(1)).createOAuthMember(eq(tokenResponse));
         verify(jwtTokenProvider, times(1)).generateEmailToken(eq("email@example.com"));
-        verify(memberService, times(1)).createMember(any(MemberCreateRequest.class));
+        verify(memberService, times(1)).create(any(MemberCreateRequest.class));
     }
 
     @DisplayName("같은 이메일의 유저가 있을 경우 멤버를 생성하지 않음.")
@@ -115,7 +113,7 @@ public class OAuthServiceTest {
         when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
         when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
-        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1"));
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1","a.url","a@a.com"));
 
         // When,Then
 
@@ -123,6 +121,6 @@ public class OAuthServiceTest {
 
         // Then
 
-        verify(memberService, times(0)).createMember(any(MemberCreateRequest.class));
+        verify(memberService, times(0)).create(any(MemberCreateRequest.class));
     }
 }
