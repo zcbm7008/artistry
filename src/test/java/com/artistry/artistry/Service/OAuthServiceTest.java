@@ -115,7 +115,7 @@ public class OAuthServiceTest {
         when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
         when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
-        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1"));
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1","a.url","a@a.com"));
 
         // When,Then
 
