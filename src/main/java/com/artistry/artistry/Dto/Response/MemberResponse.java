@@ -12,9 +12,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberResponse {
     private Long id;
-    private String name;
+    private String nickName;
+    private String iconUrl;
+    private String email;
 
     public static MemberResponse from(Member member){
-        return new MemberResponse(member.getId(), member.getNickname());
+        return new MemberResponse(
+                member.getId(),
+                member.getNickname(),
+                member.getIconUrl(),
+                member.getEmail());
     }
 }

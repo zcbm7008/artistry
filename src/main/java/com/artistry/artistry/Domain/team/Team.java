@@ -52,6 +52,11 @@ public class Team {
         this(null,name,host,tags,roles);
     }
 
+    public Team(final String name,final Member host, List<Role> roles){
+        this(null,name,host,null,roles);
+    }
+
+
     @Builder
     public Team(Long id, @NonNull String name, @NonNull Member host, List<Tag> tags, List<Role> roles){
         this.id = id;
