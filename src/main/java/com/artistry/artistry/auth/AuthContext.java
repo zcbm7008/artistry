@@ -10,6 +10,5 @@ import org.springframework.web.context.annotation.RequestScope;
 @RequestScope
 @Component
 public class AuthContext {
-
     private Long memberId;
 }
