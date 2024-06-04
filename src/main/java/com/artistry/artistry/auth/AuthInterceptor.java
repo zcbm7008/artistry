@@ -1,10 +1,7 @@
 package com.artistry.artistry.auth;
 
 import com.artistry.artistry.Exceptions.ArtistryInvalidValueException;
-import com.artistry.artistry.Exceptions.MemberNotFoundException;
-import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
-import com.artistry.artistry.auth.jwt.JwtTokenExtractor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

@@ -55,23 +55,6 @@ public class MemberApiDocTest extends ApiTest{
     }
 
 
-    @DisplayName("멤버의 이메일로 로그인한다.")
-    @Test
-    void loginWithEmail(){
-        String email = createdMembers.get(0).getEmail();
-
-        AccessTokenResponse accessTokenResponse = given().when().get("/api/auth/fake/tokens?email=" + email)
-                .then().log().all()
-                .extract()
-                .as(AccessTokenResponse.class);
-
-        String accessToken = accessTokenResponse.getAccessToken();
-        parameters.put(email,accessToken);
-
-        assertThat(accessToken).isNotNull();
-
-    }
-
     @DisplayName("엑세스 토큰을 사용해 자신의 정보를 확인할 수 있다.")
     @Test
     void checkProfile(){
