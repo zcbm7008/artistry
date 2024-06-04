@@ -2,27 +2,41 @@ package com.artistry.artistry.restdocs;
 
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
+import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.RoleResponse;
+import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 public class MemberApiDocTest extends ApiTest{
-    private List<MemberResponse> createdMembers = new ArrayList<>();
+    private final JwtTokenProvider jwtTokenProvider;
+    private final List<MemberResponse> createdMembers = new ArrayList<>();
+    private final Map<String, Object> parameters = new HashMap<>();
 
+
+    @Autowired
+    public MemberApiDocTest(JwtTokenProvider jwtTokenProvider){
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
     @BeforeEach
     void setUp(){
        createdMembers.add(memberSave("member1"));
@@ -38,6 +52,51 @@ public class MemberApiDocTest extends ApiTest{
                 .when().post("/api/members")
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(MemberResponse.class);
+    }
+
+
+    @DisplayName("멤버의 이메일로 로그인한다.")
+    @Test
+    void loginWithEmail(){
+        String email = createdMembers.get(0).getEmail();
+
+        AccessTokenResponse accessTokenResponse = given().when().get("/api/auth/fake/tokens?email=" + email)
+                .then().log().all()
+                .extract()
+                .as(AccessTokenResponse.class);
+
+        String accessToken = accessTokenResponse.getAccessToken();
+        parameters.put(email,accessToken);
+
+        assertThat(accessToken).isNotNull();
+
+    }
+
+    @DisplayName("엑세스 토큰을 사용해 자신의 정보를 확인할 수 있다.")
+    @Test
+    void checkProfile(){
+        String email = createdMembers.get(0).getEmail();
+
+        AccessTokenResponse accessTokenResponse = given().when().get("/api/auth/fake/tokens?email=" + email)
+                .then().log().all()
+                .extract()
+                .as(AccessTokenResponse.class);
+
+        String accessToken = accessTokenResponse.getAccessToken();
+        parameters.put(email,accessToken);
+
+        MemberResponse member = createdMembers.get(0);
+        String accesstoken = (String) parameters.get(email);
+
+        MemberResponse response = given().log().all().header(HttpHeaders.AUTHORIZATION, accesstoken)
+                .when()
+                .get("/api/members/me")
+                .then().log().all().extract()
+                .as(MemberResponse.class);
+
+        assertThat(response.getEmail()).isEqualTo(member.getEmail());
+        assertThat(response.getNickName()).isEqualTo(member.getNickName());
+        assertThat(response.getIconUrl()).isEqualTo(member.getIconUrl());
     }
 
     @DisplayName("멤버를 생성한다.")
@@ -121,5 +180,7 @@ public class MemberApiDocTest extends ApiTest{
 
         AssertionsForClassTypes.assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+
+
 
 }

@@ -2,6 +2,7 @@ package com.artistry.artistry.auth;
 
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Repository.MemberRepository;
+import com.artistry.artistry.Service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final AuthContext authContext;
 
     @Override
@@ -25,7 +26,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        return memberRepository.findById(authContext.getMemberId());
+        return memberService.findEntityById(authContext.getMemberId());
     }
 
 }
