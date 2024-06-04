@@ -13,14 +13,17 @@ import lombok.NoArgsConstructor;
 public class MemberResponse {
     private Long id;
     private String nickName;
-    private String iconUrl;
     private String email;
+    private String iconUrl;
+
 
     public static MemberResponse from(Member member){
         return new MemberResponse(
                 member.getId(),
                 member.getNickname(),
-                member.getIconUrl(),
-                member.getEmail());
+                member.getEmail(),
+                member.getIconUrl()
+        );
+
     }
 }

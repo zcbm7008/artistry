@@ -68,7 +68,7 @@ public class OAuthServiceTest {
         assertThat(actualUrl).isNotNull();
     }
 
-    @DisplayName("소셜 타입과 코드를 받아 멤버 이메일 Jwt 토큰을 생성한다.")
+    @DisplayName("소셜 타입과 코드를 받아 멤버 ID Jwt 토큰을 생성한다.")
     @Test
     public void testCreateMemberAccessToken() throws JsonProcessingException {
         // Given
@@ -84,7 +84,7 @@ public class OAuthServiceTest {
         when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
         when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
-        when(memberService.findByEmail(any(String.class))).thenReturn(null);
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(1L,"nickname","email@example.com","image.url"));
 
         // When
         AccessTokenResponse actualAccessTokenResponse = mockOAuthService.createMemberAccessToken(socialType, code);
@@ -93,7 +93,7 @@ public class OAuthServiceTest {
         verify(oAuthProviderFactory, times(1)).createOAuthClient(eq(socialType));
         verify(mockOAuthClient, times(1)).getAccessToken(eq(code));
         verify(mockOAuthClient, times(1)).createOAuthMember(eq(tokenResponse));
-        verify(jwtTokenProvider, times(1)).generateEmailToken(eq("email@example.com"));
+        verify(jwtTokenProvider, times(1)).createIdToken(eq(1L));
         verify(memberService, times(1)).create(any(MemberCreateRequest.class));
     }
 
@@ -113,8 +113,8 @@ public class OAuthServiceTest {
         when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
         when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
-        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1","a.url","email@example.com"));
-
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1","a.url","a@a.com"));
+        when(memberService.isEmailExists(any(String.class))).thenReturn(true);
         // When,Then
 
         AccessTokenResponse actualAccessTokenResponse = mockOAuthService.createMemberAccessToken(socialType, code);
