@@ -2,9 +2,11 @@ package com.artistry.artistry.Dto.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class AccessTokenResponse {
-    private final String accessToken;
+    private String accessToken;
 }

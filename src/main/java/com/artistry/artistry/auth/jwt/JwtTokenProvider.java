@@ -34,6 +34,18 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String createIdToken(Long id){
+        final Date now = new Date();
+        final Date expiryDate = new Date(now.getTime() + validityInMilliSeconds);
+
+        return Jwts.builder()
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .subject(String.valueOf(id))
+                .signWith(secretKey)
+                .compact();
+    }
+
     public String extractValueFromToken(String key, String token) {
         final Date now = new Date();
         final Date expiryDate = new Date(now.getTime() + validityInMilliSeconds);
@@ -54,6 +66,15 @@ public class JwtTokenProvider {
         return extractValueFromToken(EMAIL_KEY,token);
 
     }
+
+   public Long parseId(String token){
+       Jws<Claims> claims = Jwts.parser()
+               .verifyWith(secretKey)
+               .build()
+               .parseSignedClaims(token);
+
+       return Long.parseLong(claims.getPayload().getSubject());
+   }
 
     private void validateAccessToken(final String token){
         try{
