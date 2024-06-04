@@ -22,7 +22,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/auth/**")
-                .excludePathPatterns("/api/members/**")
+                .excludePathPatterns("/api/members/{id:[0-9]\\\\d*}\"")
+                .excludePathPatterns("/api/members")
                 .excludePathPatterns("/api/teams");
     }
 
