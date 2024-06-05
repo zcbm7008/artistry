@@ -37,6 +37,11 @@ public class TeamResponse {
                 .build();
     }
 
+    public List<String> getRoleNames(){
+        return teamRoles.stream().map(TeamRoleResponse::getRole)
+                .map(RoleResponse::getName).collect(Collectors.toList());
+    }
+
     private static <T> List<String> objectsToString(List<T> objects, Function<T,String> mapper){
         return objects.stream()
                 .map(mapper)
