@@ -43,11 +43,21 @@ public class TeamService {
                 .collect(Collectors.toList());
     }
 
+    public List<TeamResponse> findTeamsByNameLike(final String name){
+        return findByNameLike(name).stream()
+                .map(TeamResponse::from)
+                .collect(Collectors.toList());
+    }
+
     private List<Team> findByTagIds(final List<Long> tagIds){
         Set<Long> distinctTagIds = new HashSet<>(tagIds);
 
         return teamRepository.findByTagIds(distinctTagIds);
 
+    }
+
+    private List<Team> findByNameLike(final String name){
+        return teamRepository.findByNameLike(name);
     }
 
     public TeamResponse create(TeamRequest teamRequest){
