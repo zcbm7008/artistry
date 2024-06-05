@@ -272,11 +272,15 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<configuration>
+					<dataFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</dataFile>
+					<outputDirectory>${project.testresult.directory}/coverage/jacoco
+					</outputDirectory>
 					<excludes>
 						<exclude>**/config/*</exclude>
 						<exclude>**/Dto/*</exclude>
 						<exclude>**/Exceptions/*</exclude>
 					</excludes>
+					<destFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</destFile>
 				</configuration>
 				<executions>
 					<execution>
