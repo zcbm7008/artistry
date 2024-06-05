@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class TeamResponse {
     private Long teamId;
+    private String teamName;
     private String createdAt;
     private HostResponse host;
     private List<String> tags;
@@ -28,11 +29,17 @@ public class TeamResponse {
     public static TeamResponse from(Team team){
         return TeamResponse.builder()
                 .teamId(team.getId())
+                .teamName(team.getName())
                 .createdAt(team.getCreatedAt().toString())
                 .host(HostResponse.from(team.getHost()))
                 .teamRoles(team.getTeamRoles().stream().map(TeamRoleResponse::from).collect(Collectors.toList()))
                 .tags(tagNames(team.getTags()))
                 .build();
+    }
+
+    public List<String> getRoleNames(){
+        return teamRoles.stream().map(TeamRoleResponse::getRole)
+                .map(RoleResponse::getName).collect(Collectors.toList());
     }
 
     private static <T> List<String> objectsToString(List<T> objects, Function<T,String> mapper){

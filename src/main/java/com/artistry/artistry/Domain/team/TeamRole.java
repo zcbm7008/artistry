@@ -32,10 +32,6 @@ public class TeamRole {
     @JoinColumn(name="role_id")
     private Role role;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
-
     @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<Application> applications = new ArrayList<>();
 
