@@ -1,4 +1,4 @@
 ignore:
-  - "**/config*"
-  - "**/Dto*"
-  - "**/Exceptions*"
+  - "**/config/*"
+  - "**/Dto/*"
+  - "**/Exceptions/*"
