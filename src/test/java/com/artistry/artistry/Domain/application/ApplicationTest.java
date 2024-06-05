@@ -1,4 +1,4 @@
-package com.artistry.artistry.Domain;
+package com.artistry.artistry.Domain.application;
 
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.application.Application;
@@ -82,6 +82,5 @@ public class ApplicationTest {
     public void isStatusPending(){
         team.apply(application);
         assertEquals(application.getStatus(),ApplicationStatus.PENDING);
-
     }
 }

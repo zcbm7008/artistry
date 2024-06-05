@@ -1,6 +1,8 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
+import com.artistry.artistry.Dto.Response.MemberResponse;
+import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
 import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OAuthService {
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final OAuthProviderFactory oAuthProviderFactory;
 
@@ -38,19 +41,20 @@ public class OAuthService {
         OAuthClient oAuthClient = oAuthProviderFactory.createOAuthClient(socialType);
         TokenResponse tokenResponse = oAuthClient.getAccessToken(code);
         OAuthMemberResponse oAuthMemberResponse = oAuthClient.createOAuthMember(tokenResponse);
-
         createMemberIfNotExists(oAuthMemberResponse);
 
-        return generateAccessToken(oAuthMemberResponse);
+        MemberResponse member = memberService.findByEmail(oAuthMemberResponse.getEmail());
+
+        return generateIdToken(member.getId());
     }
 
-    private AccessTokenResponse generateAccessToken(OAuthMemberResponse oAuthMemberResponse) {
-        String token = jwtTokenProvider.generateEmailToken(oAuthMemberResponse.getEmail());
+    private AccessTokenResponse generateIdToken(Long id) {
+        String token = jwtTokenProvider.createIdToken(id);
         return new AccessTokenResponse(token);
     }
 
     private void createMemberIfNotExists(final OAuthMemberResponse oAuthMemberResponse){
-        if(memberService.findByEmail(oAuthMemberResponse.getEmail()) != null){
+        if(memberService.isEmailExists(oAuthMemberResponse.getEmail())){
             return;
         }
         MemberCreateRequest memberCreateRequest = new MemberCreateRequest(oAuthMemberResponse.getNickName(), oAuthMemberResponse.getEmail(),oAuthMemberResponse.getProfileImageUrl());

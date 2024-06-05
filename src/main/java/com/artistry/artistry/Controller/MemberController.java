@@ -1,9 +1,11 @@
 package com.artistry.artistry.Controller;
 
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Service.MemberService;
+import com.artistry.artistry.auth.Authorization;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,13 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody final MemberCreateRequest request){
         MemberResponse response = memberService.create(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(path = "/me")
+    public ResponseEntity<MemberResponse> findMyProfile(@Authorization Member member){
+        MemberResponse response = memberService.findById(member.getId());
+
         return ResponseEntity.ok(response);
     }
 

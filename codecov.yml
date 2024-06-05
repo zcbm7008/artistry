@@ -1,4 +1,4 @@
 ignore:
-  - "src/main/java/**/config/*"
-  - "src/main/java/**/Dto/*"
-  - "src/main/java/**/Exceptions/*"
+  - "**/config*"
+  - "**/Dto*"
+  - "**/Exceptions*"
