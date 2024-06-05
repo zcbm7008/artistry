@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -37,22 +38,42 @@ public class TeamService {
                 .orElseThrow(TeamNotFoundException::new));
     }
 
-    public List<TeamResponse> findTeamsByTagIds(final List<Long> tagIds){
-        return findByTagIds(tagIds).stream()
-                .map(TeamResponse::from)
-                .collect(Collectors.toList());
-    }
-
     public List<TeamResponse> findTeamsByNameLike(final String name){
         return findByNameLike(name).stream()
                 .map(TeamResponse::from)
                 .collect(Collectors.toList());
     }
 
+    public List<TeamResponse> findTeamsByTagIds(final List<Long> tagIds) {
+        return findTeamsByIds(tagIds, teamRepository::findByTagIds);
+    }
+
+    public List<TeamResponse> findTeamsByRoleIds(final List<Long> tagIds) {
+        return findTeamsByIds(tagIds, teamRepository::findByRoleIds);
+    }
+
+
+
+    private <T> List<TeamResponse> findTeamsByIds(final List<Long > ids, Function<Set<Long>, List<Team>> findByIdsFunction){
+        Set<Long> distinctIds = new HashSet<>(ids);
+        return findByIdsFunction.apply(distinctIds).stream()
+                .map(TeamResponse::from)
+                .collect(Collectors.toList());
+    }
+
+
+
     private List<Team> findByTagIds(final List<Long> tagIds){
         Set<Long> distinctTagIds = new HashSet<>(tagIds);
 
         return teamRepository.findByTagIds(distinctTagIds);
+
+    }
+
+    private List<Team> findByRoleIds(final List<Long> roleIds){
+        Set<Long> distinctRoleIds = new HashSet<>(roleIds);
+
+        return teamRepository.findByTagIds(distinctRoleIds);
 
     }
 

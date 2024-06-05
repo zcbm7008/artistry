@@ -10,6 +10,7 @@ import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Response.TeamResponse;
+import com.artistry.artistry.Dto.Response.TeamRoleResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import com.artistry.artistry.Repository.*;
@@ -185,6 +186,39 @@ public class TeamServiceTest {
         assertThat(responses).hasSize(2)
                 .extracting(TeamResponse::getTags).contains(tagNames);
     }
+
+    @DisplayName("역할 Id로 팀을 검색한다.")
+    @Test
+    void findTeamByRoleIds() {
+        Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
+
+        Role role1 = roleRepository.save(new Role("작곡가"));
+        Role role2 = roleRepository.save(new Role("드럼"));
+
+        List<Role> roleList = Arrays.asList(role1,role2);
+        List<String> roleNames = roleList.stream().map(Role::getName).toList();
+        List<Long> roleIds = roleList.stream().map(Role::getId).toList();
+
+        Team team1 =
+                Team.builder()
+                        .name("team1")
+                        .roles(List.of(role1,role2))
+                        .host(host).build();
+
+        Team team2 =
+                Team.builder()
+                        .name("team1")
+                        .roles(List.of(role1))
+                        .host(host).build();
+
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+
+        List<TeamResponse> responses = teamService.findTeamsByRoleIds(roleIds);
+        assertThat(responses).hasSize(2)
+                .extracting(TeamResponse::getRoleNames).contains(roleNames);
+    }
+
 
     @DisplayName("요청한 팀 Id가 없을경우 예외를 던짐.")
     @Test

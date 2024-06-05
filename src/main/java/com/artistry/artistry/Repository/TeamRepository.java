@@ -1,6 +1,5 @@
 package com.artistry.artistry.Repository;
 
-import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,5 +21,9 @@ public interface TeamRepository extends JpaRepository<Team,Long> {
             + "WHERE t.name like %:name% ", nativeQuery = true)
     List<Team> findByNameLike(@Param("name") final String name);
 
+    @Query("SELECT t "
+    + "FROM Team t join t.teamRoles tr "
+    + "WHERE tr.role.id IN :roles ")
+    List<Team> findByRoleIds(@Param("roles") Set<Long> roleIds);
 
 }
