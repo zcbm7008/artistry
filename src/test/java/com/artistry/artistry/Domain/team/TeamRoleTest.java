@@ -52,4 +52,15 @@ public class TeamRoleTest {
     assertThat(pendingPortfolios).isNullOrEmpty();
     }
 
+    @DisplayName("TeamRole의 Role을 출력한다.")
+    @Test
+    void getRoleName(){
+        String roleName = "role1";
+        TeamRole teamRole1 = TeamRole.builder()
+                .role(new Role(roleName))
+                .build();
+
+        assertThat(teamRole1.getRole().getName()).isEqualTo(roleName);
+    }
+
 }
