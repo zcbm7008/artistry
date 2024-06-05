@@ -20,7 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -106,6 +108,45 @@ public class TeamServiceTest {
         team.findTeamRoleByRole(role1).addApplication(application1);
         assertThatThrownBy(() -> team.findTeamRoleByRole(invalidRole).getApplications().add(application2)).isInstanceOf(TeamRoleNotFoundException.class);
 
+    }
+
+    @DisplayName("태그 Id로 팀을 검색한다.")
+    @Test
+    void findTeamByTagIds() {
+        Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
+        Tag tag1 = tagRepository.save(new Tag("tag1"));
+        Tag tag2 = tagRepository.save(new Tag("tag2"));
+        Tag tag3 = tagRepository.save(new Tag("tag3"));
+        Role role1 = roleRepository.save(new Role("role1"));
+
+        List<Tag> tagList = Arrays.asList(tag1,tag2);
+        List<String> tagNames = tagList.stream().map(Tag::getName).toList();
+        List<Long> tagIds = tagList.stream().map(Tag::getId).toList();
+
+        List<String> tagIdsAsString = tagIds.stream()
+                .map(String::valueOf)
+                .toList();
+
+        Team team1 =
+                Team.builder()
+                        .name("team1")
+                        .roles(List.of(role1))
+                        .tags(tagList)
+                        .host(host).build();
+
+        Team team2 =
+                Team.builder()
+                        .name("team1")
+                        .roles(List.of(role1))
+                        .tags(Arrays.asList(tag1,tag2,tag3))
+                        .host(host).build();
+
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+
+        List<TeamResponse> responses = teamService.findTeamsByTagIds(tagIds);
+        assertThat(responses).hasSize(2)
+                .extracting(TeamResponse::getTags).contains(tagNames);
     }
 
     @DisplayName("요청한 팀 Id가 없을경우 예외를 던짐.")

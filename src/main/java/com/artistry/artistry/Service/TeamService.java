@@ -10,7 +10,10 @@ import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.TeamRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -32,6 +35,19 @@ public class TeamService {
     public TeamResponse findById(Long id){
         return TeamResponse.from(teamRepository.findById(id)
                 .orElseThrow(TeamNotFoundException::new));
+    }
+
+    public List<TeamResponse> findTeamsByTagIds(final List<Long> tagIds){
+        return findByTagIds(tagIds).stream()
+                .map(TeamResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    private List<Team> findByTagIds(final List<Long> tagIds){
+        Set<Long> distinctTagIds = new HashSet<>(tagIds);
+
+        return teamRepository.findByTagIds(distinctTagIds);
+
     }
 
     public TeamResponse create(TeamRequest teamRequest){
