@@ -63,6 +63,12 @@ jobs:
     - name: Run the Maven verify phase
       run: mvn --batch-mode  --update-snapshots verify
 
+    - name: Report to CodeCov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./build/reports/jacoco/test/jacoco.xml
+
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2.16.1
       if: always()
