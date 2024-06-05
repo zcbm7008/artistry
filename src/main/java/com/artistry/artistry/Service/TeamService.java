@@ -1,13 +1,16 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.TeamRequest;
+import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.TeamRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -18,20 +21,14 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class TeamService {
 
     private final TeamRepository teamRepository;
     private final TagService tagService;
     private final RoleService roleService;
     private final MemberService memberService;
-
-    public TeamService(TeamRepository teamRepository,TagService tagService,
-                       RoleService roleService, MemberService memberService){
-        this.teamRepository = teamRepository;
-        this.tagService = tagService;
-        this.roleService = roleService;
-        this.memberService = memberService;
-    }
+    private final ApplicationService applicationService;
 
     public TeamResponse findById(Long id){
         return TeamResponse.from(teamRepository.findById(id)
@@ -44,12 +41,18 @@ public class TeamService {
                 .collect(Collectors.toList());
     }
 
+    public List<TeamResponse> findTeamsByApprovedMember(final Long memberId){
+        List<ApplicationResponse> responses = applicationService.findByIdAndStatus(memberId, ApplicationStatus.APPROVED);
+        List<Long> teamIds = responses.stream().map(ApplicationResponse::getTeamId).collect(Collectors.toList());
+        return findTeamsByIds(teamIds, teamRepository::findAllById);
+    }
+
     public List<TeamResponse> findTeamsByTagIds(final List<Long> tagIds) {
         return findTeamsByIds(tagIds, teamRepository::findByTagIds);
     }
 
-    public List<TeamResponse> findTeamsByRoleIds(final List<Long> tagIds) {
-        return findTeamsByIds(tagIds, teamRepository::findByRoleIds);
+    public List<TeamResponse> findTeamsByRoleIds(final List<Long> roleIds) {
+        return findTeamsByIds(roleIds, teamRepository::findByRoleIds);
     }
 
 
@@ -59,22 +62,6 @@ public class TeamService {
         return findByIdsFunction.apply(distinctIds).stream()
                 .map(TeamResponse::from)
                 .collect(Collectors.toList());
-    }
-
-
-
-    private List<Team> findByTagIds(final List<Long> tagIds){
-        Set<Long> distinctTagIds = new HashSet<>(tagIds);
-
-        return teamRepository.findByTagIds(distinctTagIds);
-
-    }
-
-    private List<Team> findByRoleIds(final List<Long> roleIds){
-        Set<Long> distinctRoleIds = new HashSet<>(roleIds);
-
-        return teamRepository.findByTagIds(distinctRoleIds);
-
     }
 
     private List<Team> findByNameLike(final String name){

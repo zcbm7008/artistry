@@ -2,6 +2,7 @@ package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.application.Application;
+import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
@@ -217,6 +218,45 @@ public class TeamServiceTest {
         List<TeamResponse> responses = teamService.findTeamsByRoleIds(roleIds);
         assertThat(responses).hasSize(2)
                 .extracting(TeamResponse::getRoleNames).contains(roleNames);
+    }
+
+    @DisplayName("Approved 된 Application의 Member로 Team을 검색한다.")
+    @Test
+    void findTeamsByApprovedApplicationMember(){
+        String teamName = "밴드 팀";
+        String roleName1 = "작곡가";
+        String roleName2 = "기타";
+        String tagName1 = "밴드";
+        Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+
+
+        Role role1 = roleRepository.save(new Role(roleName1));
+        Role role2 = roleRepository.save(new Role(roleName2));
+
+        Tag tag1 = tagRepository.save(new Tag(tagName1));
+
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", role2));
+
+        Team team1 = new Team(teamName, host, List.of(tag1), List.of(role1));
+        Team team2 = new Team(teamName, host, List.of(tag1), List.of(role1));
+
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+
+        Application application1 = applicationRepository.save(new Application(team1, role1, member1, portfolio1));
+        Application application2 = applicationRepository.save(new Application(team2, role1, member1, portfolio2));
+
+        team1.apply(application1);
+        team2.apply(application2);
+
+        application1.setStatus(ApplicationStatus.APPROVED);
+        application2.setStatus(ApplicationStatus.APPROVED);
+
+        List <TeamResponse> responses = teamService.findTeamsByApprovedMember(member1.getId());
+
+        assertThat(responses).hasSize(2);
     }
 
 

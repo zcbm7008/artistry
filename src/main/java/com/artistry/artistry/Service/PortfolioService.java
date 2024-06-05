@@ -34,8 +34,6 @@ public class PortfolioService {
                 .orElseThrow(PortfolioNotFoundException::new);
     }
 
-
-
     public List<PortfolioResponse> findAll() {
         List <Portfolio> portfolios = portfolioRepository.findAll();
 
