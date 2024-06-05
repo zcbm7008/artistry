@@ -11,4 +11,6 @@ import java.util.List;
 
 public interface ApplicationRepository extends JpaRepository<Application,Long> {
     List<Application> findByStatusAndMember(ApplicationStatus status, Member member);
+
+    List<Application> findByStatus(ApplicationStatus status);
 }
