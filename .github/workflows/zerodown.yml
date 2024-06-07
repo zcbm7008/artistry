@@ -7,7 +7,7 @@ name: Zerodown
 
 on:
   push:
-    branches: [ "feat/zeto-downtime-deploy " ]
+    branches: [ "feat/zeto-downtime-deploy" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
