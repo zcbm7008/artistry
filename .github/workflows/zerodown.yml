@@ -87,7 +87,7 @@ jobs:
           cp ./appspec.yml ./deploy/
           cp ./Dockerfile ./deploy/
           cp ./scripts/deploy.sh ./deploy/
-          cp ./build/target/artistry-0.0.1-SNAPSHOT.jar ./deploy/
+          cp ./target/artistry-0.0.1-SNAPSHOT.jar ./deploy/
           zip -r -qq -j ./$GITHUB_SHA.zip ./deploy
       - name: upload to s3
         run: |
