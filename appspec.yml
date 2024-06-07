@@ -4,7 +4,7 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ec2-user/app/deploy/zip/
+    destination: /home/ec2-user/artistry
     overwrite: yes
 
 permissions:
@@ -14,15 +14,8 @@ permissions:
     group: ec2-user
 
 hooks:
-  AfterInstall:
-    - location: stop.sh
-      timeout: 60
-      runas: ec2-user
+
   ApplicationStart:
-    - location: start.sh
-      timeout: 60
-      runas: ec2-user
-  ValidateService:
-    - location: health.sh
+    - location: deploy.sh
       timeout: 60
       runas: ec2-user
