@@ -98,4 +98,4 @@ jobs:
           aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://artistry-bucket/$GITHUB_SHA.zip
         
       - name: Code Deploy 배포 요청
-        run: aws deploy create-deployment --application-name artistry --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name test-group --s3-location bucket=artistry-bucket,bundleType=zip,key=$GITHUB_SHA.zip
+        run: aws deploy create-deployment --application-name artistry-codedeploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name test-group --s3-location bucket=artistry-bucket,bundleType=zip,key=$GITHUB_SHA.zip
