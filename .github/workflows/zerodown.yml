@@ -52,6 +52,9 @@ jobs:
           echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
 
+      - name: Build with Maven
+        run: mvn clean package -f pom.xml -Pdev
+
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -60,9 +63,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
         
-
-      - name: Build with Maven
-        run: mvn clean package -f pom.xml -Pdev
 
       # Ensure the target directory and JAR file are available for Docker build
       - name: List target directory
