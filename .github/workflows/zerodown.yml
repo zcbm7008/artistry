@@ -55,9 +55,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::549201086101:role/artistryaces
           aws-region: ap-northeast-2
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
+        
       - name: Set environment variables
         run: |
           echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
@@ -94,8 +92,10 @@ jobs:
           cp ./scripts/deploy.sh ./deploy/
           cp ./target/artistry-0.0.1-SNAPSHOT.jar ./deploy/
           zip -r -qq -j ./$GITHUB_SHA.zip ./deploy
+          
       - name: upload to s3
         run: |
           aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://artistry-bucket/$GITHUB_SHA.zip
+        
       - name: Code Deploy 배포 요청
         run: aws deploy create-deployment --application-name artistry --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name test-group --s3-location bucket=artistry-bucket,bundleType=zip,key=$GITHUB_SHA.zip
