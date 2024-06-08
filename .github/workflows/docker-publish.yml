@@ -25,7 +25,6 @@ env:
   NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
   NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
 
-
 jobs:
   build:
 
@@ -46,13 +45,8 @@ jobs:
         with:
           java-version: '21'
           distribution: 'adopt'
+          
 
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::549201086101:role/artistryaces
-          aws-region: ap-northeast-2
-        
       - name: Set environment variables
         run: |
           echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
@@ -60,10 +54,19 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -f pom.xml -Pdev
 
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::549201086101:role/artistryaces
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+        
+
       # Ensure the target directory and JAR file are available for Docker build
       - name: List target directory
         run: ls -l target
-        
+
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
@@ -78,62 +81,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
 
-      # Login against a Docker registry except on PR
-      # https://github.com/docker/login-action
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      # Build and push Docker image with Buildx (don't push on PR)
-      # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
-        with:
-          context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      # Sign the resulting Docker image digest except on PRs.
-      # This will only write to the public Rekor transparency log when the Docker
-      # repository is public to avoid leaking data.  If you would like to publish
-      # transparency data even for private images, pass --force to cosign below.
-      # https://github.com/sigstore/cosign
-      - name: Sign the published Docker image
-        if: ${{ github.event_name != 'pull_request' }}
-        env:
-          # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
-          TAGS: ${{ steps.meta.outputs.tags }}
-          DIGEST: ${{ steps.build-and-push.outputs.digest }}
-        # This step uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance.
-        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
-
-      #docker-compose 파일을 ec2 서버에 배포
-      - name: Deploy to Prod
-        uses: appleboy/ssh-action@master
-        id: deploy-prod
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          envs: GITHUB_SHA
-          script: |
-             docker stop artistry
-             docker rm artistry
-             sudo docker pull ${{ secrets.DOCKER_HUB_IMAGENAME }}
-             docker run -d --name artistry -p 8080:8080 ${{ secrets.DOCKER_HUB_IMAGENAME }}
-              dangling_images=$(docker images -f "dangling=true" -q)
-              
-              # 삭제할 이미지가 있는 경우에만 삭제 명령 실행
-              if [ -n "$dangling_images" ]; then
-                  docker rmi -f $dangling_images
-              else
-                  echo "No dangling images to remove."
-              fi
+      - name: create zip file
+        run: |
+          mkdir deploy
+          cp ./docker-compose.blue.yml ./deploy/
+          cp ./docker-compose.green.yml ./deploy/
+          cp ./appspec.yml ./deploy/
+          cp ./Dockerfile ./deploy/
+          cp ./scripts/deploy.sh ./deploy/
+          cp ./target/artistry-0.0.1-SNAPSHOT.jar ./deploy/
+          zip -r -qq -j ./$GITHUB_SHA.zip ./deploy
+          
+      - name: upload to s3
+        run: |
+          aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://artistry-bucket/$GITHUB_SHA.zip
+        
+      - name: Code Deploy 배포 요청
+        run: aws deploy create-deployment --application-name artistry-codedeploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name test-group --s3-location bucket=artistry-bucket,bundleType=zip,key=$GITHUB_SHA.zip
