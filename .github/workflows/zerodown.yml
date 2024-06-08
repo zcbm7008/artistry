@@ -25,7 +25,6 @@ env:
   NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
   NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
 
-
 jobs:
   build:
 
@@ -46,20 +45,21 @@ jobs:
         with:
           java-version: '21'
           distribution: 'adopt'
-
-
-
           
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::549201086101:role/artistryaces
-          aws-region: ap-northeast-2
-        
+
       - name: Set environment variables
         run: |
           echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::549201086101:role/artistryaces
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+        
 
       - name: Build with Maven
         run: mvn clean package -f pom.xml -Pdev
@@ -99,7 +99,6 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'ap-northeast-2'
         
       - name: Code Deploy 배포 요청
         run: aws deploy create-deployment --application-name artistry --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name test-group --s3-location bucket=artistry-bucket,bundleType=zip,key=$GITHUB_SHA.zip
