@@ -114,6 +114,7 @@
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
 		<!-- rest docs dependency -->
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
@@ -195,6 +196,17 @@
 
 		<plugins>
 			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 				<version>2.2.1</version>
@@ -274,6 +286,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<!-- restdocs-spec 문서 생성을 위한 플러그인 정의 -->
 			<plugin>
 				<groupId>io.github.berkleytechnologyservices</groupId>
