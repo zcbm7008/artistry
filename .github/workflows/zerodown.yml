@@ -11,7 +11,7 @@ on:
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ "feat/zeto-downtime-deploy " ]
+
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -51,20 +51,12 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::549201086101:role/artistryaces
-          aws-region: ap-northeast-2
-        
-      - name: Set environment variables
-        run: |
-          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-      
-      - name: Build with Maven
-        run: mvn clean package -f pom.xml -Pdev
+
 
       # Ensure the target directory and JAR file are available for Docker build
       - name: List target directory
         run: ls -l target
-        
+
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
@@ -87,12 +79,3 @@ jobs:
           cp ./appspec.yml ./deploy/
           cp ./Dockerfile ./deploy/
           cp ./scripts/deploy.sh ./deploy/
-          cp ./build/target/artistry-0.0.1-SNAPSHOT.jar ./deploy/
-          zip -r -qq -j ./$GITHUB_SHA.zip ./deploy
-
-      - name: upload to s3
-        run: |
-         aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://artistry-bucket/$GITHUB_SHA.zip
-
-      - name: Code Deploy 배포 요청
-        run: aws deploy create-deployment --application-name artistry --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name test-group --s3-location bucket=artistry-bucket,bundleType=zip,key=$GITHUB_SHA.zip
