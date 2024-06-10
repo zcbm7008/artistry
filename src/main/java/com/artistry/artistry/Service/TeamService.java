@@ -1,6 +1,7 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
@@ -13,6 +14,7 @@ import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +56,12 @@ public class TeamService {
         return findByNameLike(name).stream()
                 .map(TeamResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void apply(Long teamId, Application application){
+        Team team = findEntityById(teamId);
+        team.apply(application);
     }
 
     private List<Team> findByNameLike(final String name){

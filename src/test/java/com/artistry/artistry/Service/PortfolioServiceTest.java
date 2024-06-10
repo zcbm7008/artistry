@@ -226,8 +226,8 @@ public class PortfolioServiceTest {
                 "수정된 타이틀",
                 "수정된 역할",
                 Arrays.asList(ContentResponse.from(content)),
-                "PRIVATE"
-);
+                "PRIVATE");
+
         Role role1 = new Role("수정된 역할");
         roleRepository.save(role1);
         RoleRequest roleRequest = new RoleRequest(role1.getId());

@@ -13,9 +13,11 @@ import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
+import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import com.artistry.artistry.Repository.*;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,11 +42,11 @@ public class TeamServiceTest {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
+    private RoleService roleService;
+    @Autowired
     MemberRepository memberRepository;
     @Autowired
     PortfolioRepository portfolioRepository;
-    @Autowired
-    TeamRoleRepository teamRoleRepository;
     @Autowired
     ApplicationRepository applicationRepository;
 
@@ -272,9 +274,10 @@ public class TeamServiceTest {
         assertThat(responses).hasSize(2);
     }
 
-    @DisplayName("팀의 내용을 수정한다.")
-    @Test
-    void updateTeam(){
+    @DisplayName("팀 정보를 수정할 때,")
+    @Nested
+    class updateTeam{
+
         String teamName = "밴드 팀";
         String roleName1 = "작곡가";
         String roleName2 = "드럼";
@@ -302,25 +305,58 @@ public class TeamServiceTest {
                         Arrays.asList(roleRequest1,roleRequest2));
 
         TeamResponse responseDto = teamService.create(teamRequest);
+        @DisplayName("역할에 승인된 지원자가 없으면 수정을 실행한다..")
+        @Test
+        void update(){
 
-        String changedName = "밴드팀팀팀";
+            String changedName = "밴드팀팀팀";
 
-        TeamUpdateRequest request =
-                TeamUpdateRequest.builder()
-                        .name(changedName)
-                        .tags(List.of(tagRequest1,tagRequest3))
-                        .roles(List.of(roleRequest2,roleRequest3))
-                        .isRecruiting(false)
-                        .build();
+            TeamUpdateRequest request =
+                    TeamUpdateRequest.builder()
+                            .name(changedName)
+                            .tags(List.of(tagRequest1,tagRequest3))
+                            .roles(List.of(roleRequest2,roleRequest3))
+                            .isRecruiting(false)
+                            .build();
 
-        TeamResponse response = teamService.update(responseDto.getTeamId(),request);
+            TeamResponse response = teamService.update(responseDto.getTeamId(),request);
 
-        assertThat(response.getTeamName()).isEqualTo(changedName);
-        assertThat(response.getTags()).containsExactly(tagName1,tagName3);
-        assertThat(response.getRoleNames()).containsExactly(roleName2,roleName3);
-        assertThat(response.isRecruiting()).isFalse();
+            assertThat(response.getTeamName()).isEqualTo(changedName);
+            assertThat(response.getTags()).containsExactly(tagName1,tagName3);
+            assertThat(response.getRoleNames()).containsExactly(roleName2,roleName3);
+            assertThat(response.isRecruiting()).isFalse();
+        }
+
+        @DisplayName("역할에 승인된 지원자가 있으면, Role을 수정할 때 예외를 출력한다.")
+        @Test
+        void exceptionWhenApprovedInTeamRole(){
+
+            String changedName = "밴드팀팀팀";
+
+            Role role1 = roleService.findEntityById(roleRequest1.getId());
+            Portfolio portfolio = new Portfolio("포폴1", role1);
+            Team team = teamService.findEntityById(responseDto.getTeamId());
+            Application application = new Application(team,role1,member1,portfolio);
+
+            teamService.apply(responseDto.getTeamId(), application);
+            application.setStatus(ApplicationStatus.APPROVED);
+
+            TeamUpdateRequest request =
+                    TeamUpdateRequest.builder()
+                            .name(changedName)
+                            .tags(List.of(tagRequest1,tagRequest3))
+                            .roles(List.of(roleRequest2,roleRequest3))
+                            .isRecruiting(false)
+                            .build();
+
+            assertThatThrownBy(() -> teamService.update(responseDto.getTeamId(),request)).isInstanceOf(TeamRoleHasApprovedException.class);
+
+
+        }
 
     }
+
+
 
 
     @DisplayName("요청한 팀 Id가 없을경우 예외를 던짐.")
