@@ -30,6 +30,16 @@ public class TeamService {
     private final MemberService memberService;
     private final ApplicationService applicationService;
 
+    public TeamResponse create(TeamRequest teamRequest){
+        Member host = memberService.findEntityById(teamRequest.getHostId());
+        List<Tag> tags = tagService.findAllEntityById(teamRequest.getTags());
+        List<Role> roles = roleService.findAllById(teamRequest.getRoles());
+
+        Team team = new Team(teamRequest.getTeamName(),host,tags,roles);
+
+        return TeamResponse.from(teamRepository.save(team));
+    }
+
     public TeamResponse findById(Long id){
         return TeamResponse.from(teamRepository.findById(id)
                 .orElseThrow(TeamNotFoundException::new));
@@ -41,9 +51,17 @@ public class TeamService {
                 .collect(Collectors.toList());
     }
 
+    private List<Team> findByNameLike(final String name){
+        return teamRepository.findByNameLike(name);
+    }
+
     public List<TeamResponse> findTeamsByApprovedMember(final Long memberId){
         List<ApplicationResponse> responses = applicationService.findByIdAndStatus(memberId, ApplicationStatus.APPROVED);
-        List<Long> teamIds = responses.stream().map(ApplicationResponse::getTeamId).collect(Collectors.toList());
+        List<Long> teamIds =
+                responses.stream()
+                .map(ApplicationResponse::getTeamId)
+                .collect(Collectors.toList());
+
         return findTeamsByIds(teamIds, teamRepository::findAllById);
     }
 
@@ -55,27 +73,11 @@ public class TeamService {
         return findTeamsByIds(roleIds, teamRepository::findByRoleIds);
     }
 
-
-
     private <T> List<TeamResponse> findTeamsByIds(final List<Long > ids, Function<Set<Long>, List<Team>> findByIdsFunction){
         Set<Long> distinctIds = new HashSet<>(ids);
         return findByIdsFunction.apply(distinctIds).stream()
                 .map(TeamResponse::from)
                 .collect(Collectors.toList());
-    }
-
-    private List<Team> findByNameLike(final String name){
-        return teamRepository.findByNameLike(name);
-    }
-
-    public TeamResponse create(TeamRequest teamRequest){
-        Member host = memberService.findEntityById(teamRequest.getHostId());
-        List<Tag> tags = tagService.findAllEntityById(teamRequest.getTags());
-        List<Role> roles = roleService.findAllById(teamRequest.getRoles());
-
-        Team team = new Team(teamRequest.getTeamName(),host,tags,roles);
-
-        return TeamResponse.from(teamRepository.save(team));
     }
 
 }

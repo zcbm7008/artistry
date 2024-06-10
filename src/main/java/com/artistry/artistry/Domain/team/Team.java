@@ -5,9 +5,12 @@ import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
+import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -18,6 +21,8 @@ import java.util.List;
 
 
 @Getter
+@SQLDelete(sql = "UPDATE team SET deleted = true WHERE id=?")
+@SQLRestriction("deleted=false")
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -48,22 +53,29 @@ public class Team {
             inverseJoinColumns = @JoinColumn(name="tag_id"))
     private List<Tag> tags;
 
+    private boolean isRecruiting;
+
+    @Column(nullable = false)
+    private boolean deleted;
+
     public Team(final String name,final Member host,final List<Tag> tags, List<Role> roles){
-        this(null,name,host,tags,roles);
+        this(null,name,host,tags,roles,true,false);
     }
 
     public Team(final String name,final Member host, List<Role> roles){
-        this(null,name,host,null,roles);
+        this(null,name,host,null,roles,true,false);
     }
 
 
     @Builder
-    public Team(Long id, @NonNull String name, @NonNull Member host, List<Tag> tags, List<Role> roles){
+    public Team(Long id, @NonNull String name, @NonNull Member host, List<Tag> tags, List<Role> roles,boolean isRecruiting,boolean deleted){
         this.id = id;
         this.name = name;
         this.host = host;
         this.tags=tags;
         addRoles(roles);
+        this.isRecruiting = isRecruiting;
+        this.deleted = deleted;
     }
 
     public void apply(Application application){
@@ -74,8 +86,15 @@ public class Team {
     }
 
     private void validateApplication(Application application){
+        isTeamRecruiting();
         isMemberDuplicatedInRole(application.getRole(), application.getMember());
         isValidRole(application.getRole());
+    }
+
+    private void isTeamRecruiting(){
+        if (!isRecruiting){
+            throw new TeamNotRecruitingException("팀이 구인중인 상태가 아닙니다.");
+        }
     }
 
     private void isMemberDuplicatedInRole(Role role, Member member){

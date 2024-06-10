@@ -51,7 +51,7 @@ class TeamApiDocTest extends ApiTest{
         String dummyTeamName = "더미 팀";
         List<Role> roles = Arrays.asList(role1, role2);
         List<Tag> tags = Arrays.asList(tag1, tag2);
-        dummyTeam = new Team(member1.getId(),dummyTeamName, member1, tags, roles);
+        dummyTeam = new Team(dummyTeamName, member1, tags, roles);
         teamRepository.save(dummyTeam);
 
         teamResponse1 = create_team(dummyTeamName,member1.getId(),roles,tags);
