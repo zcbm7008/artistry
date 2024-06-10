@@ -12,6 +12,7 @@ import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.TeamResponse;
+import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
@@ -355,9 +356,6 @@ public class TeamServiceTest {
         }
 
     }
-
-
-
 
     @DisplayName("요청한 팀 Id가 없을경우 예외를 던짐.")
     @Test
