@@ -6,6 +6,7 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
+import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +18,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -53,7 +54,7 @@ public class Team {
             inverseJoinColumns = @JoinColumn(name="tag_id"))
     private List<Tag> tags;
 
-    private boolean isRecruiting;
+    private boolean isRecruiting = true;
 
     @Column(nullable = false)
     private boolean deleted;
@@ -72,10 +73,26 @@ public class Team {
         this.id = id;
         this.name = name;
         this.host = host;
-        this.tags=tags;
+        this.tags = tags;
         addRoles(roles);
         this.isRecruiting = isRecruiting;
         this.deleted = deleted;
+    }
+
+    public void addRoles(List<Role> roles){
+        this.teamRoles.addAll(
+                roles.stream()
+                        .map(this::roleToTeamRole)
+                        .toList()
+        );
+    }
+
+    public TeamRole roleToTeamRole(Role role){
+        return(TeamRole.builder()
+                .team(this)
+                .role(role)
+                .applications(new ArrayList<>())
+                .build());
     }
 
     public void apply(Application application){
@@ -113,27 +130,10 @@ public class Team {
             throw new TeamRoleNotFoundException(String.format("[%s]는 팀의 역할에 없습니다.", role.getName()));
         }
     }
+
     private boolean isRoleInTeam(Role role){
         return teamRoles.stream()
                 .anyMatch(teamRole -> teamRole.getRole().equals(role));
-    }
-
-
-
-    public void addRoles(List<Role> roles){
-        this.teamRoles.addAll(
-                roles.stream()
-                        .map(this::roleToTeamRole)
-                        .toList()
-        );
-    }
-
-    public TeamRole roleToTeamRole(Role role){
-        return(TeamRole.builder()
-                .team(this)
-                .role(role)
-                .applications(new ArrayList<>())
-                .build());
     }
 
     public TeamRole findTeamRoleByRole(Role role){
@@ -144,9 +144,57 @@ public class Team {
                 .orElseThrow(TeamRoleNotFoundException::new);
     }
 
+    private void validateTeamRoleForDeletion(TeamRole teamRole){
+        if(teamRole.isApprovedInTeamRole()){
+            throw new TeamRoleHasApprovedException("이 역할에 이미 승인된 멤버가 있습니다.");
+        }
+    }
 
     public boolean isHostMember(Member member){
         return host.equals(member);
+    }
+
+    public void update(@NonNull String name, List<Tag> tags, List<Role> roles,boolean isRecruiting){
+        this.name = name;
+        this.tags = tags;
+        updateRoles(roles);
+        this.isRecruiting = isRecruiting;
+    }
+
+    private void updateRoles(List<Role> roles) {
+        List<Role> rolesToAdd = findRolesNotInTeamRoles(roles);
+        List<TeamRole> teamRolesToDelete = findTeamRolesNotInRoles(roles);
+
+        // 새 역할 추가 로직
+        rolesToAdd.forEach(role -> this.teamRoles.add(roleToTeamRole(role)));
+
+        // 기존 역할 삭제 로직
+        teamRolesToDelete.forEach(this::deleteTeamRoleByRole);
+    }
+
+    private List<Role> findRolesNotInTeamRoles(List<Role> roles) {
+        List<String> existingRoleNames = this.teamRoles.stream()
+                .map(teamRole -> teamRole.getRole().getName())
+                .toList();
+
+        return roles.stream()
+                .filter(role -> !existingRoleNames.contains(role.getName()))
+                .collect(Collectors.toList());
+    }
+
+    private List<TeamRole> findTeamRolesNotInRoles(List<Role> roles) {
+        List<String> roleNames = roles.stream()
+                .map(Role::getName)
+                .toList();
+
+        return this.teamRoles.stream()
+                .filter(teamRole -> !roleNames.contains(teamRole.getRole().getName()))
+                .collect(Collectors.toList());
+    }
+
+    private void deleteTeamRoleByRole(TeamRole teamRole){
+        validateTeamRoleForDeletion(teamRole);
+        this.teamRoles.remove(teamRole);
     }
 
 }

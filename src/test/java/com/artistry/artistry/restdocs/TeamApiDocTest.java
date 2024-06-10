@@ -119,7 +119,8 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("teamRoles[].role.id").ignored(),
                                 fieldWithPath("teamRoles[].role.name").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
-                                fieldWithPath("tags").description("태그 리스트"))))
+                                fieldWithPath("tags").description("태그 리스트"),
+                                fieldWithPath("recruiting").description("모집 여부"))))
                 .when().post("/api/teams")
                 .then().statusCode(201)
                 .extract().body().as(TeamResponse.class);
@@ -150,12 +151,11 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("teamRoles[].role").ignored(),
                                 fieldWithPath("teamRoles[].role.id").ignored(),
                                 fieldWithPath("teamRoles[].role.name").description("역할 이름"),
-                                fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"))))
+                                fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
+                                fieldWithPath("recruiting").description("모집 여부"))))
                 .when().get("/api/teams/{id}",teamResponse1.getTeamId())
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(TeamResponse.class);
     }
-
-
 
 }

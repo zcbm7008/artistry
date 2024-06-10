@@ -12,7 +12,7 @@ import java.net.URI;
 @RestController
 public class TeamController {
 
-    private TeamService teamService;
+    private final TeamService teamService;
 
     public TeamController(TeamService teamService){
         this.teamService = teamService;

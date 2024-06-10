@@ -25,6 +25,7 @@ public class TeamResponse {
     private HostResponse host;
     private List<String> tags;
     private List<TeamRoleResponse> teamRoles;
+    private boolean recruiting;
 
     public static TeamResponse from(Team team){
         return TeamResponse.builder()
@@ -34,6 +35,7 @@ public class TeamResponse {
                 .host(HostResponse.from(team.getHost()))
                 .teamRoles(team.getTeamRoles().stream().map(TeamRoleResponse::from).collect(Collectors.toList()))
                 .tags(tagNames(team.getTags()))
+                .recruiting(team.isRecruiting())
                 .build();
     }
 

@@ -6,6 +6,7 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.TeamRequest;
+import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
@@ -41,8 +42,12 @@ public class TeamService {
     }
 
     public TeamResponse findById(Long id){
-        return TeamResponse.from(teamRepository.findById(id)
-                .orElseThrow(TeamNotFoundException::new));
+        return TeamResponse.from(findEntityById(id));
+    }
+
+    public Team findEntityById(Long id){
+        return teamRepository.findById(id)
+                .orElseThrow(TeamNotFoundException::new);
     }
 
     public List<TeamResponse> findTeamsByNameLike(final String name){
@@ -80,4 +85,13 @@ public class TeamService {
                 .collect(Collectors.toList());
     }
 
+    public TeamResponse update(final Long teamId, final TeamUpdateRequest request){
+        Team team = findEntityById(teamId);
+        List <Tag> tags = tagService.findAllEntityById(request.getTags());
+        List <Role> roles = roleService.findAllById(request.getRoles());
+
+        team.update(request.getName(),tags,roles,request.isRecruiting());
+
+        return TeamResponse.from(team);
+    }
 }

@@ -52,4 +52,9 @@ public class TeamRole {
         return role.getName();
     }
 
+    public boolean isApprovedInTeamRole(){
+        return applications.stream()
+                .anyMatch(application -> application.getStatus().equals(ApplicationStatus.APPROVED));
+    }
+
 }
