@@ -48,6 +48,17 @@ public class TeamServiceTest {
     @Autowired
     ApplicationRepository applicationRepository;
 
+    private TagRequest createTagRequest(String name){
+        Tag tag = tagRepository.save(new Tag(name));
+        return new TagRequest(tag.getId());
+    }
+
+    private RoleRequest createRoleRequest(String name){
+        Role role = roleRepository.save(new Role(name));
+        return new RoleRequest(role.getId());
+    }
+
+
     @DisplayName("팀을 생성한다")
     @Test
     void createTeam(){
@@ -57,16 +68,19 @@ public class TeamServiceTest {
         String tagName1 = "밴드";
         String tagName2 = "락";
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
-        Role role1 = roleRepository.save(new Role(roleName1));
-        Role role2 = roleRepository.save(new Role(roleName2));
-        Tag tag1 = tagRepository.save(new Tag(tagName1));
-        Tag tag2 = tagRepository.save(new Tag(tagName2));
-        TagRequest tagRequest1 = new TagRequest(tag1.getId());
-        TagRequest tagRequest2 = new TagRequest(tag2.getId());
-        RoleRequest roleRequest1 = new RoleRequest(role1.getId());
-        RoleRequest roleRequest2 = new RoleRequest(role2.getId());
 
-        TeamRequest teamRequest = new TeamRequest(teamName,member1.getId(),Arrays.asList(tagRequest1,tagRequest2),Arrays.asList(roleRequest1,roleRequest2));
+        TagRequest tagRequest1 = createTagRequest(tagName1);
+        TagRequest tagRequest2 = createTagRequest(tagName2);
+        RoleRequest roleRequest1 = createRoleRequest(roleName1);
+        RoleRequest roleRequest2 = createRoleRequest(roleName2);
+
+        TeamRequest teamRequest =
+                new TeamRequest(
+                        teamName,
+                        member1.getId(),
+                        Arrays.asList(tagRequest1,tagRequest2),
+                        Arrays.asList(roleRequest1,roleRequest2));
+
         TeamResponse responseDto = teamService.create(teamRequest);
 
         assertThat(responseDto.getTeamId()).isNotNull();
@@ -85,10 +99,10 @@ public class TeamServiceTest {
         String roleName1 = "작곡가";
         String invalidRoleName = "일러스트레이터";
         String tagName1 = "밴드";
+
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
         Member member2 = memberRepository.save(new Member("member2","b@b.com"));
         Member applicant1 = memberRepository.save(new Member("applicant1","c@c.com"));
-
 
         Role role1 = roleRepository.save(new Role(roleName1));
         Role invalidRole = roleRepository.save(new Role(invalidRoleName));
@@ -106,6 +120,7 @@ public class TeamServiceTest {
         Application application2 = applicationRepository.save(new Application(team, invalidRole, applicant1, portfolio2));
 
         team.findTeamRoleByRole(role1).addApplication(application1);
+
         assertThatThrownBy(() -> team.findTeamRoleByRole(invalidRole).getApplications().add(application2)).isInstanceOf(TeamRoleNotFoundException.class);
 
     }
@@ -225,9 +240,9 @@ public class TeamServiceTest {
         String roleName1 = "작곡가";
         String roleName2 = "기타";
         String tagName1 = "밴드";
+
         Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
-
 
         Role role1 = roleRepository.save(new Role(roleName1));
         Role role2 = roleRepository.save(new Role(roleName2));
@@ -270,23 +285,22 @@ public class TeamServiceTest {
         String tagName3 = "인디";
 
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
-        Role role1 = roleRepository.save(new Role(roleName1));
-        Role role2 = roleRepository.save(new Role(roleName2));
-        Role role3 = roleRepository.save(new Role(roleName3));
 
-        Tag tag1 = tagRepository.save(new Tag(tagName1));
-        Tag tag2 = tagRepository.save(new Tag(tagName2));
-        Tag tag3 = tagRepository.save(new Tag(tagName3));
+        TagRequest tagRequest1 = createTagRequest(tagName1);
+        TagRequest tagRequest2 = createTagRequest(tagName2);
+        TagRequest tagRequest3 = createTagRequest(tagName3);
 
-        TagRequest tagRequest1 = new TagRequest(tag1.getId());
-        TagRequest tagRequest2 = new TagRequest(tag2.getId());
-        TagRequest tagRequest3 = new TagRequest(tag3.getId());
+        RoleRequest roleRequest1 = createRoleRequest(roleName1);
+        RoleRequest roleRequest2 = createRoleRequest(roleName2);
+        RoleRequest roleRequest3 = createRoleRequest(roleName3);
 
-        RoleRequest roleRequest1 = new RoleRequest(role1.getId());
-        RoleRequest roleRequest2 = new RoleRequest(role2.getId());
-        RoleRequest roleRequest3 = new RoleRequest(role3.getId());
+        TeamRequest teamRequest =
+                new TeamRequest(
+                        teamName,
+                        member1.getId(),
+                        Arrays.asList(tagRequest1,tagRequest2),
+                        Arrays.asList(roleRequest1,roleRequest2));
 
-        TeamRequest teamRequest = new TeamRequest(teamName,member1.getId(),Arrays.asList(tagRequest1,tagRequest2),Arrays.asList(roleRequest1,roleRequest2));
         TeamResponse responseDto = teamService.create(teamRequest);
 
         String changedName = "밴드팀팀팀";
@@ -315,7 +329,5 @@ public class TeamServiceTest {
         assertThatThrownBy(() -> teamService.findById(Long.MAX_VALUE))
                 .isInstanceOf(TeamNotFoundException.class);
     }
-
-
 
 }
