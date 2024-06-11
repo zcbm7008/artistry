@@ -1,11 +1,9 @@
 package com.artistry.artistry.Controller;
 
-import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Service.TeamService;
-import com.artistry.artistry.auth.Authorization;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +23,7 @@ public class TeamController {
    @PostMapping
    public ResponseEntity<TeamResponse> createTeam(@RequestBody TeamRequest teamRequest){
         TeamResponse teamResponse = teamService.create(teamRequest);
-        return ResponseEntity.created(URI.create("api/teams/" + teamResponse.getTeamId())).body(teamResponse);
+        return ResponseEntity.created(URI.create("api/teams/" + teamResponse.getId())).body(teamResponse);
    }
 
    @GetMapping("/{teamId}")

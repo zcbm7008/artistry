@@ -12,7 +12,6 @@ import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.TeamResponse;
-import com.artistry.artistry.Exceptions.TagNotFoundException;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
@@ -86,7 +85,7 @@ public class TeamServiceTest {
 
         TeamResponse responseDto = teamService.create(teamRequest);
 
-        assertThat(responseDto.getTeamId()).isNotNull();
+        assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getTeamRoles())
                 .extracting(teamRole -> teamRole.getRole().getName())
                 .containsExactly(roleName1, roleName2);
@@ -160,7 +159,7 @@ public class TeamServiceTest {
         List <TeamResponse> response = teamService.findTeamsByNameLike("공모전");
 
         assertThat(response).hasSize(2)
-                .extracting(TeamResponse::getTeamName)
+                .extracting(TeamResponse::getName)
                 .allMatch(name -> name.contains(nameToFind));
 
     }
@@ -317,15 +316,17 @@ public class TeamServiceTest {
                             .name(changedName)
                             .tags(List.of(tagRequest1,tagRequest3))
                             .roles(List.of(roleRequest2,roleRequest3))
-                            .isRecruiting(false)
+                            .isRecruiting(true)
                             .build();
 
-            TeamResponse response = teamService.update(responseDto.getTeamId(),request);
+            TeamResponse response = teamService.update(responseDto.getId(),request);
 
-            assertThat(response.getTeamName()).isEqualTo(changedName);
+            assertThat(response.getName()).isEqualTo(changedName);
             assertThat(response.getTags()).containsExactly(tagName1,tagName3);
             assertThat(response.getRoleNames()).containsExactly(roleName2,roleName3);
-            assertThat(response.isRecruiting()).isFalse();
+            assertThat(response.isRecruiting()).isTrue();
+
+
         }
 
         @DisplayName("역할에 승인된 지원자가 있으면, Role을 수정할 때 예외를 출력한다.")
@@ -336,10 +337,10 @@ public class TeamServiceTest {
 
             Role role1 = roleService.findEntityById(roleRequest1.getId());
             Portfolio portfolio = new Portfolio("포폴1", role1);
-            Team team = teamService.findEntityById(responseDto.getTeamId());
+            Team team = teamService.findEntityById(responseDto.getId());
             Application application = new Application(team,role1,member1,portfolio);
 
-            teamService.apply(responseDto.getTeamId(), application);
+            teamService.apply(responseDto.getId(), application);
             application.setStatus(ApplicationStatus.APPROVED);
 
             TeamUpdateRequest request =
@@ -350,7 +351,7 @@ public class TeamServiceTest {
                             .isRecruiting(false)
                             .build();
 
-            assertThatThrownBy(() -> teamService.update(responseDto.getTeamId(),request)).isInstanceOf(TeamRoleHasApprovedException.class);
+            assertThatThrownBy(() -> teamService.update(responseDto.getId(),request)).isInstanceOf(TeamRoleHasApprovedException.class);
 
 
         }

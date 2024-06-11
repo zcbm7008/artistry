@@ -2,6 +2,7 @@ package com.artistry.artistry.Dto.Request;
 
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.tag.Tag;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -13,11 +14,11 @@ import java.util.List;
 public class TeamUpdateRequest {
 
     @NonNull
-    String name;
+    private String name;
+    private List<TagRequest> tags;
+    private List<RoleRequest> roles;
 
-    List<TagRequest> tags;
+    @JsonProperty("isRecruiting")
+    private boolean isRecruiting;
 
-    List<RoleRequest> roles;
-
-    boolean isRecruiting;
 }

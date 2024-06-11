@@ -1,10 +1,12 @@
 package com.artistry.artistry.Domain.Role;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.artistry.artistry.Domain.team.TeamRole;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode
 @Builder

@@ -38,7 +38,7 @@ public class TeamService {
         List<Tag> tags = tagService.findAllEntityById(teamRequest.getTags());
         List<Role> roles = roleService.findAllById(teamRequest.getRoles());
 
-        Team team = new Team(teamRequest.getTeamName(),host,tags,roles);
+        Team team = new Team(teamRequest.getName(),host,tags,roles);
 
         return TeamResponse.from(teamRepository.save(team));
     }
@@ -99,6 +99,8 @@ public class TeamService {
         List <Role> roles = roleService.findAllById(request.getRoles());
 
         team.update(request.getName(),tags,roles,request.isRecruiting());
+
+        System.out.println("ddddddddddddddddddddddddd"+request.isRecruiting());
 
         return TeamResponse.from(team);
     }

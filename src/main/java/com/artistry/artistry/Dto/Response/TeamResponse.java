@@ -4,6 +4,7 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamRole;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,18 +20,20 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TeamResponse {
-    private Long teamId;
-    private String teamName;
+    private Long id;
+    private String name;
     private String createdAt;
     private HostResponse host;
     private List<String> tags;
     private List<TeamRoleResponse> teamRoles;
+
+    @JsonProperty("isRecruiting")
     private boolean recruiting;
 
     public static TeamResponse from(Team team){
         return TeamResponse.builder()
-                .teamId(team.getId())
-                .teamName(team.getName())
+                .id(team.getId())
+                .name(team.getName())
                 .createdAt(team.getCreatedAt().toString())
                 .host(HostResponse.from(team.getHost()))
                 .teamRoles(team.getTeamRoles().stream().map(TeamRoleResponse::from).collect(Collectors.toList()))
