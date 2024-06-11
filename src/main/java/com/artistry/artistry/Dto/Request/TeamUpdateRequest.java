@@ -17,8 +17,6 @@ public class TeamUpdateRequest {
     private String name;
     private List<TagRequest> tags;
     private List<RoleRequest> roles;
-
-    @JsonProperty("isRecruiting")
-    private boolean isRecruiting;
+    private String teamStatus;
 
 }

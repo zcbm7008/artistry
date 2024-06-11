@@ -4,6 +4,7 @@ import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -126,7 +127,7 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("teamRoles[].role.name").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
                                 fieldWithPath("tags").description("태그 리스트"),
-                                fieldWithPath("isRecruiting").description("모집 여부"))))
+                                fieldWithPath("teamStatus").description("팀 상태"))))
                 .when().post("/api/teams")
                 .then().statusCode(201)
                 .extract().body().as(TeamResponse.class);
@@ -154,7 +155,7 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("teamRoles[].role.id").ignored(),
                                 fieldWithPath("teamRoles[].role.name").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
-                                fieldWithPath("isRecruiting").description("모집 여부"))))
+                                fieldWithPath("teamStatus").description("팀 상태"))))
                 .when().get("/api/teams/{id}",teamResponse1.getId())
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(TeamResponse.class);
@@ -182,7 +183,7 @@ class TeamApiDocTest extends ApiTest{
                 Map.of("id", role4.getId(), "name", role4.getName())));
         body.put("tags", Arrays.asList(Map.of("id", tag3.getId(), "name", tag3.getName()),
                 Map.of("id", tag4.getId(), "name", tag4.getName())));
-        body.put("isRecruiting",true);
+        body.put("teamStatus", "CANCELED");
 
         TeamResponse response = given().body(body)
                 .filter(RestAssuredRestDocumentationWrapper.document("update-team",
@@ -194,7 +195,7 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("roles[].name").description("역할 이름"),
                                 fieldWithPath("tags[].id").description("태그 Id"),
                                 fieldWithPath("tags[].name").description("태그 리스트"),
-                                fieldWithPath("isRecruiting").description("모집 여부")
+                                fieldWithPath("teamStatus").description("팀 상태")
                         ),
                         responseFields(fieldWithPath("id").description("팀 Id"),
                                 fieldWithPath("name").description("팀 이름"),
@@ -210,7 +211,7 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("teamRoles[].role.id").ignored(),
                                 fieldWithPath("teamRoles[].role.name").description("역할 이름"),
                                 fieldWithPath("teamRoles[].applications").description("팀 역할에 지원한 지원서"),
-                                fieldWithPath("isRecruiting").description("모집 여부"))))
+                                fieldWithPath("teamStatus").description("팀 상태"))))
                 .when().put("/api/teams/{id}", teamResponse1.getId())
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(TeamResponse.class);
@@ -221,7 +222,7 @@ class TeamApiDocTest extends ApiTest{
         assertThat(response.getName()).isEqualTo(updateTeamName);
         assertThat(response.getRoleNames()).containsExactly(role3.getName(),role4.getName());
         assertThat(response.getTags()).containsExactly(tag3.getName(),tag4.getName());
-        assertThat(response.isRecruiting()).isEqualTo(true);
+        assertThat(response.getTeamStatus()).isEqualTo(String.valueOf(TeamStatus.CANCELED));
 
     }
 

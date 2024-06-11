@@ -7,6 +7,7 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
@@ -143,14 +144,18 @@ public class TeamServiceTest {
                         .name(nameToFind + "참여하실분12312312")
                         .roles(List.of(role1))
                         .tags(tagList)
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         Team team2 =
                 Team.builder()
                         .name(nameToFind + "참여하실분1233434")
                         .roles(List.of(role1))
                         .tags(Arrays.asList(tag1,tag2,tag3))
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         teamRepository.save(team1);
         teamRepository.save(team2);
@@ -185,14 +190,18 @@ public class TeamServiceTest {
                         .name("team1")
                         .roles(List.of(role1))
                         .tags(tagList)
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         Team team2 =
                 Team.builder()
                         .name("team1")
                         .roles(List.of(role1))
                         .tags(Arrays.asList(tag1,tag2,tag3))
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         teamRepository.save(team1);
         teamRepository.save(team2);
@@ -218,13 +227,17 @@ public class TeamServiceTest {
                 Team.builder()
                         .name("team1")
                         .roles(List.of(role1,role2))
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         Team team2 =
                 Team.builder()
                         .name("team1")
                         .roles(List.of(role1))
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         teamRepository.save(team1);
         teamRepository.save(team2);
@@ -311,7 +324,7 @@ public class TeamServiceTest {
                         .name(changedName)
                         .tags(List.of(tagRequest1,tagRequest3))
                         .roles(List.of(roleRequest2,roleRequest3))
-                        .isRecruiting(true)
+                        .teamStatus(String.valueOf(TeamStatus.RECRUITING))
                         .build();
 
         TeamResponse response = teamService.update(responseDto.getId(),request);
@@ -319,7 +332,7 @@ public class TeamServiceTest {
         assertThat(response.getName()).isEqualTo(changedName);
         assertThat(response.getTags()).containsExactly(tagName1,tagName3);
         assertThat(response.getRoleNames()).containsExactly(roleName2,roleName3);
-        assertThat(response.isRecruiting()).isTrue();
+        assertThat(response.getTeamStatus()).isEqualTo(String.valueOf(TeamStatus.RECRUITING));
 
     }
 
@@ -372,7 +385,7 @@ public class TeamServiceTest {
                             .name(changedName)
                             .tags(List.of(tagRequest1,tagRequest3))
                             .roles(List.of(roleRequest2,roleRequest3))
-                            .isRecruiting(false)
+                            .teamStatus(String.valueOf(TeamStatus.CANCELED))
                             .build();
 
             assertThatThrownBy(() -> teamService.update(responseDto.getId(),request)).isInstanceOf(TeamRoleHasApprovedException.class);

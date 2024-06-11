@@ -36,6 +36,8 @@ public class Team {
     @NonNull
     private String name;
 
+    TeamStatus teamStatus = TeamStatus.RECRUITING;
+
     @NonNull
     @ManyToOne
     @JoinColumn(name = "host_id")
@@ -44,38 +46,36 @@ public class Team {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<TeamRole> teamRoles = new ArrayList<>();
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "team_tag",
             joinColumns = @JoinColumn(name="team_id"),
             inverseJoinColumns = @JoinColumn(name="tag_id"))
     private List<Tag> tags;
 
-    private boolean isRecruiting = true;
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private boolean deleted;
 
     public Team(final String name,final Member host,final List<Tag> tags, List<Role> roles){
-        this(null,name,host,tags,roles,true,false);
+        this(null,name,host,tags,roles,TeamStatus.RECRUITING,false);
     }
 
     public Team(final String name,final Member host, List<Role> roles){
-        this(null,name,host,null,roles,true,false);
+        this(null,name,host,null,roles,TeamStatus.RECRUITING,false);
     }
 
 
     @Builder
-    public Team(Long id, @NonNull String name, @NonNull Member host, List<Tag> tags, List<Role> roles,boolean isRecruiting,boolean deleted){
+    public Team(Long id, @NonNull String name, @NonNull Member host, List<Tag> tags, List<Role> roles,TeamStatus teamStatus,boolean deleted){
         this.id = id;
         this.name = name;
         this.host = host;
         this.tags = tags;
         addRoles(roles);
-        this.isRecruiting = isRecruiting;
+        this.teamStatus = teamStatus;
         this.deleted = deleted;
     }
 
@@ -96,22 +96,27 @@ public class Team {
     }
 
     public void apply(Application application){
+        isTeamRecruiting();
         validateApplication(application);
+
         TeamRole teamRole = findTeamRoleByRole(application.getRole());
         teamRole.getApplications().add(application);
         application.setTeamRole(teamRole);
     }
 
     private void validateApplication(Application application){
-        isTeamRecruiting();
         isMemberDuplicatedInRole(application.getRole(), application.getMember());
         isValidRole(application.getRole());
     }
 
     private void isTeamRecruiting(){
-        if (!isRecruiting){
+        if (!isRecruiting()){
             throw new TeamNotRecruitingException("팀이 구인중인 상태가 아닙니다.");
         }
+    }
+
+    public boolean isRecruiting(){
+        return teamStatus != TeamStatus.CANCELED && teamStatus != TeamStatus.FINISHED;
     }
 
     private void isMemberDuplicatedInRole(Role role, Member member){
@@ -154,11 +159,11 @@ public class Team {
         return host.equals(member);
     }
 
-    public void update(@NonNull String name, List<Tag> tags, List<Role> roles,boolean isRecruiting){
+    public void update(@NonNull String name, List<Tag> tags, List<Role> roles,TeamStatus teamStatus){
         this.name = name;
         this.tags = tags;
         updateRoles(roles);
-        this.isRecruiting = isRecruiting;
+        this.teamStatus = teamStatus;
     }
 
     private void updateRoles(List<Role> roles) {

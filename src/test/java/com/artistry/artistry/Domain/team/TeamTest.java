@@ -45,7 +45,7 @@ public class TeamTest {
                         .name("testteam")
                         .roles(List.of(new Role("role1")))
                         .host(host)
-                        .isRecruiting(false).build();
+                        .teamStatus(TeamStatus.CANCELED).build();
 
         Application application =
                 Application.builder().build();
