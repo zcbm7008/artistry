@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,6 +78,7 @@ public class TeamRoleTest {
         String roleName = "role1";
         TeamRole teamRole1 = TeamRole.builder()
                 .role(new Role(roleName))
+                .applications(new ArrayList<>())
                 .build();
 
         assertThat(teamRole1.getRole().getName()).isEqualTo(roleName);

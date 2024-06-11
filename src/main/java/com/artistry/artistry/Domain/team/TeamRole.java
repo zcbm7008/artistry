@@ -64,12 +64,12 @@ public class TeamRole {
     }
 
     public void filterApprovedApplications(){
-        applications.removeIf(application -> !application.getStatus().equals(ApplicationStatus.APPROVED));
-
+        this.applications = applications.stream()
+                .filter(application -> application.getStatus().equals(ApplicationStatus.APPROVED)).collect(Collectors.toList());
     }
 
     public void removeAllApplications(){
-        applications.clear();
+        this.applications = new ArrayList<>();
     }
 
 }

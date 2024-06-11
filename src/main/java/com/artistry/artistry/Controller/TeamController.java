@@ -1,9 +1,7 @@
 package com.artistry.artistry.Controller;
 
-import com.artistry.artistry.Dto.Request.TagUpdateRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
-import com.artistry.artistry.Dto.Response.TagResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Service.TeamService;
 import jakarta.validation.Valid;
@@ -50,7 +48,8 @@ public class TeamController {
 
     @PutMapping(value = "/{teamId}/finish")
     public ResponseEntity<TeamResponse> finish(@PathVariable final Long teamId){
-        return ResponseEntity.ok(teamService.finish(teamId));
+        TeamResponse response= teamService.finish(teamId);
+        return ResponseEntity.ok(response);
     }
 
 }
