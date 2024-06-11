@@ -57,9 +57,9 @@ public class TeamRoleTest {
     @DisplayName("teamRole의 포트폴리오를 Application Status에 따라 가져온다.")
     @Test
     void getTeamRolePortfolios(){
-        List<Portfolio> approvedPortfolios = teamRole1.getPortfolios(ApplicationStatus.APPROVED);
-        List<Portfolio> rejectedPortfolios = teamRole1.getPortfolios(ApplicationStatus.REJECTED);
-        List<Portfolio> pendingPortfolios = teamRole1.getPortfolios(ApplicationStatus.PENDING);
+        List<Portfolio> approvedPortfolios = teamRole1.getPortfoliosByStatus(ApplicationStatus.APPROVED);
+        List<Portfolio> rejectedPortfolios = teamRole1.getPortfoliosByStatus(ApplicationStatus.REJECTED);
+        List<Portfolio> pendingPortfolios = teamRole1.getPortfoliosByStatus(ApplicationStatus.PENDING);
 
         assertThat(approvedPortfolios).hasSize(1).extracting(Portfolio::getTitle).contains(title1);
         assertThat(rejectedPortfolios).hasSize(1).extracting(Portfolio::getTitle).contains(title2);

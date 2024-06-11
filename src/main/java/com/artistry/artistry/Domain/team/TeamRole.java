@@ -35,7 +35,14 @@ public class TeamRole {
     @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Application> applications = new ArrayList<>();
 
-    public List<Portfolio> getPortfolios(ApplicationStatus status) {
+    public List<Portfolio> getAllPortfolios() {
+        return applications.stream()
+                .map(Application::getPortfolio)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<Portfolio> getPortfoliosByStatus(ApplicationStatus status) {
         return applications.stream()
                 .filter(application -> status == null || application.getStatus() == status)
                 .map(Application::getPortfolio)
@@ -43,7 +50,6 @@ public class TeamRole {
     }
 
     public void addApplication(Application application){
-        application.setStatus(ApplicationStatus.APPROVED);
         applications.add(application);
     }
 
