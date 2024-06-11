@@ -100,8 +100,6 @@ public class TeamService {
 
         team.update(request.getName(),tags,roles,request.isRecruiting());
 
-        System.out.println("ddddddddddddddddddddddddd"+request.isRecruiting());
-
         return TeamResponse.from(team);
     }
 }

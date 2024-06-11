@@ -31,7 +31,7 @@ public class RoleServiceTest {
 
     @BeforeEach
     void setUp() {
-        roleRepository.deleteAll(); // 기존 데이터 삭제
+
     }
 
 
