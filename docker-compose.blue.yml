@@ -1,0 +1,10 @@
+#blue
+version: '3'
+services:
+  backend:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8081:80"
+    container_name: artistry-blue
