@@ -52,7 +52,7 @@ public class PortfolioService {
 
     @Transactional
     public PortfolioResponse create(final PortfolioRequest request){
-        Role role = roleService.findRoleById(request.getRole().getId());
+        Role role = roleService.findEntityById(request.getRole().getId());
 
         Portfolio portfolio = new Portfolio(request.getTitle(),role);
         portfolio.addContents(ContentToEntity(request.getContents()));
@@ -64,7 +64,7 @@ public class PortfolioService {
     @Transactional
     public PortfolioResponse update(final PortfolioUpdateRequest request){
         Portfolio portfolio = findEntityById(request.getId());
-        Role role = roleService.findRoleById(request.getRole().getId());
+        Role role = roleService.findEntityById(request.getRole().getId());
         portfolio.update(request.getTitle(),role,ContentToEntity(request.getContents()),PortfolioAccess.valueOf(request.getAccess()));
 
         return PortfolioResponse.from(portfolio);

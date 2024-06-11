@@ -10,9 +10,10 @@ import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
+import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.TeamResponse;
-import com.artistry.artistry.Dto.Response.TeamRoleResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
+import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import com.artistry.artistry.Repository.*;
 import org.junit.jupiter.api.DisplayName;
@@ -22,9 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -42,13 +41,24 @@ public class TeamServiceTest {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
+    private RoleService roleService;
+    @Autowired
     MemberRepository memberRepository;
     @Autowired
     PortfolioRepository portfolioRepository;
     @Autowired
-    TeamRoleRepository teamRoleRepository;
-    @Autowired
     ApplicationRepository applicationRepository;
+
+    private TagRequest createTagRequest(String name){
+        Tag tag = tagRepository.save(new Tag(name));
+        return new TagRequest(tag.getId());
+    }
+
+    private RoleRequest createRoleRequest(String name){
+        Role role = roleRepository.save(new Role(name));
+        return new RoleRequest(role.getId());
+    }
+
 
     @DisplayName("팀을 생성한다")
     @Test
@@ -59,19 +69,22 @@ public class TeamServiceTest {
         String tagName1 = "밴드";
         String tagName2 = "락";
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
-        Role role1 = roleRepository.save(new Role(roleName1));
-        Role role2 = roleRepository.save(new Role(roleName2));
-        Tag tag1 = tagRepository.save(new Tag(tagName1));
-        Tag tag2 = tagRepository.save(new Tag(tagName2));
-        TagRequest tagRequest1 = new TagRequest(tag1.getId());
-        TagRequest tagRequest2 = new TagRequest(tag2.getId());
-        RoleRequest roleRequest1 = new RoleRequest(role1.getId());
-        RoleRequest roleRequest2 = new RoleRequest(role2.getId());
 
-        TeamRequest teamRequest = new TeamRequest(teamName,member1.getId(),Arrays.asList(tagRequest1,tagRequest2),Arrays.asList(roleRequest1,roleRequest2));
+        TagRequest tagRequest1 = createTagRequest(tagName1);
+        TagRequest tagRequest2 = createTagRequest(tagName2);
+        RoleRequest roleRequest1 = createRoleRequest(roleName1);
+        RoleRequest roleRequest2 = createRoleRequest(roleName2);
+
+        TeamRequest teamRequest =
+                new TeamRequest(
+                        teamName,
+                        member1.getId(),
+                        Arrays.asList(tagRequest1,tagRequest2),
+                        Arrays.asList(roleRequest1,roleRequest2));
+
         TeamResponse responseDto = teamService.create(teamRequest);
 
-        assertThat(responseDto.getTeamId()).isNotNull();
+        assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getTeamRoles())
                 .extracting(teamRole -> teamRole.getRole().getName())
                 .containsExactly(roleName1, roleName2);
@@ -87,10 +100,10 @@ public class TeamServiceTest {
         String roleName1 = "작곡가";
         String invalidRoleName = "일러스트레이터";
         String tagName1 = "밴드";
+
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
         Member member2 = memberRepository.save(new Member("member2","b@b.com"));
         Member applicant1 = memberRepository.save(new Member("applicant1","c@c.com"));
-
 
         Role role1 = roleRepository.save(new Role(roleName1));
         Role invalidRole = roleRepository.save(new Role(invalidRoleName));
@@ -108,6 +121,7 @@ public class TeamServiceTest {
         Application application2 = applicationRepository.save(new Application(team, invalidRole, applicant1, portfolio2));
 
         team.findTeamRoleByRole(role1).addApplication(application1);
+
         assertThatThrownBy(() -> team.findTeamRoleByRole(invalidRole).getApplications().add(application2)).isInstanceOf(TeamRoleNotFoundException.class);
 
     }
@@ -144,7 +158,7 @@ public class TeamServiceTest {
         List <TeamResponse> response = teamService.findTeamsByNameLike("공모전");
 
         assertThat(response).hasSize(2)
-                .extracting(TeamResponse::getTeamName)
+                .extracting(TeamResponse::getName)
                 .allMatch(name -> name.contains(nameToFind));
 
     }
@@ -225,11 +239,11 @@ public class TeamServiceTest {
     void findTeamsByApprovedApplicationMember(){
         String teamName = "밴드 팀";
         String roleName1 = "작곡가";
-        String roleName2 = "기타";
+        String roleName2 = "베이스";
         String tagName1 = "밴드";
+
         Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
-
 
         Role role1 = roleRepository.save(new Role(roleName1));
         Role role2 = roleRepository.save(new Role(roleName2));
@@ -259,6 +273,111 @@ public class TeamServiceTest {
         assertThat(responses).hasSize(2);
     }
 
+    @DisplayName("팀 정보를 수정할 때, 역할에 승인된 지원자가 없으면 수정을 실행한다.")
+    @Test
+    void update(){
+        String teamName = "밴드 팀";
+        String roleName1 = "작곡가";
+        String roleName2 = "드럼";
+        String roleName3 = "베이스";
+
+        String tagName1 = "밴드";
+        String tagName2 = "락";
+        String tagName3 = "인디";
+
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+
+        TagRequest tagRequest1 = createTagRequest(tagName1);
+        TagRequest tagRequest2 = createTagRequest(tagName2);
+        TagRequest tagRequest3 = createTagRequest(tagName3);
+
+        RoleRequest roleRequest1 = createRoleRequest(roleName1);
+        RoleRequest roleRequest2 = createRoleRequest(roleName2);
+        RoleRequest roleRequest3 = createRoleRequest(roleName3);
+
+        TeamRequest teamRequest =
+                new TeamRequest(
+                        teamName,
+                        member1.getId(),
+                        Arrays.asList(tagRequest1,tagRequest2),
+                        Arrays.asList(roleRequest1,roleRequest2));
+
+        TeamResponse responseDto = teamService.create(teamRequest);
+
+        String changedName = "밴드팀팀팀";
+
+        TeamUpdateRequest request =
+                TeamUpdateRequest.builder()
+                        .name(changedName)
+                        .tags(List.of(tagRequest1,tagRequest3))
+                        .roles(List.of(roleRequest2,roleRequest3))
+                        .isRecruiting(true)
+                        .build();
+
+        TeamResponse response = teamService.update(responseDto.getId(),request);
+
+        assertThat(response.getName()).isEqualTo(changedName);
+        assertThat(response.getTags()).containsExactly(tagName1,tagName3);
+        assertThat(response.getRoleNames()).containsExactly(roleName2,roleName3);
+        assertThat(response.isRecruiting()).isTrue();
+
+    }
+
+
+
+
+        @DisplayName("역할에 승인된 지원자가 있으면, Role을 수정할 때 예외를 출력한다.")
+        @Test
+        void exceptionWhenApprovedInTeamRole(){
+            String teamName = "밴드 팀";
+            String roleName1 = "작곡가";
+            String roleName2 = "드럼";
+            String roleName3 = "베이스";
+
+            String tagName1 = "밴드";
+            String tagName2 = "락";
+            String tagName3 = "인디";
+
+            Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+
+            TagRequest tagRequest1 = createTagRequest(tagName1);
+            TagRequest tagRequest2 = createTagRequest(tagName2);
+            TagRequest tagRequest3 = createTagRequest(tagName3);
+
+            RoleRequest roleRequest1 = createRoleRequest(roleName1);
+            RoleRequest roleRequest2 = createRoleRequest(roleName2);
+            RoleRequest roleRequest3 = createRoleRequest(roleName3);
+
+            TeamRequest teamRequest =
+                    new TeamRequest(
+                            teamName,
+                            member1.getId(),
+                            Arrays.asList(tagRequest1,tagRequest2),
+                            Arrays.asList(roleRequest1,roleRequest2));
+
+            TeamResponse responseDto = teamService.create(teamRequest);
+
+            String changedName = "밴드팀팀팀";
+
+            Role role1 = roleService.findEntityById(roleRequest1.getId());
+            Portfolio portfolio = new Portfolio("포폴1", role1);
+            Team team = teamService.findEntityById(responseDto.getId());
+            Application application = new Application(team,role1,member1,portfolio);
+
+            teamService.apply(responseDto.getId(), application);
+            application.setStatus(ApplicationStatus.APPROVED);
+
+            TeamUpdateRequest request =
+                    TeamUpdateRequest.builder()
+                            .name(changedName)
+                            .tags(List.of(tagRequest1,tagRequest3))
+                            .roles(List.of(roleRequest2,roleRequest3))
+                            .isRecruiting(false)
+                            .build();
+
+            assertThatThrownBy(() -> teamService.update(responseDto.getId(),request)).isInstanceOf(TeamRoleHasApprovedException.class);
+        }
+
 
     @DisplayName("요청한 팀 Id가 없을경우 예외를 던짐.")
     @Test
@@ -266,7 +385,5 @@ public class TeamServiceTest {
         assertThatThrownBy(() -> teamService.findById(Long.MAX_VALUE))
                 .isInstanceOf(TeamNotFoundException.class);
     }
-
-
 
 }

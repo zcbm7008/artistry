@@ -1,10 +1,11 @@
 package com.artistry.artistry.Domain.Role;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.artistry.artistry.Domain.team.TeamRole;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @EqualsAndHashCode
 @Builder
@@ -20,13 +21,17 @@ public class Role {
     @NonNull
     private RoleName name;
 
+    @OneToMany(mappedBy = "role", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List <TeamRole> teamRoles = new ArrayList<>();
+
     public Role(final String roleName) {
-        this(null,roleName);
+        this(null,roleName,null);
     }
 
-    public Role(final Long id, final String name) {
+    public Role(final Long id, final String name, List<TeamRole> teamRoles) {
         this.id = id;
         this.name = new RoleName(name);
+        this.teamRoles = teamRoles;
     }
 
     public void update(String name){

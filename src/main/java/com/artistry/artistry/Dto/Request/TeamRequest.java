@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class TeamRequest {
     @NonNull
-    private String teamName;
+    private String name;
     @NonNull
     private Long hostId;
     private List<TagRequest> tags;

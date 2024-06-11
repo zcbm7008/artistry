@@ -91,7 +91,7 @@ public class MemberServiceTest {
         MemberTeamsResponse response = memberService.getParticipatedTeams(request);
 
         assertThat(response.getTeamResponses()).hasSize(2);
-        assertThat(response.getTeamResponses()).extracting(TeamResponse::getTeamId).containsExactlyInAnyOrder(team1.getId(), team2.getId());
+        assertThat(response.getTeamResponses()).extracting(TeamResponse::getId).containsExactlyInAnyOrder(team1.getId(), team2.getId());
 
     }
     
