@@ -51,4 +51,5 @@ public class Application {
     public Application(Team team, Role role, TeamRole teamRole,Member member, Portfolio portfolio){
         this(null,team,role,teamRole,member,portfolio,ApplicationStatus.PENDING);
     }
+
 }
