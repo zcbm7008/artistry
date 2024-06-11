@@ -6,6 +6,7 @@ import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
@@ -98,8 +99,25 @@ public class TeamService {
         List <Tag> tags = tagService.findAllEntityById(request.getTags());
         List <Role> roles = roleService.findAllById(request.getRoles());
 
-        team.update(request.getName(),tags,roles,request.isRecruiting());
+        team.update(request.getName(),tags,roles,TeamStatus.of(request.getTeamStatus()));
 
         return TeamResponse.from(team);
     }
+
+    @Transactional
+    public void cancel(final Long teamId){
+        Team team = findEntityById(teamId);
+        team.cancel();
+
+        teamRepository.delete(team);
+    }
+
+    @Transactional
+    public TeamResponse finish(final Long teamId){
+        Team team = findEntityById(teamId);
+        team.finish();
+
+        return TeamResponse.from(team);
+    }
+
 }

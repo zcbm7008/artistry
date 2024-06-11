@@ -29,12 +29,20 @@ public class TeamRole {
 
     @ManyToOne
     @JoinColumn(name="role_id")
+    @NonNull
     private Role role;
 
-    @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Application> applications = new ArrayList<>();
 
-    public List<Portfolio> getPortfolios(ApplicationStatus status) {
+    public List<Portfolio> getAllPortfolios() {
+        return applications.stream()
+                .map(Application::getPortfolio)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<Portfolio> getPortfoliosByStatus(ApplicationStatus status) {
         return applications.stream()
                 .filter(application -> status == null || application.getStatus() == status)
                 .map(Application::getPortfolio)
@@ -42,8 +50,8 @@ public class TeamRole {
     }
 
     public void addApplication(Application application){
-        application.setStatus(ApplicationStatus.APPROVED);
-        this.getApplications().add(application);
+        application.setTeamRole(this);
+        applications.add(application);
     }
 
     public String getRoleName(){
@@ -53,6 +61,15 @@ public class TeamRole {
     public boolean isApprovedInTeamRole(){
         return applications.stream()
                 .anyMatch(application -> application.getStatus().equals(ApplicationStatus.APPROVED));
+    }
+
+    public void filterApprovedApplications(){
+        this.applications = applications.stream()
+                .filter(application -> application.getStatus().equals(ApplicationStatus.APPROVED)).collect(Collectors.toList());
+    }
+
+    public void removeAllApplications(){
+        this.applications = new ArrayList<>();
     }
 
 }
