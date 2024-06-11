@@ -2,6 +2,7 @@ package com.artistry.artistry.Domain.team;
 
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.application.Application;
+import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,4 +54,5 @@ public class TeamTest {
         assertThatThrownBy(() -> team.apply(application)).isInstanceOf(TeamNotRecruitingException.class);
 
     }
+
 }

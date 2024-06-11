@@ -104,9 +104,4 @@ public class TeamService {
         return TeamResponse.from(team);
     }
 
-    public void delete(final Long teamId){
-        Team team = findEntityById(teamId);
-
-
-    }
 }

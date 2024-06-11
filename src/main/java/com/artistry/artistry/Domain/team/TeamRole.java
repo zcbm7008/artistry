@@ -29,9 +29,10 @@ public class TeamRole {
 
     @ManyToOne
     @JoinColumn(name="role_id")
+    @NonNull
     private Role role;
 
-    @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Application> applications = new ArrayList<>();
 
     public List<Portfolio> getPortfolios(ApplicationStatus status) {
@@ -43,7 +44,7 @@ public class TeamRole {
 
     public void addApplication(Application application){
         application.setStatus(ApplicationStatus.APPROVED);
-        this.getApplications().add(application);
+        applications.add(application);
     }
 
     public String getRoleName(){
@@ -55,4 +56,13 @@ public class TeamRole {
                 .anyMatch(application -> application.getStatus().equals(ApplicationStatus.APPROVED));
     }
 
+    public void filterApprovedApplications(){
+        applications = new ArrayList<>(applications);
+        applications.removeIf(application -> !application.getStatus().equals(ApplicationStatus.APPROVED));
+    }
+
+    public void removeAllApplications(){
+        applications = new ArrayList<>(applications);
+        applications.clear();
+    }
 }

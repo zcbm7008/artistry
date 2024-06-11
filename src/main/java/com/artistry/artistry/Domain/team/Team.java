@@ -36,6 +36,7 @@ public class Team {
     @NonNull
     private String name;
 
+    @Enumerated(EnumType.STRING)
     TeamStatus teamStatus = TeamStatus.RECRUITING;
 
     @NonNull
@@ -200,6 +201,16 @@ public class Team {
     private void deleteTeamRoleByRole(TeamRole teamRole){
         validateTeamRoleForDeletion(teamRole);
         this.teamRoles.remove(teamRole);
+    }
+
+    public void cancelTeam(){
+        teamRoles.forEach(TeamRole::removeAllApplications);
+        this.teamStatus = TeamStatus.CANCELED;
+    }
+
+    public void finishTeam(){
+        teamRoles.forEach(TeamRole::filterApprovedApplications);
+        this.teamStatus = TeamStatus.FINISHED;
     }
 
 }
