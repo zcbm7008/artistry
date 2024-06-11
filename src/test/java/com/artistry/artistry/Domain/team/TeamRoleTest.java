@@ -28,9 +28,8 @@ public class TeamRoleTest {
         title1 = "title1";
         title2 = "title2";
         Role role1 = new Role("role1");
-        Role role2 = new Role("role2");
         Portfolio portfolio1 = new Portfolio(title1,role1);
-        Portfolio portfolio2 = new Portfolio(title2,role2);
+        Portfolio portfolio2 = new Portfolio(title2,role1);
         application1 =
                 Application.builder()
                         .role(role1)
@@ -41,17 +40,23 @@ public class TeamRoleTest {
 
         application2 =
                 Application.builder()
-                        .role(role2)
+                        .role(role1)
                         .status(ApplicationStatus.REJECTED)
                         .portfolio(portfolio2)
                         .build();
 
         teamRole1 = TeamRole.builder()
+                .role(role1)
                 .applications(List.of(application1,application2))
                 .build();
 
+    }
 
-
+    @DisplayName("teamRole의 모든 포트폴리오를 가져온다.")
+    @Test
+    void getAllPortfolios(){
+        List <Portfolio> portfolios = teamRole1.getAllPortfolios();
+        assertThat(portfolios).hasSize(2).contains(application1.getPortfolio(),application2.getPortfolio());
     }
 
     @DisplayName("teamRole의 포트폴리오를 Application Status에 따라 가져온다.")
