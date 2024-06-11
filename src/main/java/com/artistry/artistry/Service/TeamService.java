@@ -104,14 +104,20 @@ public class TeamService {
         return TeamResponse.from(team);
     }
 
+    @Transactional
     public void cancel(final Long teamId){
         Team team = findEntityById(teamId);
         team.cancel();
+
+        teamRepository.delete(team);
     }
 
-    public void finish(final Long teamId){
+    @Transactional
+    public TeamResponse finish(final Long teamId){
         Team team = findEntityById(teamId);
         team.finish();
+
+        return TeamResponse.from(team);
     }
 
 }

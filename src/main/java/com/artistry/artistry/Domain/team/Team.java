@@ -101,8 +101,7 @@ public class Team {
         validateApplication(application);
 
         TeamRole teamRole = findTeamRoleByRole(application.getRole());
-        teamRole.getApplications().add(application);
-        application.setTeamRole(teamRole);
+        teamRole.addApplication(application);
     }
 
     private void validateApplication(Application application){

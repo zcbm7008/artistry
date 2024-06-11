@@ -32,7 +32,7 @@ public class TeamRole {
     @NonNull
     private Role role;
 
-    @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "teamRole", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Application> applications = new ArrayList<>();
 
     public List<Portfolio> getAllPortfolios() {
@@ -50,6 +50,7 @@ public class TeamRole {
     }
 
     public void addApplication(Application application){
+        application.setTeamRole(this);
         applications.add(application);
     }
 
@@ -63,12 +64,12 @@ public class TeamRole {
     }
 
     public void filterApprovedApplications(){
-        applications = new ArrayList<>(applications);
         applications.removeIf(application -> !application.getStatus().equals(ApplicationStatus.APPROVED));
+
     }
 
     public void removeAllApplications(){
-        applications = new ArrayList<>(applications);
         applications.clear();
     }
+
 }

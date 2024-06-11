@@ -6,6 +6,8 @@ import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Response.TeamResponse;
+import com.artistry.artistry.Exceptions.TeamNotFoundException;
+import com.artistry.artistry.Service.TeamService;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,8 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestDocs(outputDir = "target/generated-snippets")
 class TeamApiDocTest extends ApiTest{
+    @Autowired
+    private TeamService teamService;
 
     private Team dummyTeam;
     TeamResponse teamResponse1;
@@ -48,7 +53,7 @@ class TeamApiDocTest extends ApiTest{
         tagRepository.save(new Tag("힙합"));
         tagRepository.save(new Tag("퓨처"));
         tagRepository.save(new Tag("하이퍼팝"));
-        tagRepository.save(new Tag("뭄바톤"));
+        tagRepository.save(new Tag("디지코어"));
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
 
@@ -225,5 +230,40 @@ class TeamApiDocTest extends ApiTest{
         assertThat(response.getTeamStatus()).isEqualTo(String.valueOf(TeamStatus.CANCELED));
 
     }
+
+    @DisplayName("팀의 상태를 cancel로 변경한다.")
+    @Test
+    void cancelTeam(){
+        given().filter(RestAssuredRestDocumentationWrapper.document("delete-team",
+                        "팀 모집 취소 API"))
+                .when().delete("/api/teams/{id}/cancel",teamResponse1.getId())
+                .then().statusCode(HttpStatus.NO_CONTENT.value());
+
+
+
+        int statusCode =  given()
+                .when().get("/api/teams/{id}", teamResponse1.getId())
+                .then().extract().statusCode();
+
+        assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND.value());
+
+        assertThatThrownBy(() -> teamService.findEntityById(teamResponse1.getId())).isInstanceOf(TeamNotFoundException.class);
+
+    }
+
+    @DisplayName("팀의 상태를 finish로 변경한다.")
+    @Test
+    void finishTeam(){
+        TeamResponse response = given().filter(RestAssuredRestDocumentationWrapper.document("finish-team",
+                        "팀 모집 완료 API"))
+                .when().put("/api/teams/{id}/finish",teamResponse1.getId())
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(TeamResponse.class);
+
+        assertThat(response.getTeamStatus()).isEqualTo(TeamStatus.FINISHED.toString());
+
+    }
+
+
 
 }
