@@ -104,4 +104,14 @@ public class TeamService {
         return TeamResponse.from(team);
     }
 
+    public void cancel(final Long teamId){
+        Team team = findEntityById(teamId);
+        team.cancel();
+    }
+
+    public void finish(final Long teamId){
+        Team team = findEntityById(teamId);
+        team.finish();
+    }
+
 }

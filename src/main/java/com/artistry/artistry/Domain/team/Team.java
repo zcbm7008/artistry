@@ -97,7 +97,7 @@ public class Team {
     }
 
     public void apply(Application application){
-        isTeamRecruiting();
+        validateRecruiting();
         validateApplication(application);
 
         TeamRole teamRole = findTeamRoleByRole(application.getRole());
@@ -110,7 +110,7 @@ public class Team {
         isValidRole(application.getRole());
     }
 
-    private void isTeamRecruiting(){
+    private void validateRecruiting(){
         if (!isRecruiting()){
             throw new TeamNotRecruitingException("팀이 구인중인 상태가 아닙니다.");
         }
@@ -203,12 +203,12 @@ public class Team {
         this.teamRoles.remove(teamRole);
     }
 
-    public void cancelTeam(){
+    public void cancel(){
         teamRoles.forEach(TeamRole::removeAllApplications);
         this.teamStatus = TeamStatus.CANCELED;
     }
 
-    public void finishTeam(){
+    public void finish(){
         teamRoles.forEach(TeamRole::filterApprovedApplications);
         this.teamStatus = TeamStatus.FINISHED;
     }
