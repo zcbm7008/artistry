@@ -4,6 +4,7 @@ import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,10 +21,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 public class TeamTest {
     Member host;
+    Member member1;
 
     @BeforeEach
     void setUp(){
         host = new Member("host","host@host.com","hosturl");
+        member1 = new Member("member1","member@member.com","memberurl");
     }
 
     @DisplayName("팀의 host를 확인한다.")
@@ -41,17 +44,17 @@ public class TeamTest {
     @DisplayName("팀이 recruiting중이 아니면 지원할 때 예외를 출력한다.")
     @Test
     void notRecruiting(){
+        Role role = new Role("role1");
         Team team=
                 Team.builder()
                         .name("testteam")
-                        .roles(List.of(new Role("role1")))
+                        .roles(List.of(role))
                         .host(host)
                         .teamStatus(TeamStatus.CANCELED).build();
 
-        Application application =
-                Application.builder().build();
+        Portfolio portfolio = new Portfolio(member1,"title1",role);
 
-        assertThatThrownBy(() -> team.apply(application)).isInstanceOf(TeamNotRecruitingException.class);
+        assertThatThrownBy(() -> team.apply(portfolio)).isInstanceOf(TeamNotRecruitingException.class);
 
     }
 

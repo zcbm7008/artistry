@@ -1,6 +1,7 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
@@ -12,6 +13,7 @@ import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
+import com.artistry.artistry.Repository.ApplicationRepository;
 import com.artistry.artistry.Repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class TeamService {
     private final RoleService roleService;
     private final MemberService memberService;
     private final ApplicationService applicationService;
+    private final ApplicationRepository applicationRepository;
 
     public TeamResponse create(TeamRequest teamRequest){
         Member host = memberService.findEntityById(teamRequest.getHostId());
@@ -62,7 +65,9 @@ public class TeamService {
     @Transactional
     public ApplicationResponse apply(Long teamId, Portfolio portfolio){
         Team team = findEntityById(teamId);
-        return ApplicationResponse.from(team.apply(portfolio));
+        Application application = team.apply(portfolio);
+        applicationRepository.save(application);
+        return ApplicationResponse.from(application);
     }
 
     private List<Team> findByNameLike(final String name){

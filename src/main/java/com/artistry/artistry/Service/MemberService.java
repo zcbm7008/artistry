@@ -42,7 +42,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberTeamsResponse getParticipatedTeams(final MemberInfoRequest request){
         final Member member = memberRepository.findByEmail(request.getEmail());
-        final List<Application> applications = applicationRepository.findByStatusAndMember(ApplicationStatus.APPROVED, member);
+        final List<Application> applications = applicationRepository.findByStatusAndPortfolio_Member(ApplicationStatus.APPROVED, member);
 
         final List<Team> teams = applications.stream()
                 .map(Application::getTeam)

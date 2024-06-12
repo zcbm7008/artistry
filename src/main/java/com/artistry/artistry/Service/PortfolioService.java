@@ -1,11 +1,12 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Dto.Request.ContentRequest;
-import com.artistry.artistry.Dto.Request.PortfolioRequest;
+import com.artistry.artistry.Dto.Request.PortfolioCreateRequest;
 import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
@@ -20,9 +21,12 @@ import java.util.stream.Collectors;
 public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final RoleService roleService;
-    public PortfolioService(PortfolioRepository portfolioRepository,RoleService roleService){
+    private final MemberService memberService;
+
+    public PortfolioService(PortfolioRepository portfolioRepository,RoleService roleService,MemberService memberService){
         this.portfolioRepository = portfolioRepository;
         this.roleService = roleService;
+        this.memberService = memberService;
     }
 
     public PortfolioResponse findPortfolioById(Long id){
@@ -51,10 +55,11 @@ public class PortfolioService {
     }
 
     @Transactional
-    public PortfolioResponse create(final PortfolioRequest request){
+    public PortfolioResponse create(final PortfolioCreateRequest request){
         Role role = roleService.findEntityById(request.getRole().getId());
+        Member member = memberService.findEntityById(request.getMemberId());
 
-        Portfolio portfolio = new Portfolio(request.getTitle(),role);
+        Portfolio portfolio = new Portfolio(member,request.getTitle(),role);
         portfolio.addContents(ContentToEntity(request.getContents()));
         portfolio.setPortfolioAccess(PortfolioAccess.valueOf(request.getAccess()));
 

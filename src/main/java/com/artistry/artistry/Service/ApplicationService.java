@@ -71,6 +71,8 @@ public class ApplicationService {
                         .status(ApplicationStatus.of(request.getStatus()))
                         .build();
 
+        applicationRepository.save(application);
+
         return ApplicationResponse.from(application);
     }
 

@@ -8,6 +8,7 @@ import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Request.MemberInfoRequest;
+import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.MemberTeamsResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
@@ -39,6 +40,8 @@ public class MemberServiceTest {
     private TeamRepository teamRepository;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    ApplicationService applicationService;
 
     @DisplayName("멤버를 저장한다.")
     @Test
@@ -77,14 +80,14 @@ public class MemberServiceTest {
         Member hostMember = memberRepository.save(new Member("host","host@a.com","1.url"));
         Member savedMember = memberRepository.save(new Member("nick1","savedmember@member.com","2.url"));
         Role role1 = roleRepository.save(new Role("작곡가"));
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio("작곡가포폴1",role1));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(savedMember,"작곡가포폴1",role1));
 
         Team team1 = teamRepository.save(new Team("team1",hostMember, Arrays.asList(role1)));
         Team team2 = teamRepository.save(new Team("team2",savedMember, Arrays.asList(role1)));
-        Application application = applicationRepository.save(new Application(team1,role1,savedMember,portfolio1));
-        Application application2 = applicationRepository.save(new Application(team2,role1,savedMember,portfolio1));
+        Application application1 = team1.apply(portfolio1);
+        Application application2 = team2.apply(portfolio1);
 
-        application.setStatus(ApplicationStatus.APPROVED);
+        application1.setStatus(ApplicationStatus.APPROVED);
         application2.setStatus(ApplicationStatus.APPROVED);
 
         MemberInfoRequest request = new MemberInfoRequest(savedMember.getEmail());
