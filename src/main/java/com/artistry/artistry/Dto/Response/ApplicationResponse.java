@@ -11,19 +11,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApplicationResponse {
-    private Long applicationId;
-    private Long teamId;
+    private Long id;
     private MemberResponse member;
+    private Long teamId;
     private String role;
     private PortfolioResponse portfolio;
     private String status;
 
     public static ApplicationResponse from(Application application){
         return ApplicationResponse.builder()
-                .applicationId(application.getId())
-                .teamId(application.getTeam().getId())
+                .id(application.getId())
                 .member(MemberResponse.from(application.getMember()))
-                .role(application.getRole().toString())
+                .teamId(application.getTeamRole().getTeam().getId())
+                .role(application.getRole().getName())
                 .portfolio(PortfolioResponse.from(application.getPortfolio()))
                 .status(application.getStatus().toString())
                 .build();

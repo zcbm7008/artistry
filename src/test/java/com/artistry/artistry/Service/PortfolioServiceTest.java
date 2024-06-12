@@ -1,16 +1,18 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Dto.Request.ContentRequest;
-import com.artistry.artistry.Dto.Request.PortfolioRequest;
+import com.artistry.artistry.Dto.Request.PortfolioCreateRequest;
 import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
 import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Response.ContentResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
+import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.PortfolioRepository;
 import com.artistry.artistry.Repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.artistry.artistry.Domain.portfolio.Portfolio.INIT_ACCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
@@ -40,7 +43,10 @@ public class PortfolioServiceTest {
     PortfolioRepository portfolioRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private MemberRepository memberRepository;
     PortfolioResponse response;
+    Member savedMember;
 
 
 
@@ -50,6 +56,7 @@ public class PortfolioServiceTest {
         String title = "보컬 포트폴리오";
         Role role = new Role("보컬");
         Role savedRole = roleRepository.save(role);
+        savedMember = memberRepository.save(new Member("m1","m1@a.com","a.url"));
 
         RoleRequest roleRequest = new RoleRequest(savedRole.getId());
 
@@ -58,7 +65,7 @@ public class PortfolioServiceTest {
 
         List<ContentRequest> contents = Arrays.asList(contentRequest1, contentRequest2);
 
-        PortfolioRequest request = new PortfolioRequest(title, roleRequest, contents, "PUBLIC");
+        PortfolioCreateRequest request = new PortfolioCreateRequest(savedMember.getId(),title, roleRequest, contents, "PUBLIC");
         //when
         response = portfolioService.create(request);
 
@@ -74,7 +81,7 @@ public class PortfolioServiceTest {
 
         List<ContentRequest> contents2 = Arrays.asList(contentRequest3, contentRequest4);
 
-        PortfolioRequest request2 = new PortfolioRequest(title2, roleRequest2, contents2, "PRIVATE");
+        PortfolioCreateRequest request2 = new PortfolioCreateRequest(savedMember.getId(),title2, roleRequest2, contents2, "PRIVATE");
         //when
         portfolioService.create(request2);
     }
@@ -100,7 +107,7 @@ public class PortfolioServiceTest {
 
         List<ContentRequest> contents = Arrays.asList(contentRequest1, contentRequest2);
 
-        PortfolioRequest request = new PortfolioRequest(title, roleRequest, contents, "imimimimi");
+        PortfolioCreateRequest request = new PortfolioCreateRequest(savedMember.getId(),title, roleRequest, contents, "imimimimi");
         //when
 
         assertThatThrownBy(() -> portfolioService.create(request))
@@ -124,7 +131,7 @@ public class PortfolioServiceTest {
 
         List<ContentRequest> contents = Arrays.asList(contentRequest1, contentRequest2);
 
-        PortfolioRequest request = new PortfolioRequest(title, roleRequest, contents, "PUBLIC");
+        PortfolioCreateRequest request = new PortfolioCreateRequest(savedMember.getId(),title, roleRequest, contents, "PUBLIC");
         //when
         PortfolioResponse response = portfolioService.create(request);
 
@@ -153,7 +160,7 @@ public class PortfolioServiceTest {
 
         List<Content> contents = Arrays.asList(content1, content2);
 
-        Portfolio portfolio = new Portfolio(title,role);
+        Portfolio portfolio = new Portfolio(savedMember,title,role);
         portfolio.addContents(contents);
 
         portfolioRepository.save(portfolio);
@@ -178,7 +185,7 @@ public class PortfolioServiceTest {
                 .extracting(ContentResponse::getComment)
                 .containsExactlyInAnyOrderElementsOf(contents.stream().map(Content::getComment).collect(Collectors.toList()));
 
-        assertThat(portfolioResponse.getAccess()).isEqualTo(PortfolioAccess.PRIVATE.toString());
+        assertThat(portfolioResponse.getAccess()).isEqualTo(INIT_ACCESS.toString());
 
     }
 

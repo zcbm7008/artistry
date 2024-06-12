@@ -3,7 +3,10 @@ package com.artistry.artistry.Domain.team;
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
+import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
+import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 @Table(name = "team_role")
 @Entity
 public class TeamRole {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -49,9 +53,32 @@ public class TeamRole {
                 .collect(Collectors.toList());
     }
 
-    public void addApplication(Application application){
-        application.setTeamRole(this);
+    public Application applyPortfolio(Portfolio portfolio){
+        validatePortfolio(portfolio);
+
+        Application application = createApplication(portfolio);
         applications.add(application);
+
+        return application;
+    }
+
+    private Application createApplication(Portfolio portfolio){
+        return new Application(this,portfolio);
+    }
+
+    private void validatePortfolio(Portfolio portfolio){
+        isMemberDuplicatedInRole(portfolio.getRole(), portfolio.getMember());
+    }
+
+    private void isMemberDuplicatedInRole(Role role, Member member){
+        if (isDuplicated(role,member)) {
+            throw new ArtistryDuplicatedException("멤버의 지원서가 이미 지원한 역할에 있습니다.");
+        }
+    }
+
+    private boolean isDuplicated(Role role, Member member){
+        return applications.stream()
+                .anyMatch(application -> application.getMember().equals(member));
     }
 
     public String getRoleName(){

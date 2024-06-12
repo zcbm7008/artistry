@@ -56,21 +56,17 @@ public class TeamRoleServiceTest {
         Tag tag1 = tagRepository.save(new Tag(tagName1));
         Tag tag2 = tagRepository.save(new Tag(tagName2));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", role2));
-        Portfolio portfolio3 = portfolioRepository.save(new Portfolio( "portfolio3 for drummer", role2));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1,"portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member2, "portfolio2 for drummer", role2));
+        Portfolio portfolio3 = portfolioRepository.save(new Portfolio(member1, "portfolio3 for drummer", role2));
 
         Team team = new Team(teamName, member1, Arrays.asList(tag1, tag2), Arrays.asList(role1, role2));
 
         teamRepository.save(team);
 
-        Application application1 = applicationRepository.save(new Application(team, role1, team.findTeamRoleByRole(role1), member2, portfolio1));
-        Application application2 = applicationRepository.save(new Application(team, role2, team.findTeamRoleByRole(role2), applicant1, portfolio2));
-        Application application3 = applicationRepository.save(new Application(team, role2, team.findTeamRoleByRole(role2), applicant2, portfolio3));
-
-        team.findTeamRoleByRole(role1).addApplication(application1);
-        team.findTeamRoleByRole(role2).getApplications().add(application2);
-        team.findTeamRoleByRole(role2).getApplications().add(application3);
+        Application application1 = team.apply(portfolio1);
+        Application application2 = team.apply(portfolio2);
+        Application application3 = team.apply(portfolio3);
 
         List<ApplicationResponse> role1Applications = teamRoleService.getApplications(team.findTeamRoleByRole(role1).getId());
         List<ApplicationResponse> role2Applications = teamRoleService.getApplications(team.findTeamRoleByRole(role2).getId());

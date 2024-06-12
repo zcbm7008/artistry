@@ -56,22 +56,20 @@ public class ApplicationTest {
 
         team = teamRepository.save(new Team(teamName,member1,tags,roles));
 
+        portfolio =new Portfolio(member1,"title1",roles.get(0));
+
         appliedRole = roles.get(0);
 
-        application = Application.builder()
-                .team(team)
-                .role(appliedRole)
-                .member(member)
-                .status(ApplicationStatus.PENDING)
-                .build();
+        team.addRoles(List.of(appliedRole));
+
+        application = new Application(team.findTeamRoleByRole(appliedRole),portfolio);
 
     }
 
     @Test
     @DisplayName("팀의 특정한 역할에 지원서를 지원한다.")
     public void applyToTeam(){
-
-        team.apply(application);
+        team.apply(portfolio);
         assertEquals(application.getId(),team.getTeamRoles().get(0).getApplications().get(0).getId());
         assertEquals(application.getTeam().getId(),team.getId());
         assertEquals(application.getRole(),team.findTeamRoleByRole(appliedRole).getRole());
@@ -80,7 +78,7 @@ public class ApplicationTest {
     @Test
     @DisplayName("지원한 application의 상태는 PENDING이어야 한다.")
     public void isStatusPending(){
-        team.apply(application);
+        team.apply(portfolio);
         assertEquals(application.getStatus(),ApplicationStatus.PENDING);
     }
 }

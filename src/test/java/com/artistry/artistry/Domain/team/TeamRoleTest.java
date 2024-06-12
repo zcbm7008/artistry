@@ -3,6 +3,7 @@ package com.artistry.artistry.Domain.team;
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,34 +24,29 @@ public class TeamRoleTest {
     Application application1;
     Application application2;
     TeamRole teamRole1;
+    Member member1;
+    Member member2;
 
     @BeforeEach
     void setUp(){
+        member1 = new Member("member1","a@a.com","as.url");
+        member2 = new Member("member2","b@b.com","as.url");
         title1 = "title1";
         title2 = "title2";
         Role role1 = new Role("role1");
-        Portfolio portfolio1 = new Portfolio(title1,role1);
-        Portfolio portfolio2 = new Portfolio(title2,role1);
-        application1 =
-                Application.builder()
-                        .role(role1)
-                        .status(ApplicationStatus.APPROVED)
-                        .portfolio(portfolio1)
-                        .build();
-
-
-        application2 =
-                Application.builder()
-                        .role(role1)
-                        .status(ApplicationStatus.REJECTED)
-                        .portfolio(portfolio2)
-                        .build();
+        Portfolio portfolio1 = new Portfolio(member1,title1,role1);
+        Portfolio portfolio2 = new Portfolio(member2,title2,role1);
 
         teamRole1 = TeamRole.builder()
                 .role(role1)
-                .applications(List.of(application1,application2))
+                .applications(new ArrayList<>())
                 .build();
 
+        application1 = teamRole1.applyPortfolio(portfolio1);
+        application1.setStatus(ApplicationStatus.APPROVED);
+
+        application2 = teamRole1.applyPortfolio(portfolio2);
+        application2.setStatus(ApplicationStatus.REJECTED);
     }
 
     @DisplayName("teamRole의 모든 포트폴리오를 가져온다.")
@@ -87,7 +83,6 @@ public class TeamRoleTest {
     @DisplayName("TeamRole에 Approved된 Application의 여부에 따라 Boolean을 반환한다.")
     @Test
     void isApprovedInTeamRole(){
-        application1.setStatus(ApplicationStatus.APPROVED);
         assertThat(teamRole1.isApprovedInTeamRole()).isTrue();
 
         application1.setStatus(ApplicationStatus.REJECTED);

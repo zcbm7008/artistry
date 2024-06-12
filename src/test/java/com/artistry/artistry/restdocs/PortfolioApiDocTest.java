@@ -1,6 +1,7 @@
 package com.artistry.artistry.restdocs;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Dto.Request.ContentRequest;
 import com.artistry.artistry.Dto.Request.RoleRequest;
@@ -24,15 +25,16 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 public class PortfolioApiDocTest extends ApiTest{
     private List<PortfolioResponse> createdPortfolios = new ArrayList<>();
-
+    Member member1;
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation){
         super.setUp(restDocumentation);
 
         String title = "보컬 포트폴리오1";
-
+        member1 = memberRepository.save(new Member("member1","a@a.com","a.url"));
         Role role1 = roleRepository.save(new Role("보컬"));
         Map<String, Object> body = getStringObjectMap(role1, title,"PUBLIC");
+        body.put("memberId",member1.getId());
 
         PortfolioResponse response =
                 given().body(body)
@@ -48,6 +50,7 @@ public class PortfolioApiDocTest extends ApiTest{
 
         Role role2 = roleRepository.save(new Role("보컬"));
         Map<String, Object> body2 = getStringObjectMap(role1, title,"PRIVATE");
+        body2.put("memberId",member1.getId());
 
         PortfolioResponse response2 =
                 given().body(body2)
@@ -110,12 +113,14 @@ public class PortfolioApiDocTest extends ApiTest{
 
         Role role1 = roleRepository.save(new Role("작곡가"));
         Map<String, Object> body = getStringObjectMap(role1, title,"PUBLIC");
+        body.put("memberId",member1.getId());
 
         PortfolioResponse response =
                 given().body(body)
                         .filter(RestAssuredRestDocumentationWrapper.document("create-portfolio",
                                 "포트폴리오 생성 API",
                                 requestFields(
+                                        fieldWithPath("memberId").description("포트폴리오 멤버 ID"),
                                         fieldWithPath("title").description("포트폴리오 제목"),
                                         fieldWithPath("role").description("포트폴리오 역할"),
                                         fieldWithPath("role.id").description("역할 Id"),

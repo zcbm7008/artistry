@@ -1,7 +1,7 @@
 package com.artistry.artistry.Controller;
 
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
-import com.artistry.artistry.Dto.Request.PortfolioRequest;
+import com.artistry.artistry.Dto.Request.PortfolioCreateRequest;
 import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Service.PortfolioService;
@@ -30,7 +30,7 @@ public class PortfolioController {
         return ResponseEntity.ok(portfolioService.findAllByAccess(PortfolioAccess.valueOf(access)));
     }
     @PostMapping
-    public ResponseEntity<PortfolioResponse> createPortfolio(@Valid @RequestBody final PortfolioRequest request){
+    public ResponseEntity<PortfolioResponse> createPortfolio(@Valid @RequestBody final PortfolioCreateRequest request){
         PortfolioResponse response = portfolioService.create(request);
         return ResponseEntity.ok(response);
     }

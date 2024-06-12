@@ -1,5 +1,7 @@
 package com.artistry.artistry.Controller;
 
+import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Dto.Request.ApplicationRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.TeamResponse;
@@ -31,6 +33,13 @@ public class TeamController {
         TeamResponse teamResponse = teamService.findById(teamId);
         return ResponseEntity.ok(teamResponse);
    }
+
+//   @PutMapping("/{teamId}/applications")
+//   public ResponseEntity<TeamResponse> applyToTeam(
+//           @PathVariable Long teamId,
+//           @RequestBody ApplicationRequest request ){
+//
+//   }
 
    @PutMapping("/{teamId}")
     public ResponseEntity<TeamResponse> updateTeam(

@@ -13,6 +13,7 @@ import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Request.TagRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
+import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
@@ -45,6 +46,8 @@ public class TeamServiceTest {
     private RoleRepository roleRepository;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    ApplicationService applicationService;
     @Autowired
     MemberRepository memberRepository;
     @Autowired
@@ -113,19 +116,14 @@ public class TeamServiceTest {
 
         Tag tag1 = tagRepository.save(new Tag(tagName1));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", invalidRole));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1, "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member2, "portfolio2 for drummer", invalidRole));
 
-        Team team = new Team(teamName, member1, List.of(tag1), List.of(role1));
+        Team team = teamRepository.save(new Team(teamName, member1, List.of(tag1), List.of(role1)));
 
-        teamRepository.save(team);
+        team.apply(portfolio1);
 
-        Application application1 = applicationRepository.save(new Application(team, role1, member2, portfolio1));
-        Application application2 = applicationRepository.save(new Application(team, invalidRole, applicant1, portfolio2));
-
-        team.findTeamRoleByRole(role1).addApplication(application1);
-
-        assertThatThrownBy(() -> team.findTeamRoleByRole(invalidRole).getApplications().add(application2)).isInstanceOf(TeamRoleNotFoundException.class);
+        assertThatThrownBy(() -> team.apply(portfolio2)).isInstanceOf(TeamRoleNotFoundException.class);
 
     }
 
@@ -265,23 +263,20 @@ public class TeamServiceTest {
 
         Tag tag1 = tagRepository.save(new Tag(tagName1));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", role2));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1, "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member1, "portfolio2 for drummer", role2));
 
         Team team1 = new Team(teamName, host, List.of(tag1), List.of(role1));
-        Team team2 = new Team(teamName, host, List.of(tag1), List.of(role1));
+        Team team2 = new Team(teamName, host, List.of(tag1), List.of(role1,role2));
 
         teamRepository.save(team1);
         teamRepository.save(team2);
 
-        Application application1 = applicationRepository.save(new Application(team1, role1, member1, portfolio1));
-        Application application2 = applicationRepository.save(new Application(team2, role1, member1, portfolio2));
+        ApplicationResponse application1 = teamService.apply(team1.getId(),portfolio1);
+        ApplicationResponse application2 = teamService.apply(team2.getId(),portfolio2);
 
-        team1.apply(application1);
-        team2.apply(application2);
-
-        application1.setStatus(ApplicationStatus.APPROVED);
-        application2.setStatus(ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(application1.getId(),ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(application2.getId(),ApplicationStatus.APPROVED);
 
         List <TeamResponse> responses = teamService.findTeamsByApprovedMember(member1.getId());
 
@@ -371,11 +366,11 @@ public class TeamServiceTest {
         String changedName = "밴드팀팀팀";
 
         Role role1 = roleService.findEntityById(roleRequest1.getId());
-        Portfolio portfolio = new Portfolio("포폴1", role1);
+        Portfolio portfolio = new Portfolio(member1,"포폴1", role1);
         Team team = teamService.findEntityById(responseDto.getId());
-        Application application = new Application(team,role1,member1,portfolio);
 
-        teamService.apply(responseDto.getId(), application);
+        ApplicationResponse response = teamService.apply(responseDto.getId(), portfolio);
+        Application application = applicationService.findEntityById(response.getId());
         application.setStatus(ApplicationStatus.APPROVED);
 
         TeamUpdateRequest request =
@@ -406,25 +401,22 @@ public class TeamServiceTest {
 
         Tag tag1 = tagRepository.save(new Tag(tagName1));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", role2));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1,"portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member1, "portfolio2 for drummer", role2));
 
         Team team1 = new Team(teamName, host, List.of(tag1), List.of(role1));
 
         teamRepository.save(team1);
 
-        Application application1 = applicationRepository.save(new Application(team1, role1, member1, portfolio1));
-        Application application2 = applicationRepository.save(new Application(team1, role1, member1, portfolio2));
+        ApplicationResponse applicationResponse1 = teamService.apply(team1.getId(),portfolio1);
 
-        team1.apply(application1);
-
-        application1.setStatus(ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(applicationResponse1.getId(),ApplicationStatus.APPROVED);
 
         //when
         team1.cancel();
 
         //then
-        assertThatThrownBy(()->team1.apply(application2)).isInstanceOf(TeamNotRecruitingException.class);
+        assertThatThrownBy(()->team1.apply(portfolio2)).isInstanceOf(TeamNotRecruitingException.class);
 
         assertThat(team1.getTeamRoles().stream()
                 .allMatch(teamRole -> teamRole.getApplications().isEmpty()))
@@ -448,22 +440,18 @@ public class TeamServiceTest {
 
         Tag tag1 = tagRepository.save(new Tag(tagName1));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", role2));
-        Portfolio portfolio3 = portfolioRepository.save(new Portfolio( "portfolio3 for drummer", role2));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1, "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member1, "portfolio2 for drummer", role2));
+        Portfolio portfolio3 = portfolioRepository.save(new Portfolio(member2, "portfolio3 for drummer", role2));
 
         Team team1 = new Team(teamName, host, List.of(tag1), List.of(role1,role2));
 
         teamRepository.save(team1);
 
-        Application application1 = applicationRepository.save(new Application(team1, role1, member1, portfolio1));
-        Application application2 = applicationRepository.save(new Application(team1, role2, member1, portfolio2));
-        Application application3 = applicationRepository.save(new Application(team1, role2, member2, portfolio3));
+        ApplicationResponse applicationResponse = teamService.apply(team1.getId(),portfolio1);
+        team1.apply(portfolio2);
 
-        team1.apply(application1);
-        team1.apply(application2);
-
-        application1.setStatus(ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(applicationResponse.getId(),ApplicationStatus.APPROVED);
 
         //when
         TeamRole teamRole1 = team1.findTeamRoleByRole(role1);
@@ -472,7 +460,7 @@ public class TeamServiceTest {
         team1.finish();
 
         //then
-        assertThatThrownBy(()->team1.apply(application3)).isInstanceOf(TeamNotRecruitingException.class);
+        assertThatThrownBy(()->team1.apply(portfolio3)).isInstanceOf(TeamNotRecruitingException.class);
         assertThat(teamRole1.getApplications().stream()
                 .map(Application::getStatus)
                 .allMatch(status -> status == ApplicationStatus.APPROVED)).isTrue();

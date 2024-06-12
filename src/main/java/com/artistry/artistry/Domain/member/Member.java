@@ -1,6 +1,6 @@
 package com.artistry.artistry.Domain.member;
 
-import com.artistry.artistry.Domain.application.Application;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Exceptions.ArtistryInvalidValueException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,7 +37,7 @@ public class Member {
     private List<Team> teams;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Application> applications;
+    private List<Portfolio> portfolios;
 
     @NonNull
     private String email;
@@ -47,9 +47,6 @@ public class Member {
     @Column(nullable = false)
     private boolean deleted;
 
-    public Member(String nickName){
-        this(null,nickName,null,null,null,null,false);
-    }
     public Member (String nickName,String email) {
         this(null,nickName,email,null,null,null,false);
     }
@@ -63,12 +60,12 @@ public class Member {
     }
 
     @Builder
-    public Member(final Long id, @NonNull final String nickName, @NonNull String email,String iconUrl, final List<Team> teams, List<Application> applications,boolean deleted) {
+    public Member(final Long id, @NonNull final String nickName, @NonNull String email,String iconUrl, final List<Team> teams, List<Portfolio> portfolios, boolean deleted) {
         validateEmail(email);
         this.id = id;
         this.nickname = new Nickname(nickName);
         this.teams = teams;
-        this.applications = applications;
+        this.portfolios = portfolios;
         this.email = email;
         this.iconUrl = iconUrl;
         this.deleted = deleted;
