@@ -1,6 +1,7 @@
 package com.artistry.artistry.Domain.team;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
@@ -96,12 +97,12 @@ public class Team {
                 .build());
     }
 
-    public ApplicationResponse apply(Portfolio portfolio){
+    public Application apply(Portfolio portfolio){
         validateRecruiting();
         validatePortfolioRole(portfolio);
 
         TeamRole teamRole = findTeamRoleByRole(portfolio.getRole());
-        return ApplicationResponse.from(teamRole.applyPortfolio(portfolio));
+        return teamRole.applyPortfolio(portfolio);
     }
 
     private void validatePortfolioRole(Portfolio portfolio){

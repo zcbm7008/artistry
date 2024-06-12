@@ -1,9 +1,9 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
-import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
@@ -60,9 +60,9 @@ public class TeamService {
     }
 
     @Transactional
-    public void apply(Long teamId, Application application){
+    public ApplicationResponse apply(Long teamId, Portfolio portfolio){
         Team team = findEntityById(teamId);
-        team.apply(application);
+        return ApplicationResponse.from(team.apply(portfolio));
     }
 
     private List<Team> findByNameLike(final String name){
