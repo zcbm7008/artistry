@@ -77,7 +77,7 @@ public class TeamRole {
     }
 
     private boolean isDuplicated(Role role, Member member){
-        return  applications.stream()
+        return applications.stream()
                 .anyMatch(application -> application.getMember().equals(member));
     }
 
