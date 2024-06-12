@@ -1,10 +1,10 @@
 package com.artistry.artistry.Domain.team;
 
 import com.artistry.artistry.Domain.Role.Role;
-import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
-import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
+import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
 import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
@@ -96,17 +96,16 @@ public class Team {
                 .build());
     }
 
-    public void apply(Application application){
+    public ApplicationResponse apply(Portfolio portfolio){
         validateRecruiting();
-        validateApplication(application);
+        validatePortfolioRole(portfolio);
 
-        TeamRole teamRole = findTeamRoleByRole(application.getRole());
-        teamRole.addApplication(application);
+        TeamRole teamRole = findTeamRoleByRole(portfolio.getRole());
+        return ApplicationResponse.from(teamRole.applyPortfolio(portfolio));
     }
 
-    private void validateApplication(Application application){
-        isMemberDuplicatedInRole(application.getRole(), application.getMember());
-        isValidRole(application.getRole());
+    private void validatePortfolioRole(Portfolio portfolio){
+        isValidRole(portfolio.getRole());
     }
 
     private void validateRecruiting(){
@@ -117,17 +116,6 @@ public class Team {
 
     public boolean isRecruiting(){
         return teamStatus != TeamStatus.CANCELED && teamStatus != TeamStatus.FINISHED;
-    }
-
-    private void isMemberDuplicatedInRole(Role role, Member member){
-        if (isDuplicated(role,member)) {
-            throw new ArtistryDuplicatedException("멤버의 지원서가 이미 지원한 역할에 있습니다.");
-        }
-    }
-
-    private boolean isDuplicated(Role role, Member member){
-        return findTeamRoleByRole(role).getApplications().stream()
-                .anyMatch(application -> application.getMember().equals(member));
     }
 
     private void isValidRole(Role role){
