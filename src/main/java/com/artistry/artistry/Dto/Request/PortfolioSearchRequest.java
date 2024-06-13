@@ -13,4 +13,11 @@ public class PortfolioSearchRequest {
     private Long memberId;
     private Long roleId;
     private PortfolioAccess access;
+
+    public PortfolioSearchRequest(String title, Long memberId, Long roleId) {
+        this.title = title;
+        this.memberId = memberId;
+        this.roleId = roleId;
+        this.access = PortfolioAccess.PUBLIC;
+    }
 }

@@ -254,8 +254,10 @@ public class PortfolioServiceTest {
         //Given
         String title = "작곡가";
 
+        PortfolioSearchRequest request = new PortfolioSearchRequest(title,savedMember.getId(),role.getId());
+        PortfolioSearchRequest request2 = new PortfolioSearchRequest(title,null,null);
         //When
-        List<PortfolioResponse> responses = portfolioService.findPublicPortfolios(title,savedMember.getId(),role.getId());
+        List<PortfolioResponse> responses = portfolioService.searchPublicPortfolios(request);
 
         //Then
         assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getTitle().contains(title));
@@ -263,7 +265,7 @@ public class PortfolioServiceTest {
         assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getRoleName().equals(role.getName()));
 
         //When
-        List<PortfolioResponse> responses2 = portfolioService.findPublicPortfolios(title,null,null);
+        List<PortfolioResponse> responses2 = portfolioService.searchPublicPortfolios(request2);
         assertThat(responses2).allMatch(portfolioResponse -> portfolioResponse.getTitle().contains(title));
 
     }

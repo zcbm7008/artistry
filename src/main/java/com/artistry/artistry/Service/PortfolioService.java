@@ -87,9 +87,13 @@ public class PortfolioService {
     }
 
     @Transactional
-    public List<PortfolioResponse> findPublicPortfolios(String title, Long memberId, Long roleId) {
+    public List<PortfolioResponse> searchPublicPortfolios(PortfolioSearchRequest request) {
         Specification<Portfolio> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            String title = request.getTitle();
+            Long memberId = request.getMemberId();
+            Long roleId = request.getRoleId();
 
             if (title != null && !title.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));

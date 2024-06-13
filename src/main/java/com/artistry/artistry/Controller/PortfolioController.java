@@ -1,8 +1,8 @@
 package com.artistry.artistry.Controller;
 
-import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Dto.Request.PortfolioCreateRequest;
+import com.artistry.artistry.Dto.Request.PortfolioSearchRequest;
 import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Service.PortfolioService;
@@ -33,7 +33,8 @@ public class PortfolioController {
             @RequestParam(required = false) Long roleId,
             @RequestParam(defaultValue = "PUBLIC") String access) {
 
-        return ResponseEntity.ok(portfolioService.findPublicPortfolios(title,memberId,roleId));
+        PortfolioSearchRequest request = new PortfolioSearchRequest(title,memberId,roleId);
+        return ResponseEntity.ok(portfolioService.searchPublicPortfolios(request));
     }
 
     @GetMapping("/access")
