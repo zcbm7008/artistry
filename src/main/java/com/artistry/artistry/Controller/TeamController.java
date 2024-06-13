@@ -38,9 +38,7 @@ public class TeamController {
    public ResponseEntity<ApplicationResponse> applyToTeam(
            @PathVariable Long teamId,
            @RequestBody PortfolioRequest request ){
-
         return ResponseEntity.ok(teamService.apply(teamId,request));
-
    }
 
    @PutMapping("/{teamId}")
