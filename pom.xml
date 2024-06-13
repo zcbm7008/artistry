@@ -274,7 +274,7 @@
 				<configuration>
 					<excludes>
 						<exclude>**/config/*</exclude>
-						<exclude>**/Dto/*</exclude>
+						<exclude>**/Dto/**</exclude>
 						<exclude>**/Exceptions/*</exclude>
 					</excludes>
 				</configuration>
