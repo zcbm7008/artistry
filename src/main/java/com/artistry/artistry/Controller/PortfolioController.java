@@ -1,5 +1,6 @@
 package com.artistry.artistry.Controller;
 
+import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Dto.Request.PortfolioCreateRequest;
 import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
@@ -25,10 +26,21 @@ public class PortfolioController {
         return ResponseEntity.ok(portfolioService.findAll());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<PortfolioResponse>> findPortfoliosByCriteria(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long roleId,
+            @RequestParam(defaultValue = "PUBLIC") String access) {
+
+        return ResponseEntity.ok(portfolioService.findPublicPortfolios(title,memberId,roleId));
+    }
+
     @GetMapping("/access")
     public ResponseEntity<List<PortfolioResponse>> findAllPortfoliosByAccess(@RequestParam(defaultValue = "PUBLIC") String access){
         return ResponseEntity.ok(portfolioService.findAllByAccess(PortfolioAccess.valueOf(access)));
     }
+
     @PostMapping
     public ResponseEntity<PortfolioResponse> createPortfolio(@Valid @RequestBody final PortfolioCreateRequest request){
         PortfolioResponse response = portfolioService.create(request);
@@ -40,6 +52,8 @@ public class PortfolioController {
         PortfolioResponse response  = portfolioService.findPortfolioById(portfolioId);
         return ResponseEntity.ok(response);
     }
+
+
 
     @PutMapping
     public ResponseEntity<PortfolioResponse> update(@RequestBody final PortfolioUpdateRequest request){

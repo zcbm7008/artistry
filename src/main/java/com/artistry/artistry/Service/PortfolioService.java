@@ -9,9 +9,12 @@ import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +72,29 @@ public class PortfolioService {
         Role role = roleService.findEntityById(request.getId());
         List <Portfolio> portfolios = portfolioRepository.findByRoleAndPortfolioAccess(role,PortfolioAccess.PUBLIC);
 
+        return getPortfolioResponses(portfolios);
+    }
+
+    @Transactional
+    public List<PortfolioResponse> findPublicPortfolios(String title, Long memberId, Long roleId) {
+        Specification<Portfolio> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (title != null && !title.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));
+            }
+            if (memberId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("member").get("id"), memberId));
+            }
+            if (roleId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("role").get("id"), roleId));
+            }
+            predicates.add(criteriaBuilder.equal(root.get("portfolioAccess"), PortfolioAccess.PUBLIC));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<Portfolio> portfolios = portfolioRepository.findAll(spec);
         return getPortfolioResponses(portfolios);
     }
 

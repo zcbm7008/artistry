@@ -6,6 +6,7 @@ import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.ContentsType;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
+import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.PortfolioRepository;
@@ -154,7 +155,5 @@ public class PortfolioRepositoryTest {
         assertThat(publicPortfolios).hasSize(1)
                 .allMatch(portfolio -> portfolio.getTitle().contains(title));
     }
-
-
 
 }

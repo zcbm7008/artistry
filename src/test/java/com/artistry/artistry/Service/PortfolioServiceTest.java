@@ -248,6 +248,27 @@ public class PortfolioServiceTest {
         assertThat(portfolioResponses).allMatch(portfolio -> portfolio.getRoleName().equals(role.getName()));
     }
 
+    @DisplayName("title, memberId, roleId로 포트폴리오를 조회한다.")
+    @Test
+    void findPortfoliosQuery(){
+        //Given
+        String title = "작곡가";
+
+        //When
+        List<PortfolioResponse> responses = portfolioService.findPublicPortfolios(title,savedMember.getId(),role.getId());
+
+        //Then
+        assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getTitle().contains(title));
+        assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getMember().getId().equals(savedMember.getId()));
+        assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getRoleName().equals(role.getName()));
+
+        //When
+        List<PortfolioResponse> responses2 = portfolioService.findPublicPortfolios(title,null,null);
+        assertThat(responses2).allMatch(portfolioResponse -> portfolioResponse.getTitle().contains(title));
+
+    }
+
+
     @DisplayName("포트폴리오를 수정한다.")
     @Test
     void update() {
