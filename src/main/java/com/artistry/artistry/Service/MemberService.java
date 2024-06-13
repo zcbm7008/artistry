@@ -9,6 +9,7 @@ import com.artistry.artistry.Dto.Request.MemberInfoRequest;
 import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.MemberTeamsResponse;
+import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
 import com.artistry.artistry.Repository.MemberRepository;
@@ -27,8 +28,6 @@ public class MemberService {
         this.memberRepository = memberRepository;
         this.applicationRepository = applicationRepository;
     }
-
-
 
     public Member findEntityById(Long id){
         return memberRepository.findById(id)
@@ -53,13 +52,18 @@ public class MemberService {
     }
 
     public MemberResponse create(final MemberCreateRequest request){
-        Member member = memberRepository.save(request.toEntity());
+        Member member = request.toEntity();
+        validateDuplicateMember(member);
+
+        memberRepository.save(member);
 
         return MemberResponse.from(member);
     }
 
     @Transactional
     public MemberResponse update(final Long memberId, final MemberUpdateRequest request){
+        validateDuplicateNickname(request.getNickName());
+
         Member member = findEntityById(memberId);
         member.update(request.getNickName(),request.getIconUrl());
 
@@ -75,9 +79,29 @@ public class MemberService {
         return MemberResponse.from(memberRepository.findByEmail(email));
     }
 
+    private void validateDuplicateMember(Member member){
+        validateDuplicateNickname(member.getNickname());
+        validateDuplicateEmail(member.getEmail());
+    }
+
+    private void validateDuplicateNickname(String nickName){
+        if(isNicknameExists(nickName)){
+            throw new ArtistryDuplicatedException(String.format("[%s]는 이미 존재하는 닉네임입니다.", nickName));
+        }
+    }
+
+    public Boolean isNicknameExists(String nickName){
+        return memberRepository.existsByNickname_value(nickName);
+    }
+
+    private void validateDuplicateEmail(String email){
+        if(isEmailExists(email)){
+            throw new ArtistryDuplicatedException(String.format("[%s]는 이미 존재하는 이메일입니다.", email));
+        }
+    }
+
     public boolean isEmailExists(String email){
         return memberRepository.existsByEmail(email);
     }
-
 
 }
