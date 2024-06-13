@@ -8,13 +8,13 @@ import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.ApplicationCreateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
-import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.ApplicationNotFoundException;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
 import com.artistry.artistry.Repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +44,7 @@ public class ApplicationService {
                 .orElseThrow(ApplicationNotFoundException::new);
     }
 
+    @Transactional
     public ApplicationResponse changedApplicationStatus(Long id,ApplicationStatus status){
         Application application = findEntityById(id);
         application.setStatus(status);
