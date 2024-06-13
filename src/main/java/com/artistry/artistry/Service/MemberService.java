@@ -62,9 +62,9 @@ public class MemberService {
 
     @Transactional
     public MemberResponse update(final Long memberId, final MemberUpdateRequest request){
-        Member member = findEntityById(memberId);
-        validateDuplicateMember(member);
+        validateDuplicateNickname(request.getNickName());
 
+        Member member = findEntityById(memberId);
         member.update(request.getNickName(),request.getIconUrl());
 
         return MemberResponse.from(findEntityById(memberId));
@@ -91,7 +91,7 @@ public class MemberService {
     }
 
     public Boolean isNicknameExists(String nickName){
-        return memberRepository.existsByNickName(nickName);
+        return memberRepository.existsByNickname_value(nickName);
     }
 
     private void validateDuplicateEmail(String email){
@@ -103,6 +103,5 @@ public class MemberService {
     public boolean isEmailExists(String email){
         return memberRepository.existsByEmail(email);
     }
-
 
 }
