@@ -5,15 +5,16 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
-import com.artistry.artistry.Dto.Request.ContentRequest;
-import com.artistry.artistry.Dto.Request.PortfolioCreateRequest;
-import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
+import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,17 @@ public class PortfolioService {
         this.roleService = roleService;
         this.memberService = memberService;
     }
+    @Transactional
+    public PortfolioResponse create(final PortfolioCreateRequest request){
+        Role role = roleService.findEntityById(request.getRole().getId());
+        Member member = memberService.findEntityById(request.getMemberId());
+
+        Portfolio portfolio = new Portfolio(member,request.getTitle(),role);
+        portfolio.addContents(ContentToEntity(request.getContents()));
+        portfolio.setPortfolioAccess(PortfolioAccess.valueOf(request.getAccess()));
+
+        return PortfolioResponse.from(portfolioRepository.save(portfolio));
+    }
 
     public PortfolioResponse findPortfolioById(Long id){
         return PortfolioResponse.from(findEntityById(id));
@@ -41,29 +53,64 @@ public class PortfolioService {
     public List<PortfolioResponse> findAll() {
         List <Portfolio> portfolios = portfolioRepository.findAll();
 
-        return portfolios.stream()
-                .map(PortfolioResponse::from)
-                .collect(Collectors.toList());
-    }
-
-    public List<PortfolioResponse> findAllByAccess(PortfolioAccess portfolioAccess) {
-        List <Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(portfolioAccess);
-
-        return portfolios.stream()
-                .map(PortfolioResponse::from)
-                .collect(Collectors.toList());
+        return getPortfolioResponses(portfolios);
     }
 
     @Transactional
-    public PortfolioResponse create(final PortfolioCreateRequest request){
-        Role role = roleService.findEntityById(request.getRole().getId());
-        Member member = memberService.findEntityById(request.getMemberId());
+    public List<PortfolioResponse> findAllByAccess(PortfolioAccess portfolioAccess) {
+        List <Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(portfolioAccess);
 
-        Portfolio portfolio = new Portfolio(member,request.getTitle(),role);
-        portfolio.addContents(ContentToEntity(request.getContents()));
-        portfolio.setPortfolioAccess(PortfolioAccess.valueOf(request.getAccess()));
+        return getPortfolioResponses(portfolios);
+    }
 
-        return PortfolioResponse.from(portfolioRepository.save(portfolio));
+    @Transactional
+    public List<PortfolioResponse> findAllPublicByTitle(String title){
+        List <Portfolio> portfolios = portfolioRepository.findByTitleContainingAndPortfolioAccess(title,PortfolioAccess.PUBLIC);
+
+        return getPortfolioResponses(portfolios);
+    }
+
+    @Transactional
+    public List<PortfolioResponse> findAllPublicByMember(MemberInfoRequest memberInfoRequest){
+        Member member = memberService.findEntityById(memberInfoRequest.getId());
+        List <Portfolio> portfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PUBLIC);
+
+        return getPortfolioResponses(portfolios);
+    }
+
+    @Transactional
+    public List<PortfolioResponse> findAllPublicByRole(RoleRequest request){
+        Role role = roleService.findEntityById(request.getId());
+        List <Portfolio> portfolios = portfolioRepository.findByRoleAndPortfolioAccess(role,PortfolioAccess.PUBLIC);
+
+        return getPortfolioResponses(portfolios);
+    }
+
+    @Transactional
+    public List<PortfolioResponse> searchPublicPortfolios(PortfolioSearchRequest request) {
+        Specification<Portfolio> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            String title = request.getTitle();
+            Long memberId = request.getMemberId();
+            Long roleId = request.getRoleId();
+
+            if (title != null && !title.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));
+            }
+            if (memberId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("member").get("id"), memberId));
+            }
+            if (roleId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("role").get("id"), roleId));
+            }
+            predicates.add(criteriaBuilder.equal(root.get("portfolioAccess"), PortfolioAccess.PUBLIC));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<Portfolio> portfolios = portfolioRepository.findAll(spec);
+        return getPortfolioResponses(portfolios);
     }
 
     @Transactional
@@ -81,7 +128,16 @@ public class PortfolioService {
         portfolioRepository.delete(portfolio);
     }
 
-    public static List<Content> ContentToEntity(List<ContentRequest> contents){
-        return contents.stream().map(ContentRequest::toEntity).collect(Collectors.toList());
+    private static List<PortfolioResponse> getPortfolioResponses(List<Portfolio> portfolios) {
+        return portfolios.stream()
+                .map(PortfolioResponse::from)
+                .collect(Collectors.toList());
     }
+
+    public static List<Content> ContentToEntity(List<ContentRequest> contents){
+        return contents.stream()
+                .map(ContentRequest::toEntity)
+                .collect(Collectors.toList());
+    }
+
 }

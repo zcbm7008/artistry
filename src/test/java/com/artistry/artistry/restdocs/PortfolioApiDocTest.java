@@ -26,13 +26,14 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 public class PortfolioApiDocTest extends ApiTest{
     private List<PortfolioResponse> createdPortfolios = new ArrayList<>();
     Member member1;
+    Role role1;
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation){
         super.setUp(restDocumentation);
 
         String title = "보컬 포트폴리오1";
         member1 = memberRepository.save(new Member("member1","a@a.com","a.url"));
-        Role role1 = roleRepository.save(new Role("보컬"));
+        role1 = roleRepository.save(new Role("보컬"));
         Map<String, Object> body = getStringObjectMap(role1, title,"PUBLIC");
         body.put("memberId",member1.getId());
 
@@ -70,6 +71,11 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("[].id").description("포트폴리오 Id"),
                                         fieldWithPath("[].roleName").description("포트폴리오 역할"),
                                         fieldWithPath("[].title").description("포트폴리오 제목"),
+                                        fieldWithPath("[].member").description("포트폴리오 소유 멤버"),
+                                        fieldWithPath("[].member.id").description("멤버 id"),
+                                        fieldWithPath("[].member.nickName").description("멤버 닉네임"),
+                                        fieldWithPath("[].member.email").description("멤버 이메일"),
+                                        fieldWithPath("[].member.iconUrl").description("멤버 아이콘 Url"),
                                         fieldWithPath("[].contents").description("포트폴리오 컨텐츠들"),
                                         fieldWithPath("[].contents[].url").description("컨텐츠 url"),
                                         fieldWithPath("[].contents[].comment").description("컨텐츠 설명"),
@@ -81,7 +87,7 @@ public class PortfolioApiDocTest extends ApiTest{
         assertThat(responses).isNotNull();
     }
 
-    @DisplayName("Access로 포트폴리오 검색")
+    @DisplayName("Access로 포트폴리오 조회")
     @Test
     void getTagNames(){
         PortfolioAccess portfolioAccess = PortfolioAccess.PRIVATE;
@@ -93,6 +99,11 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("[].id").description("포트폴리오 Id"),
                                         fieldWithPath("[].roleName").description("포트폴리오 역할"),
                                         fieldWithPath("[].title").description("포트폴리오 제목"),
+                                        fieldWithPath("[].member").description("포트폴리오 소유 멤버"),
+                                        fieldWithPath("[].member.id").description("멤버 id"),
+                                        fieldWithPath("[].member.nickName").description("멤버 닉네임"),
+                                        fieldWithPath("[].member.email").description("멤버 이메일"),
+                                        fieldWithPath("[].member.iconUrl").description("멤버 아이콘 Url"),
                                         fieldWithPath("[].contents").description("포트폴리오 컨텐츠들"),
                                         fieldWithPath("[].contents[].url").description("컨텐츠 url"),
                                         fieldWithPath("[].contents[].comment").description("컨텐츠 설명"),
@@ -103,7 +114,60 @@ public class PortfolioApiDocTest extends ApiTest{
 
         assertThat(responses).hasSize(1);
     }
-    
+
+    @DisplayName("title,memberId,roleId로 포트폴리오 조회")
+    @Test
+    void searchPortfolios(){
+        String searchTitle = "보컬";
+        Role searchRole = role1;
+        Long searchMemberId = searchRole.getId();
+        Long searchRoleId = role1.getId();
+        List<PortfolioResponse> responses =
+                given()
+                        .filter(RestAssuredRestDocumentationWrapper.document("search-PUBLIC-portfolios",
+                                "PUBLIC 포트폴리오 조회 API",
+                                responseFields(
+                                        fieldWithPath("[].id").description("포트폴리오 Id"),
+                                        fieldWithPath("[].roleName").description("포트폴리오 역할"),
+                                        fieldWithPath("[].title").description("포트폴리오 제목"),
+                                        fieldWithPath("[].member").description("포트폴리오 소유 멤버"),
+                                        fieldWithPath("[].member.id").description("멤버 id"),
+                                        fieldWithPath("[].member.nickName").description("멤버 닉네임"),
+                                        fieldWithPath("[].member.email").description("멤버 이메일"),
+                                        fieldWithPath("[].member.iconUrl").description("멤버 아이콘 Url"),
+                                        fieldWithPath("[].contents").description("포트폴리오 컨텐츠들"),
+                                        fieldWithPath("[].contents[].url").description("컨텐츠 url"),
+                                        fieldWithPath("[].contents[].comment").description("컨텐츠 설명"),
+                                        fieldWithPath("[].access").description("포트폴리오 접근권한"))))
+                        .when().get("/api/portfolios/search?title={searchTitle}&memberId={memberId}&roleId={roleId}",searchTitle,searchMemberId,searchRoleId)
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().jsonPath().getList(".", PortfolioResponse.class);
+
+        assertThat(responses).allMatch(response -> response.getTitle().contains(searchTitle));
+        assertThat(responses).allMatch(response -> response.getRoleName().equals(searchRole.getName()));
+        assertThat(responses).allMatch(response -> response.getMember().getId().equals(member1.getId()));
+    }
+
+    @DisplayName("title, roleId로 포트폴리오 조회")
+    @Test
+    void searchPortfoliosByTitleAndRoleId(){
+        String searchTitle = "보컬";
+        Role searchRole = role1;
+
+        List<PortfolioResponse> responses =
+                given()
+                        .when().get("/api/portfolios/search?title={searchTitle}&roleId={roleId}",searchTitle,searchRole.getId())
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().jsonPath().getList(".", PortfolioResponse.class);
+
+        assertThat(responses).allMatch(response -> response.getRoleName().equals(searchRole.getName()));
+        assertThat(responses).allMatch(response -> response.getMember().getId().equals(member1.getId()));
+
+    }
+
+
+
+
     @DisplayName("포트폴리오를 생성한다.")
     @Test
     void createPortfolio(){
@@ -131,6 +195,11 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("id").description("포트폴리오 Id"),
                                         fieldWithPath("roleName").description("포트폴리오 역할"),
                                         fieldWithPath("title").description("포트폴리오 제목"),
+                                        fieldWithPath("member").description("포트폴리오 소유 멤버"),
+                                        fieldWithPath("member.id").description("멤버 id"),
+                                        fieldWithPath("member.nickName").description("멤버 닉네임"),
+                                        fieldWithPath("member.email").description("멤버 이메일"),
+                                        fieldWithPath("member.iconUrl").description("멤버 아이콘 Url"),
                                         fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
                                         fieldWithPath("contents[].url").description("컨텐츠 url"),
                                         fieldWithPath("contents[].comment").description("컨텐츠 설명"),
@@ -175,6 +244,11 @@ public class PortfolioApiDocTest extends ApiTest{
                                 fieldWithPath("id").description("포트폴리오 Id"),
                                 fieldWithPath("roleName").description("포트폴리오 역할"),
                                 fieldWithPath("title").description("포트폴리오 제목"),
+                                fieldWithPath("member").description("포트폴리오 소유 멤버"),
+                                fieldWithPath("member.id").description("멤버 id"),
+                                fieldWithPath("member.nickName").description("멤버 닉네임"),
+                                fieldWithPath("member.email").description("멤버 이메일"),
+                                fieldWithPath("member.iconUrl").description("멤버 아이콘 Url"),
                                 fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
                                 fieldWithPath("contents[].url").description("컨텐츠 url"),
                                 fieldWithPath("contents[].comment").description("컨텐츠 설명"),
