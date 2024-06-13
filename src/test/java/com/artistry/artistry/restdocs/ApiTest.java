@@ -45,6 +45,8 @@ public abstract class ApiTest {
     protected RoleRepository roleRepository;
     @Autowired
     protected TeamRepository teamRepository;
+    @Autowired
+    protected ApplicationRepository applicationRepository;
 
     @BeforeEach
     protected void setUp(RestDocumentationContextProvider restDocumentation) {

@@ -1,16 +1,23 @@
 package com.artistry.artistry.restdocs;
 
 import com.artistry.artistry.Domain.Role.Role;
+import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
+import com.artistry.artistry.Dto.Request.ContentRequest;
+import com.artistry.artistry.Dto.Request.RoleRequest;
+import com.artistry.artistry.Dto.Response.ApplicationResponse;
+import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
+import com.artistry.artistry.Service.ApplicationService;
 import com.artistry.artistry.Service.TeamService;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
+import lombok.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,17 +45,20 @@ import static org.assertj.core.api.Assertions.*;
 class TeamApiDocTest extends ApiTest{
     @Autowired
     private TeamService teamService;
+    @Autowired
+    private ApplicationService applicationService;
 
     private Team dummyTeam;
     TeamResponse teamResponse1;
     TeamResponse teamResponse2;
+    Role role1;
     @BeforeEach
     public void setUpData() {
         roleRepository.save(new Role("작곡가"));
         roleRepository.save(new Role("일러스트레이터"));
         roleRepository.save(new Role("작사가"));
         roleRepository.save(new Role("영상편집"));
-        Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
+        role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
         Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
 
         tagRepository.save(new Tag("힙합"));
@@ -93,7 +103,7 @@ class TeamApiDocTest extends ApiTest{
     @Test
     void createTeamTest() throws Exception{
 
-        Role role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
+        role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
         Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
 
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
@@ -251,17 +261,101 @@ class TeamApiDocTest extends ApiTest{
 
     }
 
-//    @DisplayName("팀의 상태를 finish로 변경한다.")
-//    @Test
-//    void finishTeam(){
-//        TeamResponse response = given().filter(RestAssuredRestDocumentationWrapper.document("finish-team",
-//                        "팀 모집 완료 API"))
-//                .when().put("/api/teams/{id}/finish",teamResponse2.getId())
-//                .then().statusCode(HttpStatus.OK.value())
-//                .extract().body().as(TeamResponse.class);
-//
-//        assertThat(response.getTeamStatus()).isEqualTo(TeamStatus.FINISHED.toString());
-//
-//    }
+    @DisplayName("팀의 상태를 finish로 변경한다.")
+    @Test
+    void finishTeam(){
+        String title = "작곡가 포트폴리오1";
+        Member member1 = memberRepository.save(new Member("member1","a@a.com","a.url"));
+        Map<String, Object> body2 = getStringObjectMap(role1, title,"PUBLIC");
+        body2.put("memberId",member1.getId());
+
+        PortfolioResponse portfolioResponse =
+                given().body(body2)
+                        .when().post("/api/portfolios")
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().as(PortfolioResponse.class);
+
+        Map<String,Object> body = new HashMap<>();
+        body.put("id",portfolioResponse.getId());
+
+        ApplicationResponse appResponse = given().body(body)
+                .when().put("/api/teams/{id}/applications", teamResponse1.getId())
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(ApplicationResponse.class);
+
+        applicationService.changedApplicationStatus(appResponse.getId(), ApplicationStatus.APPROVED);
+
+        TeamResponse response = given().filter(RestAssuredRestDocumentationWrapper.document("finish-team",
+                        "팀 모집 완료 API"))
+                .when().put("/api/teams/{id}/finish",teamResponse1.getId())
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(TeamResponse.class);
+
+        List<String> statuses = response.getTeamRoles().stream()
+                .flatMap(teamRole -> teamRole.getApplications().stream())
+                .map(ApplicationResponse::getStatus)
+                .collect(Collectors.toList());
+
+        assertThat(statuses).containsOnly("APPROVED");
+        assertThat(response.getTeamStatus()).isEqualTo(TeamStatus.FINISHED.toString());
+    }
+
+    @DisplayName("팀에 포트폴리오를 지원한다.")
+    @Test
+    void applyTeam() throws Exception{
+        String title = "작곡가 포트폴리오1";
+        Member member1 = memberRepository.save(new Member("member1","a@a.com","a.url"));
+        Map<String, Object> body2 = getStringObjectMap(role1, title,"PUBLIC");
+        body2.put("memberId",member1.getId());
+
+        PortfolioResponse portfolioResponse =
+                given().body(body2)
+                        .when().post("/api/portfolios")
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().as(PortfolioResponse.class);
+
+        Map<String,Object> body = new HashMap<>();
+        body.put("id",portfolioResponse.getId());
+
+        ApplicationResponse response = given().body(body)
+                .filter(RestAssuredRestDocumentationWrapper.document("apply-team",
+                        "팀 지원 API",
+                        requestFields(fieldWithPath("id").description("포트폴리오 id")
+                        ),
+                        responseFields(fieldWithPath("id").description("지원서 id"),
+                                fieldWithPath("teamId").description("팀 Id"),
+                                fieldWithPath("role").description("지원한 역할"),
+                                fieldWithPath("member.id").description("지원한 멤버 id"),
+                                fieldWithPath("member.nickName").description("지원한 멤버 닉네임"),
+                                fieldWithPath("member.email").description("지원한 멤버 이메일"),
+                                fieldWithPath("member.iconUrl").description("지원한 멤버 아이콘 url"),
+                                fieldWithPath("portfolio.id").description("포트폴리오 id"),
+                                fieldWithPath("portfolio.title").description("포트폴리오 타이틀"),
+                                fieldWithPath("portfolio.roleName").ignored(),
+                                fieldWithPath("portfolio.contents").description("포트폴리오 컨텐츠"),
+                                fieldWithPath("portfolio.contents[].url").description("포트폴리오 컨텐츠 url"),
+                                fieldWithPath("portfolio.contents[].comment").description("포트폴리오 컨텐츠 코멘트"),
+                                fieldWithPath("portfolio.access").description("포트폴리오 공개 여부"),
+                                fieldWithPath("status").description("포트폴리오 지원 상태"))))
+                .when().put("/api/teams/{id}/applications", teamResponse1.getId())
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(ApplicationResponse.class);
+
+    }
+
+    @NonNull
+    private static Map<String, Object> getStringObjectMap(Role role1, String title,String access) {
+        RoleRequest roleRequest = new RoleRequest(role1.getId()); // Create and populate RoleRequest object as needed
+        List<ContentRequest> contents =
+                List.of(new ContentRequest("https://www.youtube.com/watch?v=N9_hsXleJgs","fantasize"),
+                        new ContentRequest("https://www.youtube.com/watch?v=RyZz1JX8xC8","victim")); // Create and populate ContentRequest list as needed
+
+        Map<String,Object> body =new HashMap<>();
+        body.put("title", title);
+        body.put("role",roleRequest);
+        body.put("contents",contents);
+        body.put("access", access);
+        return body;
+    }
 
 }

@@ -44,8 +44,6 @@ public class PortfolioApiDocTest extends ApiTest{
 
         createdPortfolios.add(response);
 
-        super.setUp(restDocumentation);
-
         String title2 = "보컬 포트폴리오1";
 
         Role role2 = roleRepository.save(new Role("보컬"));

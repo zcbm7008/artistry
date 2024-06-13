@@ -8,10 +8,12 @@ import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
+import com.artistry.artistry.Dto.Request.PortfolioRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
+import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
 import com.artistry.artistry.Repository.TeamRepository;
@@ -36,6 +38,7 @@ public class TeamService {
     private final MemberService memberService;
     private final ApplicationService applicationService;
     private final ApplicationRepository applicationRepository;
+    private final PortfolioService portfolioService;
 
     public TeamResponse create(TeamRequest teamRequest){
         Member host = memberService.findEntityById(teamRequest.getHostId());
@@ -63,8 +66,9 @@ public class TeamService {
     }
 
     @Transactional
-    public ApplicationResponse apply(Long teamId, Portfolio portfolio){
+    public ApplicationResponse apply(Long teamId, PortfolioRequest request){
         Team team = findEntityById(teamId);
+        Portfolio portfolio = portfolioService.findEntityById(request.getId());
         Application application = team.apply(portfolio);
         applicationRepository.save(application);
         return ApplicationResponse.from(application);

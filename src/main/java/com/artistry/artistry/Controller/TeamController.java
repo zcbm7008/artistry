@@ -1,9 +1,9 @@
 package com.artistry.artistry.Controller;
 
-import com.artistry.artistry.Domain.team.Team;
-import com.artistry.artistry.Dto.Request.ApplicationRequest;
+import com.artistry.artistry.Dto.Request.PortfolioRequest;
 import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
+import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Service.TeamService;
 import jakarta.validation.Valid;
@@ -34,12 +34,12 @@ public class TeamController {
         return ResponseEntity.ok(teamResponse);
    }
 
-//   @PutMapping("/{teamId}/applications")
-//   public ResponseEntity<TeamResponse> applyToTeam(
-//           @PathVariable Long teamId,
-//           @RequestBody ApplicationRequest request ){
-//
-//   }
+   @PutMapping("/{teamId}/applications")
+   public ResponseEntity<ApplicationResponse> applyToTeam(
+           @PathVariable Long teamId,
+           @RequestBody PortfolioRequest request ){
+        return ResponseEntity.ok(teamService.apply(teamId,request));
+   }
 
    @PutMapping("/{teamId}")
     public ResponseEntity<TeamResponse> updateTeam(

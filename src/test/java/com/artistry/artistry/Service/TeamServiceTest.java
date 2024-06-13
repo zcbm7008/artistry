@@ -9,10 +9,7 @@ import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamRole;
 import com.artistry.artistry.Domain.team.TeamStatus;
-import com.artistry.artistry.Dto.Request.RoleRequest;
-import com.artistry.artistry.Dto.Request.TagRequest;
-import com.artistry.artistry.Dto.Request.TeamRequest;
-import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
+import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
@@ -272,8 +269,8 @@ public class TeamServiceTest {
         teamRepository.save(team1);
         teamRepository.save(team2);
 
-        ApplicationResponse application1 = teamService.apply(team1.getId(),portfolio1);
-        ApplicationResponse application2 = teamService.apply(team2.getId(),portfolio2);
+        ApplicationResponse application1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
+        ApplicationResponse application2 = teamService.apply(team2.getId(),new PortfolioRequest(portfolio2.getId()));
 
         applicationService.changedApplicationStatus(application1.getId(),ApplicationStatus.APPROVED);
         applicationService.changedApplicationStatus(application2.getId(),ApplicationStatus.APPROVED);
@@ -366,10 +363,10 @@ public class TeamServiceTest {
         String changedName = "밴드팀팀팀";
 
         Role role1 = roleService.findEntityById(roleRequest1.getId());
-        Portfolio portfolio = new Portfolio(member1,"포폴1", role1);
+        Portfolio portfolio = portfolioRepository.save(new Portfolio(member1,"포폴1", role1));
         Team team = teamService.findEntityById(responseDto.getId());
 
-        ApplicationResponse response = teamService.apply(responseDto.getId(), portfolio);
+        ApplicationResponse response = teamService.apply(responseDto.getId(), new PortfolioRequest(portfolio.getId()));
         Application application = applicationService.findEntityById(response.getId());
         application.setStatus(ApplicationStatus.APPROVED);
 
@@ -408,7 +405,7 @@ public class TeamServiceTest {
 
         teamRepository.save(team1);
 
-        ApplicationResponse applicationResponse1 = teamService.apply(team1.getId(),portfolio1);
+        ApplicationResponse applicationResponse1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
 
         applicationService.changedApplicationStatus(applicationResponse1.getId(),ApplicationStatus.APPROVED);
 
@@ -448,7 +445,7 @@ public class TeamServiceTest {
 
         teamRepository.save(team1);
 
-        ApplicationResponse applicationResponse = teamService.apply(team1.getId(),portfolio1);
+        ApplicationResponse applicationResponse = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
         team1.apply(portfolio2);
 
         applicationService.changedApplicationStatus(applicationResponse.getId(),ApplicationStatus.APPROVED);
