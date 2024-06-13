@@ -5,7 +5,6 @@ import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
-import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -91,8 +90,10 @@ public class TeamRole {
     }
 
     public void filterApprovedApplications(){
-        this.applications = applications.stream()
-                .filter(application -> application.getStatus().equals(ApplicationStatus.APPROVED)).collect(Collectors.toList());
+        if(this.applications == null){
+            this.applications = new ArrayList<>();
+        }
+        this.applications.removeIf(application -> !application.getStatus().equals(ApplicationStatus.APPROVED));
     }
 
     public void removeAllApplications(){
