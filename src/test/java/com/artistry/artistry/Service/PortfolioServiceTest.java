@@ -5,11 +5,9 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
-import com.artistry.artistry.Dto.Request.ContentRequest;
-import com.artistry.artistry.Dto.Request.PortfolioCreateRequest;
-import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
-import com.artistry.artistry.Dto.Request.RoleRequest;
+import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.ContentResponse;
+import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.MemberRepository;
@@ -40,13 +38,14 @@ public class PortfolioServiceTest {
     @Autowired
     private RoleService roleService;
     @Autowired
-    PortfolioRepository portfolioRepository;
+    private PortfolioRepository portfolioRepository;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
     private MemberRepository memberRepository;
     PortfolioResponse response;
     Member savedMember;
+    Role role;
 
 
 
@@ -54,7 +53,7 @@ public class PortfolioServiceTest {
     @BeforeEach
     void setUp(){
         String title = "보컬 포트폴리오";
-        Role role = new Role("보컬");
+        role = new Role("보컬");
         Role savedRole = roleRepository.save(role);
         savedMember = memberRepository.save(new Member("m1","m1@a.com","a.url"));
 
@@ -192,7 +191,6 @@ public class PortfolioServiceTest {
     @DisplayName("모든 포트폴리오를 조회한다.")
     @Test
     void findPortfolios(){
-
         //when
         List<PortfolioResponse> portfolios = portfolioService.findAll();
         //then
@@ -221,6 +219,35 @@ public class PortfolioServiceTest {
         assertThat(portfolios).extracting(PortfolioResponse::getAccess).containsExactly(String.valueOf(PortfolioAccess.PRIVATE));
     }
 
+    @DisplayName("특정 member의 모든 포트폴리오를 조회한다.")
+    @Test
+    void findPublicPortfoliosByMember(){
+        MemberInfoRequest request = new MemberInfoRequest(savedMember.getId());
+        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByMember(request);
+
+        assertThat(portfolioResponses)
+                .extracting(PortfolioResponse::getMember)
+                .extracting(MemberResponse::getId)
+                .containsExactly(savedMember.getId());
+    }
+
+    @DisplayName("특정 title로 모든 포트폴리오를 조회한다.")
+    @Test
+    void findPublicPortfoliosByTitle(){
+        String title = "보컬";
+        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByTitle(title);
+
+        assertThat(portfolioResponses).allMatch(portfolio -> portfolio.getTitle().contains(title));
+    }
+    @DisplayName("특정 Role의 모든 포트폴리오를 조회한다.")
+    @Test
+    void findPublicPortfoliosByRole(){
+        RoleRequest request = new RoleRequest(role.getId());
+        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByRole(request);
+
+        assertThat(portfolioResponses).allMatch(portfolio -> portfolio.getRoleName().equals(role.getName()));
+    }
+
     @DisplayName("포트폴리오를 수정한다.")
     @Test
     void update() {
@@ -231,6 +258,7 @@ public class PortfolioServiceTest {
         //given
         PortfolioResponse expected = new PortfolioResponse(response.getId(),
                 "수정된 타이틀",
+                response.getMember(),
                 "수정된 역할",
                 Arrays.asList(ContentResponse.from(content)),
                 "PRIVATE");

@@ -5,9 +5,7 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
-import com.artistry.artistry.Dto.Request.ContentRequest;
-import com.artistry.artistry.Dto.Request.PortfolioCreateRequest;
-import com.artistry.artistry.Dto.Request.PortfolioUpdateRequest;
+import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
@@ -41,17 +39,41 @@ public class PortfolioService {
     public List<PortfolioResponse> findAll() {
         List <Portfolio> portfolios = portfolioRepository.findAll();
 
-        return portfolios.stream()
-                .map(PortfolioResponse::from)
-                .collect(Collectors.toList());
+        return getPortfolioResponses(portfolios);
     }
 
+    @Transactional
     public List<PortfolioResponse> findAllByAccess(PortfolioAccess portfolioAccess) {
         List <Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(portfolioAccess);
 
-        return portfolios.stream()
-                .map(PortfolioResponse::from)
-                .collect(Collectors.toList());
+        return getPortfolioResponses(portfolios);
+    }
+
+    @Transactional
+    public List<PortfolioResponse> findAllPublicByTitle(String title){
+        List <Portfolio> portfolios = portfolioRepository.findByTitleContainingAndPortfolioAccess(title,PortfolioAccess.PUBLIC);
+
+        return getPortfolioResponses(portfolios);
+    }
+
+    @Transactional
+    public List<PortfolioResponse> findAllPublicByMember(MemberInfoRequest memberInfoRequest){
+        Member member = memberService.findEntityById(memberInfoRequest.getId());
+        List <Portfolio> portfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PUBLIC);
+
+        return getPortfolioResponses(portfolios);
+    }
+
+    @Transactional
+    public List<PortfolioResponse> findAllPublicByRole(RoleRequest request){
+        Role role = roleService.findEntityById(request.getId());
+        List <Portfolio> portfolios = portfolioRepository.findByRoleAndPortfolioAccess(role,PortfolioAccess.PUBLIC);
+
+        return getPortfolioResponses(portfolios);
+    }
+
+    private static List<PortfolioResponse> getPortfolioResponses(List<Portfolio> portfolios) {
+        return portfolios.stream().map(PortfolioResponse::from).collect(Collectors.toList());
     }
 
     @Transactional

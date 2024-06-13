@@ -153,7 +153,7 @@ public class MemberServiceTest {
         application1.setStatus(ApplicationStatus.APPROVED);
         application2.setStatus(ApplicationStatus.APPROVED);
 
-        MemberInfoRequest request = new MemberInfoRequest(savedMember.getEmail());
+        MemberInfoRequest request = new MemberInfoRequest(savedMember.getId());
 
         //When
         MemberTeamsResponse response = memberService.getParticipatedTeams(request);

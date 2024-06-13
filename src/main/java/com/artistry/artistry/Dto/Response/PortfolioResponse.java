@@ -1,5 +1,6 @@
 package com.artistry.artistry.Dto.Response;
 
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class PortfolioResponse {
     private Long id;
     private String title;
+    private MemberResponse member;
     private String roleName;
     private List<ContentResponse> contents;
     private String access;
@@ -24,6 +26,7 @@ public class PortfolioResponse {
         return PortfolioResponse.builder()
                 .id(portfolio.getId())
                 .title(portfolio.getTitle())
+                .member(MemberResponse.from(portfolio.getMember()))
                 .roleName(portfolio.getRole().getName())
                 .contents(portfolio.getContents().stream().map(ContentResponse::from).collect(Collectors.toList()))
                 .access(portfolio.getPortfolioAccess().toString())

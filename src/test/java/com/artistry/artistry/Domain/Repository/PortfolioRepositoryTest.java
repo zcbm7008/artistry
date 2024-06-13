@@ -38,10 +38,11 @@ public class PortfolioRepositoryTest {
     Portfolio createdportfolio;
     Portfolio createdportfolio2;
     Member member;
+    Role role;
 
     @BeforeEach
     public void setUp(){
-        Role role = new Role("작곡가");
+        role = new Role("작곡가");
         member = memberRepository.save(new Member("a","a2@a.com","aurl"));
         roleRepository.save(role);
         Content content1 = new Content("https://youtu.be/TZlQp15pzPo?si=CauplleoztnFOI2x","buttons!", ContentsType.AUDIO);
@@ -58,7 +59,7 @@ public class PortfolioRepositoryTest {
         Content content3 = new Content("https://www.youtube.com/watch?v=tU0vm-dG-H0","Maraca", ContentsType.AUDIO);
         Content content4 = new Content("https://www.youtube.com/watch?v=OsGR31e0kjw","L.M.F", ContentsType.AUDIO);
 
-        createdportfolio2 = new Portfolio(member,"작곡가 포트폴리오1",role);
+        createdportfolio2 = new Portfolio(member,"작곡가 포트폴리오3",role);
 
         createdportfolio2.addContents(Arrays.asList(content3,content4));
         createdportfolio2.setPortfolioAccess(PortfolioAccess.PRIVATE);
@@ -118,6 +119,40 @@ public class PortfolioRepositoryTest {
         //then
         assertThat(portfolios).hasSize(1);
         assertThat(portfolios).extracting(Portfolio::getPortfolioAccess).containsExactly(PortfolioAccess.PRIVATE);
+    }
+
+    @DisplayName("특정 멤버로 특정 엑세스의 포트폴리오를 조회한다.")
+    @Test
+    void findPortfoliosByMember(){
+        List <Portfolio> publicPortfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PUBLIC);
+
+        assertThat(publicPortfolios).hasSize(1)
+                .allMatch(portfolio -> portfolio.getMember().getId().equals(member.getId()));
+
+        List <Portfolio> privatePortfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PRIVATE);
+
+        assertThat(privatePortfolios).hasSize(1)
+                .allMatch(portfolio -> portfolio.getMember().getId().equals(member.getId()));
+    }
+
+    @DisplayName("title이 포함된 특정 엑세스의 포트폴리오를 조회한다.")
+    @Test
+    void findPortfoliosByTest(){
+        String title = "작곡가";
+        List <Portfolio> publicPortfolios = portfolioRepository.findByTitleContainingAndPortfolioAccess(title,PortfolioAccess.PUBLIC);
+
+        assertThat(publicPortfolios).hasSize(1)
+                .allMatch(portfolio -> portfolio.getTitle().contains(title));
+    }
+
+    @DisplayName("role로 특정 엑세스의 포트폴리오를 조회한다.")
+    @Test
+    void findPortfoliosByRole(){
+        String title = "작곡가";
+        List <Portfolio> publicPortfolios = portfolioRepository.findByRoleAndPortfolioAccess(role,PortfolioAccess.PUBLIC);
+
+        assertThat(publicPortfolios).hasSize(1)
+                .allMatch(portfolio -> portfolio.getTitle().contains(title));
     }
 
 

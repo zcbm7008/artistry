@@ -20,7 +20,6 @@ public class Portfolio {
 
     public static final PortfolioAccess INIT_ACCESS = PortfolioAccess.PUBLIC;
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
