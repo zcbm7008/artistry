@@ -29,6 +29,17 @@ public class PortfolioService {
         this.roleService = roleService;
         this.memberService = memberService;
     }
+    @Transactional
+    public PortfolioResponse create(final PortfolioCreateRequest request){
+        Role role = roleService.findEntityById(request.getRole().getId());
+        Member member = memberService.findEntityById(request.getMemberId());
+
+        Portfolio portfolio = new Portfolio(member,request.getTitle(),role);
+        portfolio.addContents(ContentToEntity(request.getContents()));
+        portfolio.setPortfolioAccess(PortfolioAccess.valueOf(request.getAccess()));
+
+        return PortfolioResponse.from(portfolioRepository.save(portfolio));
+    }
 
     public PortfolioResponse findPortfolioById(Long id){
         return PortfolioResponse.from(findEntityById(id));
@@ -98,22 +109,6 @@ public class PortfolioService {
         return getPortfolioResponses(portfolios);
     }
 
-    private static List<PortfolioResponse> getPortfolioResponses(List<Portfolio> portfolios) {
-        return portfolios.stream().map(PortfolioResponse::from).collect(Collectors.toList());
-    }
-
-    @Transactional
-    public PortfolioResponse create(final PortfolioCreateRequest request){
-        Role role = roleService.findEntityById(request.getRole().getId());
-        Member member = memberService.findEntityById(request.getMemberId());
-
-        Portfolio portfolio = new Portfolio(member,request.getTitle(),role);
-        portfolio.addContents(ContentToEntity(request.getContents()));
-        portfolio.setPortfolioAccess(PortfolioAccess.valueOf(request.getAccess()));
-
-        return PortfolioResponse.from(portfolioRepository.save(portfolio));
-    }
-
     @Transactional
     public PortfolioResponse update(final PortfolioUpdateRequest request){
         Portfolio portfolio = findEntityById(request.getId());
@@ -129,7 +124,16 @@ public class PortfolioService {
         portfolioRepository.delete(portfolio);
     }
 
-    public static List<Content> ContentToEntity(List<ContentRequest> contents){
-        return contents.stream().map(ContentRequest::toEntity).collect(Collectors.toList());
+    private static List<PortfolioResponse> getPortfolioResponses(List<Portfolio> portfolios) {
+        return portfolios.stream()
+                .map(PortfolioResponse::from)
+                .collect(Collectors.toList());
     }
+
+    public static List<Content> ContentToEntity(List<ContentRequest> contents){
+        return contents.stream()
+                .map(ContentRequest::toEntity)
+                .collect(Collectors.toList());
+    }
+
 }
