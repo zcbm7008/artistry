@@ -10,7 +10,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Setter
 @Getter
@@ -49,7 +48,7 @@ public class Portfolio {
     }
 
 
-    public void update(final String title, Role role, List<Content> contents,PortfolioAccess portfolioAccess){
+    public void update(final String title, Role role, List<Content> contents, PortfolioAccess portfolioAccess){
         this.title = title;
         this.role = role;
         this.contents = contents;
@@ -61,7 +60,7 @@ public class Portfolio {
         this(null,member,title,role,null,INIT_ACCESS);
     }
 
-    public Portfolio(Long id, @NonNull Member member, @NonNull String title, Role role,List<Content> contents,PortfolioAccess portfolioAccess) {
+    public Portfolio(Long id, @NonNull Member member, @NonNull String title, Role role, List<Content> contents, PortfolioAccess portfolioAccess) {
         this.id = id;
         this.member = member;
         this.title = title;

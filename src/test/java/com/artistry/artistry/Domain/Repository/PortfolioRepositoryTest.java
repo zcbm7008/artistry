@@ -1,12 +1,11 @@
 package com.artistry.artistry.Domain.Repository;
 
 import com.artistry.artistry.Domain.Role.Role;
-import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Content;
-import com.artistry.artistry.Domain.portfolio.ContentsType;
+import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.common.ContentsType;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
-import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.PortfolioRepository;
@@ -51,7 +50,7 @@ public class PortfolioRepositoryTest {
 
         createdportfolio = new Portfolio(member,"작곡가 포트폴리오1",role);
 
-        createdportfolio.addContents(Arrays.asList(content1,content2));
+        createdportfolio.addContents(Arrays.asList(content1, content2));
         createdportfolio.setPortfolioAccess(PortfolioAccess.PUBLIC);
         savedPublicPortfolio = portfolioRepository.save(createdportfolio);
 
@@ -62,7 +61,7 @@ public class PortfolioRepositoryTest {
 
         createdportfolio2 = new Portfolio(member,"작곡가 포트폴리오3",role);
 
-        createdportfolio2.addContents(Arrays.asList(content3,content4));
+        createdportfolio2.addContents(Arrays.asList(content3, content4));
         createdportfolio2.setPortfolioAccess(PortfolioAccess.PRIVATE);
         savedPrivatePortfolio = portfolioRepository.save(createdportfolio2);
 
@@ -77,7 +76,7 @@ public class PortfolioRepositoryTest {
         Content content2 = new Content("https://youtu.be/iUGtYgMMZ0U?si=rBwck1vUEYQajvsm","dashstar*", ContentsType.AUDIO);
         Portfolio portfolio = new Portfolio(member,"작곡가 포트폴리오1",role);
 
-        portfolio.addContents(Arrays.asList(content1,content2));
+        portfolio.addContents(Arrays.asList(content1, content2));
 
 
         //when

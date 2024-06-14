@@ -54,8 +54,6 @@ public class PortfolioController {
         return ResponseEntity.ok(response);
     }
 
-
-
     @PutMapping
     public ResponseEntity<PortfolioResponse> update(@RequestBody final PortfolioUpdateRequest request){
         PortfolioResponse response = portfolioService.update(request);

@@ -1,6 +1,5 @@
 package com.artistry.artistry.Dto.Response;
 
-import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

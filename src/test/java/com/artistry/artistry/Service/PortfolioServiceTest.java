@@ -1,8 +1,8 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Domain.Role.Role;
-import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Content;
+import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Dto.Request.*;
@@ -174,7 +174,7 @@ public class PortfolioServiceTest {
 
         assertThat(portfolioResponse.getContents()).hasSize(contents.size())
                 .extracting(ContentResponse::getUrl)
-                .containsExactlyInAnyOrder(content1.getUrl(),content2.getUrl());
+                .containsExactlyInAnyOrder(content1.getUrl(), content2.getUrl());
 
         assertThat(portfolioResponse.getContents()).hasSize(contents.size())
                 .extracting(ContentResponse::getUrl)
@@ -276,7 +276,7 @@ public class PortfolioServiceTest {
     void update() {
         Content content = new Content("https://www.youtube.com/watch?v=ABwmmg5UNNg", "I Deserve");
 
-        ContentRequest updatedRequest = new ContentRequest(content.getUrl(),content.getComment());
+        ContentRequest updatedRequest = new ContentRequest(content.getUrl(), content.getComment());
 
         //given
         PortfolioResponse expected = new PortfolioResponse(response.getId(),
