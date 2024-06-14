@@ -32,6 +32,15 @@ public class Member {
     @NonNull
     private Nickname nickname;
 
+    @NonNull
+    private String email;
+
+    private String iconUrl;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="member_links", joinColumns = @JoinColumn(name = "member_id"))
+    private List<MemberLink> memberLinks;
+
     @OneToMany(mappedBy = "host")
     @JsonIgnore
     private List<Team> teams;
@@ -39,20 +48,17 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Portfolio> portfolios;
 
-    @NonNull
-    private String email;
 
-    private String iconUrl;
 
     @Column(nullable = false)
     private boolean deleted;
 
     public Member (String nickName,String email) {
-        this(null,nickName,email,null,null,null,false);
+        this(null,nickName,email,null,null,null,null,false);
     }
 
     public Member(String nickName, String email, String iconUrl) {
-        this(null,nickName,email,iconUrl,null,null,false);
+        this(null,nickName,email,iconUrl,null,null,null,false);
     }
 
     public String getNickname() {
@@ -60,14 +66,22 @@ public class Member {
     }
 
     @Builder
-    public Member(final Long id, @NonNull final String nickName, @NonNull String email,String iconUrl, final List<Team> teams, List<Portfolio> portfolios, boolean deleted) {
+    public Member(final Long id,
+                  @NonNull final String nickName,
+                  final @NonNull String email,
+                  final String iconUrl,
+                  final List<MemberLink> memberLinks,
+                  final List<Team> teams,
+                  final List<Portfolio> portfolios,
+                  final boolean deleted) {
         validateEmail(email);
         this.id = id;
         this.nickname = new Nickname(nickName);
-        this.teams = teams;
-        this.portfolios = portfolios;
         this.email = email;
         this.iconUrl = iconUrl;
+        this.memberLinks = memberLinks;
+        this.teams = teams;
+        this.portfolios = portfolios;
         this.deleted = deleted;
     }
 
