@@ -1,6 +1,5 @@
 package com.artistry.artistry.Dto.Request;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +15,7 @@ public class PortfolioCreateRequest {
     @NotNull(message = "포트폴리오 타이틀은 공백일 수 없습니다.")
     private String title;
     private RoleRequest role;
-    private List<ContentRequest> contents;
+    private List<LinkRequest> contents;
     private String access;
 
 }

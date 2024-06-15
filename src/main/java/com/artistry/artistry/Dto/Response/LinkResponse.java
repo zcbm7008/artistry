@@ -1,6 +1,6 @@
 package com.artistry.artistry.Dto.Response;
 
-import com.artistry.artistry.Domain.portfolio.Content;
+import com.artistry.artistry.Domain.common.AbstractLink;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContentResponse {
+public class LinkResponse {
     private String url;
     private String comment;
 
-    public static ContentResponse from(Content content){return new ContentResponse(content.getUrl(), content.getComment());}
+    public static LinkResponse from(AbstractLink abstractLink){return new LinkResponse(abstractLink.getUrl(), abstractLink.getComment());}
 
 }

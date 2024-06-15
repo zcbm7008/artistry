@@ -18,7 +18,7 @@ public class PortfolioResponse {
     private String title;
     private MemberResponse member;
     private String roleName;
-    private List<ContentResponse> contents;
+    private List<LinkResponse> contents;
     private String access;
 
     public static PortfolioResponse from(Portfolio portfolio){
@@ -27,7 +27,7 @@ public class PortfolioResponse {
                 .title(portfolio.getTitle())
                 .member(MemberResponse.from(portfolio.getMember()))
                 .roleName(portfolio.getRole().getName())
-                .contents(portfolio.getContents().stream().map(ContentResponse::from).collect(Collectors.toList()))
+                .contents(portfolio.getContents().stream().map(LinkResponse::from).collect(Collectors.toList()))
                 .access(portfolio.getPortfolioAccess().toString())
                 .build();
     }
