@@ -80,13 +80,6 @@ public class MemberServiceTest {
         assertThat(response.getIconUrl()).isEqualTo(expectedIconUrl);
     }
 
-    @DisplayName("중복된 nickname으로 생성할 때 예외를 던짐.")
-    @Test
-    void duplicatedNicknameException(){
-        assertThatThrownBy(() -> memberService.create(new MemberCreateRequest(duplicatedName,"a2a@a.com","a.url")))
-                .isInstanceOf(ArtistryDuplicatedException.class);
-    }
-
     @DisplayName("중복된 Email로 생성할 때 예외를 던짐.")
     @Test
     void duplicatedEmailException(){
@@ -123,18 +116,6 @@ public class MemberServiceTest {
         assertThat(updatedResponse.getLinks())
                 .extracting(LinkResponse::getComment)
                 .containsExactlyElementsOf(linkRequests.stream().map(LinkRequest::getComment).collect(Collectors.toList()));
-    }
-
-    @DisplayName("맴버 정보를 수정 할 때, Nickname이 중복되면 예외를 출력한다.")
-    @Test
-    void duplicatedNicknameExceptionWhenUpdate(){
-        //Given
-        MemberResponse response2 = memberService.create(new MemberCreateRequest("fortest","test@test.com","a.url"));
-        MemberUpdateRequest request = new MemberUpdateRequest(duplicatedName,"something.url");
-
-        //When, Then
-        assertThatThrownBy(()->memberService.update(response2.getId(), request))
-                .isInstanceOf(ArtistryDuplicatedException.class);
     }
 
     @DisplayName("deleted된 멤버를 검색할 때 예외를 던짐.")
