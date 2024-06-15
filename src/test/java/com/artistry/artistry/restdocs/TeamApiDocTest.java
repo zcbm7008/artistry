@@ -3,10 +3,11 @@ package com.artistry.artistry.restdocs;
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
-import com.artistry.artistry.Dto.Request.ContentRequest;
+import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
@@ -36,8 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,6 +54,7 @@ class TeamApiDocTest extends ApiTest{
     TeamResponse teamResponse1;
     TeamResponse teamResponse2;
     Role role1;
+    Member member1;
     @BeforeEach
     public void setUpData() {
         roleRepository.save(new Role("작곡가"));
@@ -67,8 +70,9 @@ class TeamApiDocTest extends ApiTest{
         tagRepository.save(new Tag("디지코어"));
         Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
-
-        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+        Member member = new Member("member1","a@a.com");
+        member.getMemberLinks().add(new MemberLink("a.url","soundcloud"));
+        member1 = memberRepository.save(member);
 
         // 더미 팀 생성
         String dummyTeamName = "더미 팀";
@@ -304,7 +308,6 @@ class TeamApiDocTest extends ApiTest{
     @Test
     void applyTeam() throws Exception{
         String title = "작곡가 포트폴리오1";
-        Member member1 = memberRepository.save(new Member("member1","a@a.com","a.url"));
         Map<String, Object> body2 = getStringObjectMap(role1, title,"PUBLIC");
         body2.put("memberId",member1.getId());
 
@@ -325,10 +328,6 @@ class TeamApiDocTest extends ApiTest{
                         responseFields(fieldWithPath("id").description("지원서 id"),
                                 fieldWithPath("teamId").description("팀 Id"),
                                 fieldWithPath("role").description("지원한 역할"),
-                                fieldWithPath("member.id").description("지원한 멤버 id"),
-                                fieldWithPath("member.nickName").description("지원한 멤버 닉네임"),
-                                fieldWithPath("member.email").description("지원한 멤버 이메일"),
-                                fieldWithPath("member.iconUrl").description("지원한 멤버 아이콘 url"),
                                 fieldWithPath("portfolio.id").description("포트폴리오 id"),
                                 fieldWithPath("portfolio.title").description("포트폴리오 타이틀"),
                                 fieldWithPath("portfolio.roleName").ignored(),
@@ -337,6 +336,9 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("portfolio.member.nickName").description("멤버 닉네임"),
                                 fieldWithPath("portfolio.member.email").description("멤버 이메일"),
                                 fieldWithPath("portfolio.member.iconUrl").description("멤버 아이콘 url"),
+                                fieldWithPath("portfolio.member.links").description("멤버 링크"),
+                                fieldWithPath("portfolio.member.links[].url").description("멤버 링크 url"),
+                                fieldWithPath("portfolio.member.links[].comment").description("멤버 링크 코멘트"),
                                 fieldWithPath("portfolio.contents").description("포트폴리오 컨텐츠"),
                                 fieldWithPath("portfolio.contents[].url").description("포트폴리오 컨텐츠 url"),
                                 fieldWithPath("portfolio.contents[].comment").description("포트폴리오 컨텐츠 코멘트"),
@@ -351,9 +353,9 @@ class TeamApiDocTest extends ApiTest{
     @NonNull
     private static Map<String, Object> getStringObjectMap(Role role1, String title,String access) {
         RoleRequest roleRequest = new RoleRequest(role1.getId()); // Create and populate RoleRequest object as needed
-        List<ContentRequest> contents =
-                List.of(new ContentRequest("https://www.youtube.com/watch?v=N9_hsXleJgs","fantasize"),
-                        new ContentRequest("https://www.youtube.com/watch?v=RyZz1JX8xC8","victim")); // Create and populate ContentRequest list as needed
+        List<LinkRequest> contents =
+                List.of(new LinkRequest("https://www.youtube.com/watch?v=N9_hsXleJgs","fantasize"),
+                        new LinkRequest("https://www.youtube.com/watch?v=RyZz1JX8xC8","victim")); // Create and populate ContentRequest list as needed
 
         Map<String,Object> body =new HashMap<>();
         body.put("title", title);

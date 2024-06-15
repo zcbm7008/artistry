@@ -1,14 +1,10 @@
 package com.artistry.artistry.auth;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-
+import com.artistry.artistry.Dto.Response.NaverUserResponse;
+import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.artistry.artistry.Exceptions.ArtistryOAuthException;
 import com.artistry.artistry.auth.oauth.Client.NaverOAuthClient;
 import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
-import com.artistry.artistry.Dto.Response.NaverUserResponse;
-import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 

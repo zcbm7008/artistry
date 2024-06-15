@@ -1,8 +1,8 @@
 package com.artistry.artistry.Controller;
 
+import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import com.artistry.artistry.Service.OAuthService;
 import com.artistry.artistry.auth.oauth.SocialType;
-import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

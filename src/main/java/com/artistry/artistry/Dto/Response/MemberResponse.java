@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -15,15 +18,23 @@ public class MemberResponse {
     private String nickName;
     private String email;
     private String iconUrl;
-
+    private List<LinkResponse> links;
 
     public static MemberResponse from(Member member){
         return new MemberResponse(
                 member.getId(),
                 member.getNickname(),
                 member.getEmail(),
-                member.getIconUrl()
+                member.getIconUrl(),
+                getLinks(member)
         );
+    }
 
+    public static List<LinkResponse> getLinks(Member member){
+        if (member.getMemberLinks() == null){
+            return new ArrayList<>();
+        }
+
+        return member.getMemberLinks().stream().map(LinkResponse::from).collect(Collectors.toList());
     }
 }

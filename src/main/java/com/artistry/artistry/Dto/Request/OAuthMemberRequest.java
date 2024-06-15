@@ -1,7 +1,6 @@
 
 package com.artistry.artistry.Dto.Request;
 
-import com.artistry.artistry.Domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

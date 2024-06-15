@@ -1,7 +1,6 @@
 package com.artistry.artistry.auth.oauth.Client;
 
 import com.artistry.artistry.Dto.Request.OAuthMemberRequest;
-import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;

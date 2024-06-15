@@ -12,6 +12,7 @@ import lombok.NonNull;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +33,15 @@ public class Member {
     @NonNull
     private Nickname nickname;
 
+    @NonNull
+    private String email;
+
+    private String iconUrl;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="memberLinks", joinColumns = @JoinColumn(name = "member_id"))
+    private List<MemberLink> memberLinks = new ArrayList<>();
+
     @OneToMany(mappedBy = "host")
     @JsonIgnore
     private List<Team> teams;
@@ -39,20 +49,17 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Portfolio> portfolios;
 
-    @NonNull
-    private String email;
 
-    private String iconUrl;
 
     @Column(nullable = false)
     private boolean deleted;
 
     public Member (String nickName,String email) {
-        this(null,nickName,email,null,null,null,false);
+        this(null,nickName,email,null,new ArrayList<>(),null,null,false);
     }
 
     public Member(String nickName, String email, String iconUrl) {
-        this(null,nickName,email,iconUrl,null,null,false);
+        this(null,nickName,email,iconUrl,new ArrayList<>(),null,null,false);
     }
 
     public String getNickname() {
@@ -60,20 +67,32 @@ public class Member {
     }
 
     @Builder
-    public Member(final Long id, @NonNull final String nickName, @NonNull String email,String iconUrl, final List<Team> teams, List<Portfolio> portfolios, boolean deleted) {
+    public Member(final Long id,
+                  @NonNull final String nickName,
+                  final @NonNull String email,
+                  final String iconUrl,
+                  final List<MemberLink> memberLinks,
+                  final List<Team> teams,
+                  final List<Portfolio> portfolios,
+                  final boolean deleted) {
         validateEmail(email);
         this.id = id;
         this.nickname = new Nickname(nickName);
-        this.teams = teams;
-        this.portfolios = portfolios;
         this.email = email;
         this.iconUrl = iconUrl;
+        this.memberLinks = memberLinks;
+        this.teams = teams;
+        this.portfolios = portfolios;
         this.deleted = deleted;
     }
 
-    public void update(String nickName, String iconUrl){
+    public void update(String nickName, String iconUrl,List<MemberLink> links){
         this.nickname = new Nickname(nickName);
         this.iconUrl = iconUrl;
+        if(this.memberLinks == null || this.memberLinks.isEmpty()){
+            this.memberLinks = new ArrayList<>();
+        }
+        this.memberLinks = links;
     }
 
     private void validateEmail(final String email){
@@ -83,5 +102,4 @@ public class Member {
         }
 
     }
-
 }

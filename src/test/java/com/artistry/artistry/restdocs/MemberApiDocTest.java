@@ -1,13 +1,11 @@
 package com.artistry.artistry.restdocs;
 
-import com.artistry.artistry.Domain.member.Member;
-import com.artistry.artistry.Domain.tag.Tag;
+
+import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
-import com.artistry.artistry.Dto.Response.RoleResponse;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
-import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,17 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 public class MemberApiDocTest extends ApiTest{
     private final JwtTokenProvider jwtTokenProvider;
@@ -103,13 +99,12 @@ public class MemberApiDocTest extends ApiTest{
                                         fieldWithPath("id").description("멤버 Id"),
                                         fieldWithPath("nickName").description("멤버 이름"),
                                         fieldWithPath("iconUrl").description("멤버 아이콘 url"),
-                                        fieldWithPath("email").description("멤버 이메일"))))
+                                        fieldWithPath("email").description("멤버 이메일"),
+                                        fieldWithPath("links").description("멤버 링크"))))
                         .when().post("/api/members")
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().as(MemberResponse.class);
     }
-
-
 
     @DisplayName("멤버 정보를 수정한다.")
     @Test
@@ -117,9 +112,16 @@ public class MemberApiDocTest extends ApiTest{
         MemberResponse member = createdMembers.get(0);
         String expectedNickname = "changedNickname";
         String expectedUrl = "changed.url";
+
+        List <LinkRequest> links = List.of(new LinkRequest("twitterurl","twitter"),new LinkRequest("tiktokurl","tiktok"));
+
         Map<String, Object> body = new HashMap<>();
+
         body.put("nickName", expectedNickname);
         body.put("iconUrl", expectedUrl);
+        body.put("links", links.stream().
+                map(link -> Map.of("url",link.getUrl(),"comment",link.getComment()))
+                .collect(Collectors.toList()));
 
         MemberResponse response =
                 given().body(body)
@@ -127,13 +129,19 @@ public class MemberApiDocTest extends ApiTest{
                                 "멤버 수정 API",
                                 requestFields(
                                         fieldWithPath("nickName").description("멤버 닉네임"),
-                                        fieldWithPath("iconUrl").description("멤버 아이콘 url")
+                                        fieldWithPath("iconUrl").description("멤버 아이콘 url"),
+                                        fieldWithPath("links").description("멤버 링크"),
+                                        fieldWithPath("links[].url").description("멤버 링크 url"),
+                                        fieldWithPath("links[].comment").description("멤버 링크 코멘트")
                                 ),
                                 responseFields(
                                         fieldWithPath("id").description("멤버 Id"),
                                         fieldWithPath("nickName").description("멤버 이름"),
                                         fieldWithPath("iconUrl").description("멤버 아이콘 url"),
-                                        fieldWithPath("email").description("멤버 이메일"))))
+                                        fieldWithPath("email").description("멤버 이메일"),
+                                        fieldWithPath("links").description("멤버 링크"),
+                                        fieldWithPath("links[].url").description("멤버 링크 url"),
+                                        fieldWithPath("links[].comment").description("멤버 링크 코멘트"))))
                         .when().put("/api/members/" + member.getId())
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().as(MemberResponse.class);

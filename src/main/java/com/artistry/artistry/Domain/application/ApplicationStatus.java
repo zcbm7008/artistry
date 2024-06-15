@@ -1,8 +1,6 @@
 package com.artistry.artistry.Domain.application;
 
-import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Exceptions.InvalidApplicatoinStatusException;
-import com.artistry.artistry.Exceptions.InvalidTeamStatusException;
 
 import java.util.Arrays;
 

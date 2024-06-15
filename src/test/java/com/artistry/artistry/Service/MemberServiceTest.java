@@ -6,16 +6,20 @@ import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Request.MemberInfoRequest;
 import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
-import com.artistry.artistry.Dto.Response.ApplicationResponse;
+import com.artistry.artistry.Dto.Response.LinkResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.MemberTeamsResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
-import com.artistry.artistry.Repository.*;
+import com.artistry.artistry.Repository.MemberRepository;
+import com.artistry.artistry.Repository.PortfolioRepository;
+import com.artistry.artistry.Repository.RoleRepository;
+import com.artistry.artistry.Repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,8 +28,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -93,7 +100,11 @@ public class MemberServiceTest {
         //Given
         String updatedName = "updatedName";
         String updatedUrl = "update.url";
-        MemberUpdateRequest request = new MemberUpdateRequest(updatedName,updatedUrl);
+        LinkRequest linkReq1 = new LinkRequest("twitterurl","twitter");
+        LinkRequest linkReq2 = new LinkRequest("instagramurl","instagram");
+
+        List<LinkRequest> linkRequests = List.of(linkReq1,linkReq2);
+        MemberUpdateRequest request = new MemberUpdateRequest(updatedName,updatedUrl,linkRequests);
 
         //When
         memberService.update(response.getId(),request);
@@ -102,6 +113,14 @@ public class MemberServiceTest {
         //Then
         assertThat(updatedResponse.getNickName()).isEqualTo(updatedName);
         assertThat(updatedResponse.getIconUrl()).isEqualTo(updatedUrl);
+
+        assertThat(updatedResponse.getLinks())
+                .extracting(LinkResponse::getUrl)
+                .containsExactlyElementsOf(linkRequests.stream().map(LinkRequest::getUrl).collect(Collectors.toList()));
+
+        assertThat(updatedResponse.getLinks())
+                .extracting(LinkResponse::getComment)
+                .containsExactlyElementsOf(linkRequests.stream().map(LinkRequest::getComment).collect(Collectors.toList()));
     }
 
     @DisplayName("맴버 정보를 수정 할 때, Nickname이 중복되면 예외를 출력한다.")

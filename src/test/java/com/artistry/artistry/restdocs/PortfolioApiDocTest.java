@@ -2,8 +2,9 @@ package com.artistry.artistry.restdocs;
 
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
-import com.artistry.artistry.Dto.Request.ContentRequest;
+import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
@@ -30,9 +31,11 @@ public class PortfolioApiDocTest extends ApiTest{
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation){
         super.setUp(restDocumentation);
-
+        Member member = new Member("member1","a@a.com","a.url");
+        member.getMemberLinks().add(new MemberLink("a.url","twitter"));
         String title = "보컬 포트폴리오1";
-        member1 = memberRepository.save(new Member("member1","a@a.com","a.url"));
+        member1 = memberRepository.save(member);
+
         role1 = roleRepository.save(new Role("보컬"));
         Map<String, Object> body = getStringObjectMap(role1, title,"PUBLIC");
         body.put("memberId",member1.getId());
@@ -76,6 +79,9 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("[].member.nickName").description("멤버 닉네임"),
                                         fieldWithPath("[].member.email").description("멤버 이메일"),
                                         fieldWithPath("[].member.iconUrl").description("멤버 아이콘 Url"),
+                                        fieldWithPath("[].member.links").description("멤버 링크"),
+                                        fieldWithPath("[].member.links[].url").description("멤버 링크 url"),
+                                        fieldWithPath("[].member.links[].comment").description("멤버 링크 코멘트"),
                                         fieldWithPath("[].contents").description("포트폴리오 컨텐츠들"),
                                         fieldWithPath("[].contents[].url").description("컨텐츠 url"),
                                         fieldWithPath("[].contents[].comment").description("컨텐츠 설명"),
@@ -104,6 +110,9 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("[].member.nickName").description("멤버 닉네임"),
                                         fieldWithPath("[].member.email").description("멤버 이메일"),
                                         fieldWithPath("[].member.iconUrl").description("멤버 아이콘 Url"),
+                                        fieldWithPath("[].member.links").description("멤버 링크"),
+                                        fieldWithPath("[].member.links[].url").description("멤버 링크 url"),
+                                        fieldWithPath("[].member.links[].comment").description("멤버 링크 코멘트"),
                                         fieldWithPath("[].contents").description("포트폴리오 컨텐츠들"),
                                         fieldWithPath("[].contents[].url").description("컨텐츠 url"),
                                         fieldWithPath("[].contents[].comment").description("컨텐츠 설명"),
@@ -135,6 +144,9 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("[].member.nickName").description("멤버 닉네임"),
                                         fieldWithPath("[].member.email").description("멤버 이메일"),
                                         fieldWithPath("[].member.iconUrl").description("멤버 아이콘 Url"),
+                                        fieldWithPath("[].member.links").description("멤버 링크"),
+                                        fieldWithPath("[].member.links[].url").description("멤버 링크 url"),
+                                        fieldWithPath("[].member.links[].comment").description("멤버 링크 코멘트"),
                                         fieldWithPath("[].contents").description("포트폴리오 컨텐츠들"),
                                         fieldWithPath("[].contents[].url").description("컨텐츠 url"),
                                         fieldWithPath("[].contents[].comment").description("컨텐츠 설명"),
@@ -200,6 +212,9 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("member.nickName").description("멤버 닉네임"),
                                         fieldWithPath("member.email").description("멤버 이메일"),
                                         fieldWithPath("member.iconUrl").description("멤버 아이콘 Url"),
+                                        fieldWithPath("member.links").description("멤버 링크"),
+                                        fieldWithPath("member.links[].url").description("멤버 링크 url"),
+                                        fieldWithPath("member.links[].comment").description("멤버 링크 코멘트"),
                                         fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
                                         fieldWithPath("contents[].url").description("컨텐츠 url"),
                                         fieldWithPath("contents[].comment").description("컨텐츠 설명"),
@@ -249,6 +264,9 @@ public class PortfolioApiDocTest extends ApiTest{
                                 fieldWithPath("member.nickName").description("멤버 닉네임"),
                                 fieldWithPath("member.email").description("멤버 이메일"),
                                 fieldWithPath("member.iconUrl").description("멤버 아이콘 Url"),
+                                fieldWithPath("member.links").description("멤버 링크"),
+                                fieldWithPath("member.links[].url").description("멤버 링크 url"),
+                                fieldWithPath("member.links[].comment").description("멤버 링크 코멘트"),
                                 fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
                                 fieldWithPath("contents[].url").description("컨텐츠 url"),
                                 fieldWithPath("contents[].comment").description("컨텐츠 설명"),
@@ -284,9 +302,9 @@ public class PortfolioApiDocTest extends ApiTest{
     @NonNull
     private static Map<String, Object> getStringObjectMap(Role role1, String title,String access) {
         RoleRequest roleRequest = new RoleRequest(role1.getId()); // Create and populate RoleRequest object as needed
-        List<ContentRequest> contents =
-                List.of(new ContentRequest("https://www.youtube.com/watch?v=N9_hsXleJgs","fantasize"),
-                        new ContentRequest("https://www.youtube.com/watch?v=RyZz1JX8xC8","victim")); // Create and populate ContentRequest list as needed
+        List<LinkRequest> contents =
+                List.of(new LinkRequest("https://www.youtube.com/watch?v=N9_hsXleJgs","fantasize"),
+                        new LinkRequest("https://www.youtube.com/watch?v=RyZz1JX8xC8","victim")); // Create and populate ContentRequest list as needed
 
         Map<String,Object> body =new HashMap<>();
         body.put("title", title);

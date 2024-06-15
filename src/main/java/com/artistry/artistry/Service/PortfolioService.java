@@ -134,9 +134,9 @@ public class PortfolioService {
                 .collect(Collectors.toList());
     }
 
-    public static List<Content> ContentToEntity(List<ContentRequest> contents){
+    public static List<Content> ContentToEntity(List<LinkRequest> contents){
         return contents.stream()
-                .map(ContentRequest::toEntity)
+                .map(LinkRequest::toContent)
                 .collect(Collectors.toList());
     }
 

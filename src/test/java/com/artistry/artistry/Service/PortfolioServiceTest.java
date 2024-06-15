@@ -6,7 +6,7 @@ import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Dto.Request.*;
-import com.artistry.artistry.Dto.Response.ContentResponse;
+import com.artistry.artistry.Dto.Response.LinkResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
@@ -59,10 +59,10 @@ public class PortfolioServiceTest {
 
         RoleRequest roleRequest = new RoleRequest(savedRole.getId());
 
-        ContentRequest contentRequest1 = new ContentRequest("https://www.youtube.com/watch?v=FWW9YYTz5T8", "Anita");
-        ContentRequest contentRequest2 = new ContentRequest("https://www.youtube.com/watch?v=YmNj2FvdHho", "Amphetamine");
+        LinkRequest linkRequest1 = new LinkRequest("https://www.youtube.com/watch?v=FWW9YYTz5T8", "Anita");
+        LinkRequest linkRequest2 = new LinkRequest("https://www.youtube.com/watch?v=YmNj2FvdHho", "Amphetamine");
 
-        List<ContentRequest> contents = Arrays.asList(contentRequest1, contentRequest2);
+        List<LinkRequest> contents = Arrays.asList(linkRequest1, linkRequest2);
 
         PortfolioCreateRequest request = new PortfolioCreateRequest(savedMember.getId(),title, roleRequest, contents, "PUBLIC");
         //when
@@ -75,10 +75,10 @@ public class PortfolioServiceTest {
 
         RoleRequest roleRequest2 = new RoleRequest(savedRole2.getId());
 
-        ContentRequest contentRequest3 = new ContentRequest("https://www.youtube.com/watch?v=FWW9YYTz5T8", "Anita");
-        ContentRequest contentRequest4 = new ContentRequest("https://www.youtube.com/watch?v=YmNj2FvdHho", "Amphetamine");
+        LinkRequest linkRequest3 = new LinkRequest("https://www.youtube.com/watch?v=FWW9YYTz5T8", "Anita");
+        LinkRequest linkRequest4 = new LinkRequest("https://www.youtube.com/watch?v=YmNj2FvdHho", "Amphetamine");
 
-        List<ContentRequest> contents2 = Arrays.asList(contentRequest3, contentRequest4);
+        List<LinkRequest> contents2 = Arrays.asList(linkRequest3, linkRequest4);
 
         PortfolioCreateRequest request2 = new PortfolioCreateRequest(savedMember.getId(),title2, roleRequest2, contents2, "PRIVATE");
         //when
@@ -101,10 +101,10 @@ public class PortfolioServiceTest {
 
         RoleRequest roleRequest = new RoleRequest(savedRole.getId());
 
-        ContentRequest contentRequest1 = new ContentRequest("https://www.youtube.com/watch?v=lzQpS1rH3zI", "Fast");
-        ContentRequest contentRequest2 = new ContentRequest("https://www.youtube.com/watch?v=9LSyWM2CL-U", "Empty");
+        LinkRequest linkRequest1 = new LinkRequest("https://www.youtube.com/watch?v=lzQpS1rH3zI", "Fast");
+        LinkRequest linkRequest2 = new LinkRequest("https://www.youtube.com/watch?v=9LSyWM2CL-U", "Empty");
 
-        List<ContentRequest> contents = Arrays.asList(contentRequest1, contentRequest2);
+        List<LinkRequest> contents = Arrays.asList(linkRequest1, linkRequest2);
 
         PortfolioCreateRequest request = new PortfolioCreateRequest(savedMember.getId(),title, roleRequest, contents, "imimimimi");
         //when
@@ -125,10 +125,10 @@ public class PortfolioServiceTest {
 
         RoleRequest roleRequest = new RoleRequest(savedRole.getId());
 
-        ContentRequest contentRequest1 = new ContentRequest("https://www.youtube.com/watch?v=lzQpS1rH3zI", "Fast");
-        ContentRequest contentRequest2 = new ContentRequest("https://www.youtube.com/watch?v=9LSyWM2CL-U", "Empty");
+        LinkRequest linkRequest1 = new LinkRequest("https://www.youtube.com/watch?v=lzQpS1rH3zI", "Fast");
+        LinkRequest linkRequest2 = new LinkRequest("https://www.youtube.com/watch?v=9LSyWM2CL-U", "Empty");
 
-        List<ContentRequest> contents = Arrays.asList(contentRequest1, contentRequest2);
+        List<LinkRequest> contents = Arrays.asList(linkRequest1, linkRequest2);
 
         PortfolioCreateRequest request = new PortfolioCreateRequest(savedMember.getId(),title, roleRequest, contents, "PUBLIC");
         //when
@@ -139,10 +139,10 @@ public class PortfolioServiceTest {
         assertThat(response.getTitle()).isEqualTo(title);
         assertThat(response.getRoleName()).isEqualTo(savedRole.getName());
         assertThat(response.getContents()).hasSize(2)
-                .extracting(ContentResponse::getUrl, ContentResponse::getComment)
+                .extracting(LinkResponse::getUrl, LinkResponse::getComment)
                 .containsExactlyInAnyOrder(
-                        tuple(contentRequest1.getUrl(), contentRequest1.getComment()),
-                        tuple(contentRequest2.getUrl(), contentRequest2.getComment())
+                        tuple(linkRequest1.getUrl(), linkRequest1.getComment()),
+                        tuple(linkRequest2.getUrl(), linkRequest2.getComment())
                 );
     }
 
@@ -173,15 +173,15 @@ public class PortfolioServiceTest {
         assertThat(portfolioResponse.getRoleName()).isEqualTo(roleName);
 
         assertThat(portfolioResponse.getContents()).hasSize(contents.size())
-                .extracting(ContentResponse::getUrl)
-                .containsExactlyInAnyOrder(content1.getUrl(),content2.getUrl());
+                .extracting(LinkResponse::getUrl)
+                .containsExactlyInAnyOrder(content1.getUrl(), content2.getUrl());
 
         assertThat(portfolioResponse.getContents()).hasSize(contents.size())
-                .extracting(ContentResponse::getUrl)
+                .extracting(LinkResponse::getUrl)
                 .containsExactlyInAnyOrderElementsOf(contents.stream().map(Content::getUrl).collect(Collectors.toList()));
 
         assertThat(portfolioResponse.getContents()).hasSize(contents.size())
-                .extracting(ContentResponse::getComment)
+                .extracting(LinkResponse::getComment)
                 .containsExactlyInAnyOrderElementsOf(contents.stream().map(Content::getComment).collect(Collectors.toList()));
 
         assertThat(portfolioResponse.getAccess()).isEqualTo(INIT_ACCESS.toString());
@@ -276,14 +276,14 @@ public class PortfolioServiceTest {
     void update() {
         Content content = new Content("https://www.youtube.com/watch?v=ABwmmg5UNNg", "I Deserve");
 
-        ContentRequest updatedRequest = new ContentRequest(content.getUrl(),content.getComment());
+        LinkRequest updatedRequest = new LinkRequest(content.getUrl(), content.getComment());
 
         //given
         PortfolioResponse expected = new PortfolioResponse(response.getId(),
                 "수정된 타이틀",
                 response.getMember(),
                 "수정된 역할",
-                Arrays.asList(ContentResponse.from(content)),
+                Arrays.asList(LinkResponse.from(content)),
                 "PRIVATE");
 
         Role role1 = new Role("수정된 역할");
