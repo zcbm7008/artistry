@@ -3,10 +3,13 @@ package com.artistry.artistry.Service;
 import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Request.MemberInfoRequest;
 import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
+import com.artistry.artistry.Dto.Response.LinkResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.MemberTeamsResponse;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberService {
@@ -67,9 +71,15 @@ public class MemberService {
         validateDuplicateNickname(request.getNickName());
 
         Member member = findEntityById(memberId);
-        member.update(request.getNickName(),request.getIconUrl());
+        member.update(request.getNickName(),request.getIconUrl(),createLinks(request.getLinks()));
 
         return MemberResponse.from(findEntityById(memberId));
+    }
+
+    public List<MemberLink> createLinks(List<LinkRequest> requests){
+        return requests.stream()
+                .map(LinkRequest::toMemberLink)
+                .collect(Collectors.toList());
     }
 
     @Transactional
