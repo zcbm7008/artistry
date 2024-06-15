@@ -67,8 +67,6 @@ public class MemberService {
 
     @Transactional
     public MemberResponse update(final Long memberId, final MemberUpdateRequest request){
-        validateDuplicateNickname(request.getNickName());
-
         Member member = findEntityById(memberId);
         member.update(request.getNickName(),request.getIconUrl(),request.getBio(),createLinks(request.getLinks()));
 
@@ -91,18 +89,7 @@ public class MemberService {
     }
 
     private void validateDuplicateMember(Member member){
-        validateDuplicateNickname(member.getNickname());
         validateDuplicateEmail(member.getEmail());
-    }
-
-    private void validateDuplicateNickname(String nickName){
-        if(isNicknameExists(nickName)){
-            throw new ArtistryDuplicatedException(String.format("[%s]는 이미 존재하는 닉네임입니다.", nickName));
-        }
-    }
-
-    public Boolean isNicknameExists(String nickName){
-        return memberRepository.existsByNickname_value(nickName);
     }
 
     private void validateDuplicateEmail(String email){
