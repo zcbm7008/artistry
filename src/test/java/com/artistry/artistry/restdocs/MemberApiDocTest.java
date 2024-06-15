@@ -100,6 +100,7 @@ public class MemberApiDocTest extends ApiTest{
                                         fieldWithPath("nickName").description("멤버 이름"),
                                         fieldWithPath("iconUrl").description("멤버 아이콘 url"),
                                         fieldWithPath("email").description("멤버 이메일"),
+                                        fieldWithPath("bio").description("멤버 소개"),
                                         fieldWithPath("links").description("멤버 링크"))))
                         .when().post("/api/members")
                         .then().statusCode(HttpStatus.OK.value())
@@ -112,6 +113,7 @@ public class MemberApiDocTest extends ApiTest{
         MemberResponse member = createdMembers.get(0);
         String expectedNickname = "changedNickname";
         String expectedUrl = "changed.url";
+        String expectedBio = "this is me";
 
         List <LinkRequest> links = List.of(new LinkRequest("twitterurl","twitter"),new LinkRequest("tiktokurl","tiktok"));
 
@@ -119,6 +121,7 @@ public class MemberApiDocTest extends ApiTest{
 
         body.put("nickName", expectedNickname);
         body.put("iconUrl", expectedUrl);
+        body.put("bio", expectedBio);
         body.put("links", links.stream().
                 map(link -> Map.of("url",link.getUrl(),"comment",link.getComment()))
                 .collect(Collectors.toList()));
@@ -130,6 +133,7 @@ public class MemberApiDocTest extends ApiTest{
                                 requestFields(
                                         fieldWithPath("nickName").description("멤버 닉네임"),
                                         fieldWithPath("iconUrl").description("멤버 아이콘 url"),
+                                        fieldWithPath("bio").description("멤버 소개"),
                                         fieldWithPath("links").description("멤버 링크"),
                                         fieldWithPath("links[].url").description("멤버 링크 url"),
                                         fieldWithPath("links[].comment").description("멤버 링크 코멘트")
@@ -139,6 +143,7 @@ public class MemberApiDocTest extends ApiTest{
                                         fieldWithPath("nickName").description("멤버 이름"),
                                         fieldWithPath("iconUrl").description("멤버 아이콘 url"),
                                         fieldWithPath("email").description("멤버 이메일"),
+                                        fieldWithPath("bio").description("멤버 소개"),
                                         fieldWithPath("links").description("멤버 링크"),
                                         fieldWithPath("links[].url").description("멤버 링크 url"),
                                         fieldWithPath("links[].comment").description("멤버 링크 코멘트"))))
@@ -150,6 +155,7 @@ public class MemberApiDocTest extends ApiTest{
         assertThat(response.getEmail()).isEqualTo(member.getEmail());
         assertThat(response.getNickName()).isEqualTo(expectedNickname);
         assertThat(response.getIconUrl()).isEqualTo(expectedUrl);
+        assertThat(response.getBio()).isEqualTo(expectedBio);
 
     }
 

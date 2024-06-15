@@ -85,7 +85,7 @@ public class OAuthServiceTest {
         when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
         when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
-        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(1L,"nickname","email@example.com","image.url",new ArrayList<>()));
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(1L,"nickname","email@example.com","image.url"," ",new ArrayList<>()));
 
         // When
         AccessTokenResponse actualAccessTokenResponse = mockOAuthService.createMemberAccessToken(socialType, code);
@@ -114,7 +114,7 @@ public class OAuthServiceTest {
         when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
         when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
-        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1","a.url","a@a.com",new ArrayList<>()));
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1","a.url","a@a.com"," ",new ArrayList<>()));
         when(memberService.isEmailExists(any(String.class))).thenReturn(true);
         // When,Then
 

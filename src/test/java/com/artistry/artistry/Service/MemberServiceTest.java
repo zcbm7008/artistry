@@ -100,11 +100,12 @@ public class MemberServiceTest {
         //Given
         String updatedName = "updatedName";
         String updatedUrl = "update.url";
+        String bio = "this is my bio";
         LinkRequest linkReq1 = new LinkRequest("twitterurl","twitter");
         LinkRequest linkReq2 = new LinkRequest("instagramurl","instagram");
 
         List<LinkRequest> linkRequests = List.of(linkReq1,linkReq2);
-        MemberUpdateRequest request = new MemberUpdateRequest(updatedName,updatedUrl,linkRequests);
+        MemberUpdateRequest request = new MemberUpdateRequest(updatedName,updatedUrl,bio,linkRequests);
 
         //When
         memberService.update(response.getId(),request);
@@ -113,6 +114,7 @@ public class MemberServiceTest {
         //Then
         assertThat(updatedResponse.getNickName()).isEqualTo(updatedName);
         assertThat(updatedResponse.getIconUrl()).isEqualTo(updatedUrl);
+        assertThat(updatedResponse.getBio()).isEqualTo(bio);
 
         assertThat(updatedResponse.getLinks())
                 .extracting(LinkResponse::getUrl)

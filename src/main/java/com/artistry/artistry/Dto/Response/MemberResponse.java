@@ -18,6 +18,7 @@ public class MemberResponse {
     private String nickName;
     private String email;
     private String iconUrl;
+    private String bio;
     private List<LinkResponse> links;
 
     public static MemberResponse from(Member member){
@@ -26,6 +27,7 @@ public class MemberResponse {
                 member.getNickname(),
                 member.getEmail(),
                 member.getIconUrl(),
+                member.getBio(),
                 getLinks(member)
         );
     }
