@@ -38,6 +38,8 @@ public class Member {
 
     private String iconUrl;
 
+    private MemberBio bio;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="memberLinks", joinColumns = @JoinColumn(name = "member_id"))
     private List<MemberLink> memberLinks = new ArrayList<>();
@@ -55,22 +57,25 @@ public class Member {
     private boolean deleted;
 
     public Member (String nickName,String email) {
-        this(null,nickName,email,null,new ArrayList<>(),null,null,false);
+        this(null,nickName,email,null," ",new ArrayList<>(),null,null,false);
     }
 
     public Member(String nickName, String email, String iconUrl) {
-        this(null,nickName,email,iconUrl,new ArrayList<>(),null,null,false);
+        this(null,nickName,email,iconUrl," ",new ArrayList<>(),null,null,false);
     }
 
     public String getNickname() {
         return nickname.getValue();
     }
 
+    public String getBio() { return bio.getValue();}
+
     @Builder
     public Member(final Long id,
                   @NonNull final String nickName,
                   final @NonNull String email,
                   final String iconUrl,
+                  final String bio,
                   final List<MemberLink> memberLinks,
                   final List<Team> teams,
                   final List<Portfolio> portfolios,
@@ -80,15 +85,17 @@ public class Member {
         this.nickname = new Nickname(nickName);
         this.email = email;
         this.iconUrl = iconUrl;
+        this.bio = new MemberBio(bio);
         this.memberLinks = memberLinks;
         this.teams = teams;
         this.portfolios = portfolios;
         this.deleted = deleted;
     }
 
-    public void update(String nickName, String iconUrl,List<MemberLink> links){
+    public void update(String nickName, String iconUrl,String bio,List<MemberLink> links){
         this.nickname = new Nickname(nickName);
         this.iconUrl = iconUrl;
+        this.bio = new MemberBio(bio);
         if(this.memberLinks == null || this.memberLinks.isEmpty()){
             this.memberLinks = new ArrayList<>();
         }

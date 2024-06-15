@@ -336,6 +336,7 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("portfolio.member.nickName").description("멤버 닉네임"),
                                 fieldWithPath("portfolio.member.email").description("멤버 이메일"),
                                 fieldWithPath("portfolio.member.iconUrl").description("멤버 아이콘 url"),
+                                fieldWithPath("portfolio.member.bio").description("멤버 소개"),
                                 fieldWithPath("portfolio.member.links").description("멤버 링크"),
                                 fieldWithPath("portfolio.member.links[].url").description("멤버 링크 url"),
                                 fieldWithPath("portfolio.member.links[].comment").description("멤버 링크 코멘트"),

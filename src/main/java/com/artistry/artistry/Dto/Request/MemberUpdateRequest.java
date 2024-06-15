@@ -17,10 +17,11 @@ public class MemberUpdateRequest {
     @NonNull
     private String nickName;
     private String iconUrl;
+    private String bio;
     private List<LinkRequest> links;
 
     public MemberUpdateRequest(String nickName, String iconUrl){
-        this(nickName,iconUrl,new ArrayList<>());
+        this(nickName,iconUrl," ",new ArrayList<>());
     }
 
 }

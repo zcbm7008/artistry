@@ -70,7 +70,7 @@ public class MemberService {
         validateDuplicateNickname(request.getNickName());
 
         Member member = findEntityById(memberId);
-        member.update(request.getNickName(),request.getIconUrl(),createLinks(request.getLinks()));
+        member.update(request.getNickName(),request.getIconUrl(),request.getBio(),createLinks(request.getLinks()));
 
         return MemberResponse.from(findEntityById(memberId));
     }
