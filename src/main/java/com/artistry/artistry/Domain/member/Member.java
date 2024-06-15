@@ -56,11 +56,11 @@ public class Member {
     private boolean deleted;
 
     public Member (String nickName,String email) {
-        this(null,nickName,email,null,null,null,null,false);
+        this(null,nickName,email,null,new ArrayList<>(),null,null,false);
     }
 
     public Member(String nickName, String email, String iconUrl) {
-        this(null,nickName,email,iconUrl,null,null,null,false);
+        this(null,nickName,email,iconUrl,new ArrayList<>(),null,null,false);
     }
 
     public String getNickname() {

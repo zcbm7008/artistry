@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApplicationResponse {
     private Long id;
-    private MemberResponse member;
     private Long teamId;
     private String role;
     private PortfolioResponse portfolio;
@@ -21,7 +20,6 @@ public class ApplicationResponse {
     public static ApplicationResponse from(Application application){
         return ApplicationResponse.builder()
                 .id(application.getId())
-                .member(MemberResponse.from(application.getMember()))
                 .teamId(application.getTeamRole().getTeam().getId())
                 .role(application.getRole().getName())
                 .portfolio(PortfolioResponse.from(application.getPortfolio()))
