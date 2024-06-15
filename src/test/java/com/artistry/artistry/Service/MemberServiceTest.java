@@ -10,10 +10,16 @@ import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Request.MemberInfoRequest;
 import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
-import com.artistry.artistry.Dto.Response.*;
+import com.artistry.artistry.Dto.Response.LinkResponse;
+import com.artistry.artistry.Dto.Response.MemberResponse;
+import com.artistry.artistry.Dto.Response.MemberTeamsResponse;
+import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
-import com.artistry.artistry.Repository.*;
+import com.artistry.artistry.Repository.MemberRepository;
+import com.artistry.artistry.Repository.PortfolioRepository;
+import com.artistry.artistry.Repository.RoleRepository;
+import com.artistry.artistry.Repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +31,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest

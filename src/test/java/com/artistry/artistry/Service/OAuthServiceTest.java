@@ -21,9 +21,8 @@ import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest

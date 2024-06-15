@@ -1,15 +1,17 @@
 package com.artistry.artistry.auth.oauth.Client;
 
 import com.artistry.artistry.Dto.Request.OAuthMemberRequest;
-import com.artistry.artistry.Exceptions.ArtistryOAuthException;
-import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.Dto.Response.NaverUserResponse;
 import com.artistry.artistry.Dto.Response.TokenResponse;
+import com.artistry.artistry.Exceptions.ArtistryOAuthException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 

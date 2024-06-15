@@ -1,6 +1,5 @@
 package com.artistry.artistry.Dto.Request;
 
-import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.portfolio.Content;
 import jakarta.validation.constraints.NotEmpty;

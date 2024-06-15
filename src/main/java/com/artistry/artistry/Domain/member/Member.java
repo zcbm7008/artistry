@@ -1,6 +1,5 @@
 package com.artistry.artistry.Domain.member;
 
-import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Exceptions.ArtistryInvalidValueException;

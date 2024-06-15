@@ -5,7 +5,6 @@ import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
-import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
 import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;

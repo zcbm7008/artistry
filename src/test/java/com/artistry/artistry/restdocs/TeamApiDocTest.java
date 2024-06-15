@@ -37,8 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

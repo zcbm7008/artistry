@@ -9,7 +9,6 @@ import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Request.MemberInfoRequest;
 import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
-import com.artistry.artistry.Dto.Response.LinkResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.MemberTeamsResponse;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;

@@ -3,10 +3,7 @@ package com.artistry.artistry.Domain.member;
 import com.artistry.artistry.Domain.common.AbstractLink;
 import com.artistry.artistry.Domain.common.ContentsType;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Embeddable

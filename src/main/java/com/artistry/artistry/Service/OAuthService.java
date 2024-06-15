@@ -1,7 +1,9 @@
 package com.artistry.artistry.Service;
 
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
+import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
+import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.artistry.artistry.auth.oauth.Client.OAuthClient;
@@ -9,8 +11,6 @@ import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
 import com.artistry.artistry.auth.oauth.OAuthProviderFactory;
 import com.artistry.artistry.auth.oauth.SocialType;
 import com.artistry.artistry.auth.oauth.endPoint.OAuthEndPoint;
-import com.artistry.artistry.Dto.Response.AccessTokenResponse;
-import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

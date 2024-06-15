@@ -13,7 +13,6 @@ import com.artistry.artistry.Dto.Request.TeamRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
-import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
 import com.artistry.artistry.Repository.TeamRepository;

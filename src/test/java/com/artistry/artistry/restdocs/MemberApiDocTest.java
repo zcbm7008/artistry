@@ -1,11 +1,8 @@
 package com.artistry.artistry.restdocs;
 
 
-import com.artistry.artistry.Domain.member.Member;
-import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Response.AccessTokenResponse;
-import com.artistry.artistry.Dto.Response.LinkResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
@@ -16,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 public class MemberApiDocTest extends ApiTest{
     private final JwtTokenProvider jwtTokenProvider;

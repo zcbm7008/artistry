@@ -4,8 +4,6 @@ import com.artistry.artistry.Repository.S3Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Set;
-
 @Service
 public class S3Service {
 
