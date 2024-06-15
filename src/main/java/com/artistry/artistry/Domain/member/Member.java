@@ -1,5 +1,6 @@
 package com.artistry.artistry.Domain.member;
 
+import com.artistry.artistry.Domain.portfolio.Content;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Exceptions.ArtistryInvalidValueException;
@@ -12,6 +13,7 @@ import lombok.NonNull;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,9 +39,9 @@ public class Member {
 
     private String iconUrl;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name="member_links", joinColumns = @JoinColumn(name = "member_id"))
-    private List<MemberLink> memberLinks;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="memberLinks", joinColumns = @JoinColumn(name = "member_id"))
+    private List<MemberLink> memberLinks = new ArrayList<>();
 
     @OneToMany(mappedBy = "host")
     @JsonIgnore
@@ -85,9 +87,13 @@ public class Member {
         this.deleted = deleted;
     }
 
-    public void update(String nickName, String iconUrl){
+    public void update(String nickName, String iconUrl,List<MemberLink> links){
         this.nickname = new Nickname(nickName);
         this.iconUrl = iconUrl;
+        if(this.memberLinks == null || this.memberLinks.isEmpty()){
+            this.memberLinks = new ArrayList<>();
+        }
+        this.memberLinks = links;
     }
 
     private void validateEmail(final String email){
@@ -97,5 +103,4 @@ public class Member {
         }
 
     }
-
 }
