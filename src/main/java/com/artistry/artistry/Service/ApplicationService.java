@@ -3,6 +3,7 @@ package com.artistry.artistry.Service;
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
+import com.artistry.artistry.Domain.application.ApplicationType;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
@@ -70,6 +71,7 @@ public class ApplicationService {
                         .portfolio(portfolio)
                         .teamRole(team.findTeamRoleByRole(role))
                         .status(ApplicationStatus.of(request.getStatus()))
+                        .applicationType(ApplicationType.of(request.getType()))
                         .build();
 
         applicationRepository.save(application);

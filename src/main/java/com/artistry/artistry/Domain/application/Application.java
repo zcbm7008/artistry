@@ -35,12 +35,28 @@ public class Application {
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status = INIT_STATUS;
 
+    @Enumerated(EnumType.STRING)
+    private ApplicationType applicationType = ApplicationType.APPLICATION;
+
     public Application(Portfolio portfolio){
-        this(null,null,portfolio,INIT_STATUS);
+        this(null,null,portfolio,INIT_STATUS,ApplicationType.APPLICATION);
     }
 
     public Application(TeamRole teamRole,Portfolio portfolio){
-        this(null,teamRole,portfolio,INIT_STATUS);
+        this(null,teamRole,portfolio,INIT_STATUS,ApplicationType.APPLICATION);
+    }
+
+    public Application(TeamRole teamRole, Portfolio portfolio, ApplicationType applicationType) {
+        this(null,teamRole,portfolio,INIT_STATUS,applicationType);
+    }
+
+    public Member getDecisionMaker() {
+        if (applicationType == ApplicationType.APPLICATION) {
+            return this.teamRole.getTeam().getHost();
+        } else if (applicationType == ApplicationType.INVITATION) {
+            return this.portfolio.getMember();
+        }
+        throw new IllegalStateException("Unknown application type: " + applicationType);
     }
 
     public Role getRole(){

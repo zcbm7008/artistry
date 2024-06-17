@@ -346,7 +346,8 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("portfolio.contents[].url").description("포트폴리오 컨텐츠 url"),
                                 fieldWithPath("portfolio.contents[].comment").description("포트폴리오 컨텐츠 코멘트"),
                                 fieldWithPath("portfolio.access").description("포트폴리오 공개 여부"),
-                                fieldWithPath("status").description("포트폴리오 지원 상태"))))
+                                fieldWithPath("status").description("포트폴리오 지원 상태"),
+                                fieldWithPath("type").ignored())))
                 .when().put("/api/teams/{id}/applications", teamResponse1.getId())
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(ApplicationResponse.class);

@@ -13,5 +13,10 @@ public class ApplicationCreateRequest {
     private RoleRequest role;
     private PortfolioRequest portfolio;
     private String status;
+    private String type;
+
+    public ApplicationCreateRequest(TeamResponse team,RoleRequest role,PortfolioRequest portfolio, String status){
+        this(team,role,portfolio,status,"APPLICATION");
+    }
 
 }

@@ -16,6 +16,7 @@ public class ApplicationResponse {
     private String role;
     private PortfolioResponse portfolio;
     private String status;
+    private String type;
 
     public static ApplicationResponse from(Application application){
         return ApplicationResponse.builder()
@@ -24,6 +25,7 @@ public class ApplicationResponse {
                 .role(application.getRole().getName())
                 .portfolio(PortfolioResponse.from(application.getPortfolio()))
                 .status(application.getStatus().toString())
+                .type(application.getApplicationType().toString())
                 .build();
     }
 
