@@ -5,6 +5,7 @@ import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
+import com.artistry.artistry.Exceptions.ArtistryUnauthorizedException;
 import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
 import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
@@ -140,6 +141,12 @@ public class Team {
     private void validateTeamRoleForDeletion(TeamRole teamRole){
         if(teamRole.isApprovedInTeamRole()){
             throw new TeamRoleHasApprovedException("이 역할에 이미 승인된 멤버가 있습니다.");
+        }
+    }
+
+    public void validateHost(Member member){
+        if(!isHostMember(member)){
+            throw new ArtistryUnauthorizedException(String.format("[%s]는 이 팀의 Host가 아닙니다.", member.getId()));
         }
     }
 

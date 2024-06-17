@@ -76,13 +76,13 @@ public class ApplicationTest {
     }
 
     @Test
-    @DisplayName("Application의 Type에 따라 선택권자를 변경한다.")
+    @DisplayName("Application의 Type에 따라 승인 유저를 변경한다.")
     void changeDecisionMakerByType() {
         Application invitation = new Application(team.findTeamRoleByRole(appliedRole),portfolio,ApplicationType.INVITATION);
-        assertThat(invitation.getDecisionMaker().getId()).isEqualTo(portfolio.getMember().getId());
+        assertThat(invitation.getApprover().getId()).isEqualTo(portfolio.getMember().getId());
 
         Application application = new Application(team.findTeamRoleByRole(appliedRole),portfolio,ApplicationType.APPLICATION);
-        assertThat(application.getDecisionMaker().getId()).isEqualTo(application.getTeam().getHost().getId());
+        assertThat(application.getApprover().getId()).isEqualTo(application.getTeam().getHost().getId());
     }
 
 

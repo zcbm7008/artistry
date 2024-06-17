@@ -287,7 +287,7 @@ class TeamApiDocTest extends ApiTest{
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(ApplicationResponse.class);
 
-        applicationService.changedApplicationStatus(appResponse.getId(), ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(appResponse.getId(), teamResponse1.getHost().getId(),ApplicationStatus.APPROVED);
 
         TeamResponse response = given().filter(RestAssuredRestDocumentationWrapper.document("finish-team",
                         "팀 모집 완료 API"))

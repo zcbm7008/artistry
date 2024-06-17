@@ -273,8 +273,8 @@ public class TeamServiceTest {
         ApplicationResponse application1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
         ApplicationResponse application2 = teamService.apply(team2.getId(),new PortfolioRequest(portfolio2.getId()));
 
-        applicationService.changedApplicationStatus(application1.getId(),ApplicationStatus.APPROVED);
-        applicationService.changedApplicationStatus(application2.getId(),ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(application1.getId(),team1.getHost().getId(),ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(application2.getId(),team1.getHost().getId(),ApplicationStatus.APPROVED);
 
         List <TeamResponse> responses = teamService.findTeamsByApprovedMember(member1.getId());
 
@@ -408,7 +408,7 @@ public class TeamServiceTest {
 
         ApplicationResponse applicationResponse1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
 
-        applicationService.changedApplicationStatus(applicationResponse1.getId(),ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(applicationResponse1.getId(),team1.getHost().getId(), ApplicationStatus.APPROVED);
 
         //when
         team1.cancel();
@@ -449,7 +449,7 @@ public class TeamServiceTest {
         ApplicationResponse applicationResponse = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
         team1.apply(portfolio2);
 
-        applicationService.changedApplicationStatus(applicationResponse.getId(),ApplicationStatus.APPROVED);
+        applicationService.changedApplicationStatus(applicationResponse.getId(),team1.getHost().getId(),ApplicationStatus.APPROVED);
 
         //when
         TeamRole teamRole1 = team1.findTeamRoleByRole(role1);

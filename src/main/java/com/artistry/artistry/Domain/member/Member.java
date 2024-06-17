@@ -51,8 +51,6 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Portfolio> portfolios;
 
-
-
     @Column(nullable = false)
     private boolean deleted;
 
