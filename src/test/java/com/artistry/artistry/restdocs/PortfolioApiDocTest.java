@@ -63,6 +63,61 @@ public class PortfolioApiDocTest extends ApiTest{
         createdPortfolios.add(response2);
     }
 
+
+    @DisplayName("포트폴리오를 생성한다.")
+    @Test
+    void createPortfolio(){
+        String title = "작곡가 포트폴리오1";
+
+        Role role1 = roleRepository.save(new Role("작곡가"));
+        Map<String, Object> body = getStringObjectMap(role1, title,"PUBLIC");
+        body.put("memberId",member1.getId());
+
+        PortfolioResponse response =
+                given().body(body)
+                        .filter(RestAssuredRestDocumentationWrapper.document("create-portfolio",
+                                "포트폴리오 생성 API",
+                                requestFields(
+                                        fieldWithPath("memberId").description("포트폴리오 멤버 ID"),
+                                        fieldWithPath("title").description("포트폴리오 제목"),
+                                        fieldWithPath("role").description("포트폴리오 역할"),
+                                        fieldWithPath("role.id").description("역할 Id"),
+                                        fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
+                                        fieldWithPath("contents[].url").description("컨텐츠 url"),
+                                        fieldWithPath("contents[].comment").description("컨텐츠 설명"),
+                                        fieldWithPath("access").description("포트폴리오 접근권한")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").description("포트폴리오 Id"),
+                                        fieldWithPath("roleName").description("포트폴리오 역할"),
+                                        fieldWithPath("title").description("포트폴리오 제목"),
+                                        fieldWithPath("view").description("포트폴리오 조회수"),
+                                        fieldWithPath("like").description("포트폴리오 like"),
+                                        fieldWithPath("member").description("포트폴리오 소유 멤버"),
+                                        fieldWithPath("member.id").description("멤버 id"),
+                                        fieldWithPath("member.nickName").description("멤버 닉네임"),
+                                        fieldWithPath("member.email").description("멤버 이메일"),
+                                        fieldWithPath("member.iconUrl").description("멤버 아이콘 Url"),
+                                        fieldWithPath("member.bio").description("멤버 소개"),
+                                        fieldWithPath("member.links").description("멤버 링크"),
+                                        fieldWithPath("member.links[].url").description("멤버 링크 url"),
+                                        fieldWithPath("member.links[].comment").description("멤버 링크 코멘트"),
+                                        fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
+                                        fieldWithPath("contents[].url").description("컨텐츠 url"),
+                                        fieldWithPath("contents[].comment").description("컨텐츠 설명"),
+                                        fieldWithPath("access").description("포트폴리오 접근권한"))))
+                        .when().post("/api/portfolios")
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().as(PortfolioResponse.class);
+
+        assertThat(response.getId()).isNotNull();
+        assertThat(response.getTitle()).isEqualTo(title);
+        assertThat(response.getRoleName()).isEqualTo(role1.getName());
+        //컨텐츠 테스트코드
+        assertThat(response.getAccess()).isEqualTo("PUBLIC");
+    }
+
+
     @DisplayName("전체 포트폴리오를 가져온다.")
     @Test
     void getAllPortfolios() {
@@ -74,6 +129,8 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("[].id").description("포트폴리오 Id"),
                                         fieldWithPath("[].roleName").description("포트폴리오 역할"),
                                         fieldWithPath("[].title").description("포트폴리오 제목"),
+                                        fieldWithPath("[].view").description("포트폴리오 조회수"),
+                                        fieldWithPath("[].like").description("포트폴리오 like"),
                                         fieldWithPath("[].member").description("포트폴리오 소유 멤버"),
                                         fieldWithPath("[].member.id").description("멤버 id"),
                                         fieldWithPath("[].member.nickName").description("멤버 닉네임"),
@@ -94,6 +151,42 @@ public class PortfolioApiDocTest extends ApiTest{
         assertThat(responses).isNotNull();
     }
 
+    @DisplayName("Id로 포트폴리오를 조회")
+    @Test
+    void getPortfolio(){
+        Long idToFind = createdPortfolios.get(0).getId();
+        PortfolioResponse response=
+                given()
+                        .filter(RestAssuredRestDocumentationWrapper.document("read-portfolio",
+                                "포트폴리오 조회 API",
+                                responseFields(
+                                        fieldWithPath("id").description("포트폴리오 Id"),
+                                        fieldWithPath("roleName").description("포트폴리오 역할"),
+                                        fieldWithPath("title").description("포트폴리오 제목"),
+                                        fieldWithPath("view").description("포트폴리오 조회수"),
+                                        fieldWithPath("like").description("포트폴리오 like"),
+                                        fieldWithPath("member").description("포트폴리오 소유 멤버"),
+                                        fieldWithPath("member.id").description("멤버 id"),
+                                        fieldWithPath("member.nickName").description("멤버 닉네임"),
+                                        fieldWithPath("member.email").description("멤버 이메일"),
+                                        fieldWithPath("member.iconUrl").description("멤버 아이콘 Url"),
+                                        fieldWithPath("member.bio").description("멤버 소개"),
+                                        fieldWithPath("member.links").description("멤버 링크"),
+                                        fieldWithPath("member.links[].url").description("멤버 링크 url"),
+                                        fieldWithPath("member.links[].comment").description("멤버 링크 코멘트"),
+                                        fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
+                                        fieldWithPath("contents[].url").description("컨텐츠 url"),
+                                        fieldWithPath("contents[].comment").description("컨텐츠 설명"),
+                                        fieldWithPath("access").description("포트폴리오 접근권한"))))
+                        .when().get("/api/portfolios/{id}",idToFind)
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().as(PortfolioResponse.class);
+
+        assertThat(response.getId()).isEqualTo(idToFind);
+        assertThat(response.getView()).isEqualTo(1L);
+
+    }
+
     @DisplayName("Access로 포트폴리오 조회")
     @Test
     void getTagNames(){
@@ -101,11 +194,13 @@ public class PortfolioApiDocTest extends ApiTest{
         List<PortfolioResponse> responses =
                 given()
                         .filter(RestAssuredRestDocumentationWrapper.document("read-Access-portfolios",
-                                "Access 조회 API",
+                                "Access 포트폴리오 조회 API",
                                 responseFields(
                                         fieldWithPath("[].id").description("포트폴리오 Id"),
                                         fieldWithPath("[].roleName").description("포트폴리오 역할"),
                                         fieldWithPath("[].title").description("포트폴리오 제목"),
+                                        fieldWithPath("[].view").description("포트폴리오 조회수"),
+                                        fieldWithPath("[].like").description("포트폴리오 like"),
                                         fieldWithPath("[].member").description("포트폴리오 소유 멤버"),
                                         fieldWithPath("[].member.id").description("멤버 id"),
                                         fieldWithPath("[].member.nickName").description("멤버 닉네임"),
@@ -141,6 +236,8 @@ public class PortfolioApiDocTest extends ApiTest{
                                         fieldWithPath("[].id").description("포트폴리오 Id"),
                                         fieldWithPath("[].roleName").description("포트폴리오 역할"),
                                         fieldWithPath("[].title").description("포트폴리오 제목"),
+                                        fieldWithPath("[].view").description("포트폴리오 조회수"),
+                                        fieldWithPath("[].like").description("포트폴리오 like"),
                                         fieldWithPath("[].member").description("포트폴리오 소유 멤버"),
                                         fieldWithPath("[].member.id").description("멤버 id"),
                                         fieldWithPath("[].member.nickName").description("멤버 닉네임"),
@@ -180,60 +277,6 @@ public class PortfolioApiDocTest extends ApiTest{
 
     }
 
-
-
-
-    @DisplayName("포트폴리오를 생성한다.")
-    @Test
-    void createPortfolio(){
-        String title = "작곡가 포트폴리오1";
-
-        Role role1 = roleRepository.save(new Role("작곡가"));
-        Map<String, Object> body = getStringObjectMap(role1, title,"PUBLIC");
-        body.put("memberId",member1.getId());
-
-        PortfolioResponse response =
-                given().body(body)
-                        .filter(RestAssuredRestDocumentationWrapper.document("create-portfolio",
-                                "포트폴리오 생성 API",
-                                requestFields(
-                                        fieldWithPath("memberId").description("포트폴리오 멤버 ID"),
-                                        fieldWithPath("title").description("포트폴리오 제목"),
-                                        fieldWithPath("role").description("포트폴리오 역할"),
-                                        fieldWithPath("role.id").description("역할 Id"),
-                                        fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
-                                        fieldWithPath("contents[].url").description("컨텐츠 url"),
-                                        fieldWithPath("contents[].comment").description("컨텐츠 설명"),
-                                        fieldWithPath("access").description("포트폴리오 접근권한")
-                                ),
-                                responseFields(
-                                        fieldWithPath("id").description("포트폴리오 Id"),
-                                        fieldWithPath("roleName").description("포트폴리오 역할"),
-                                        fieldWithPath("title").description("포트폴리오 제목"),
-                                        fieldWithPath("member").description("포트폴리오 소유 멤버"),
-                                        fieldWithPath("member.id").description("멤버 id"),
-                                        fieldWithPath("member.nickName").description("멤버 닉네임"),
-                                        fieldWithPath("member.email").description("멤버 이메일"),
-                                        fieldWithPath("member.iconUrl").description("멤버 아이콘 Url"),
-                                        fieldWithPath("member.bio").description("멤버 소개"),
-                                        fieldWithPath("member.links").description("멤버 링크"),
-                                        fieldWithPath("member.links[].url").description("멤버 링크 url"),
-                                        fieldWithPath("member.links[].comment").description("멤버 링크 코멘트"),
-                                        fieldWithPath("contents").description("포트폴리오 컨텐츠들"),
-                                        fieldWithPath("contents[].url").description("컨텐츠 url"),
-                                        fieldWithPath("contents[].comment").description("컨텐츠 설명"),
-                                        fieldWithPath("access").description("포트폴리오 접근권한"))))
-                        .when().post("/api/portfolios")
-                        .then().statusCode(HttpStatus.OK.value())
-                        .extract().body().as(PortfolioResponse.class);
-
-        assertThat(response.getId()).isNotNull();
-        assertThat(response.getTitle()).isEqualTo(title);
-        assertThat(response.getRoleName()).isEqualTo(role1.getName());
-        //컨텐츠 테스트코드
-        assertThat(response.getAccess()).isEqualTo("PUBLIC");
-    }
-
     @DisplayName("포트폴리오를 수정한다.")
     @Test
     void updatePost() {
@@ -264,6 +307,8 @@ public class PortfolioApiDocTest extends ApiTest{
                                 fieldWithPath("roleName").description("포트폴리오 역할"),
                                 fieldWithPath("title").description("포트폴리오 제목"),
                                 fieldWithPath("member").description("포트폴리오 소유 멤버"),
+                                fieldWithPath("view").description("포트폴리오 조회수"),
+                                fieldWithPath("like").description("포트폴리오 like"),
                                 fieldWithPath("member.id").description("멤버 id"),
                                 fieldWithPath("member.nickName").description("멤버 닉네임"),
                                 fieldWithPath("member.email").description("멤버 이메일"),

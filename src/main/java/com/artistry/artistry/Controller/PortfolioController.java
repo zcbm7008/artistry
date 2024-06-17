@@ -50,7 +50,7 @@ public class PortfolioController {
 
     @GetMapping("/{portfolioId}")
     public ResponseEntity<PortfolioResponse> readPortfolio(@PathVariable final Long portfolioId){
-        PortfolioResponse response  = portfolioService.findPortfolioById(portfolioId);
+        PortfolioResponse response  = portfolioService.findByIdAndIncreaseView(portfolioId);
         return ResponseEntity.ok(response);
     }
 
@@ -58,6 +58,12 @@ public class PortfolioController {
     public ResponseEntity<PortfolioResponse> update(@RequestBody final PortfolioUpdateRequest request){
         PortfolioResponse response = portfolioService.update(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{portfolioId}/like")
+    public ResponseEntity<PortfolioResponse> like(@RequestParam final Long portfolioId){
+        return ResponseEntity.ok(portfolioService.increaseLike(portfolioId));
+
     }
 
     @DeleteMapping(value = "/{portfolioId}")

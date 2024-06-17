@@ -21,6 +21,11 @@ public class PortfolioResponse {
     private List<LinkResponse> contents;
     private String access;
 
+    private Long view;
+    private Long like;
+
+
+
     public static PortfolioResponse from(Portfolio portfolio){
         return PortfolioResponse.builder()
                 .id(portfolio.getId())
@@ -29,6 +34,8 @@ public class PortfolioResponse {
                 .roleName(portfolio.getRole().getName())
                 .contents(portfolio.getContents().stream().map(LinkResponse::from).collect(Collectors.toList()))
                 .access(portfolio.getPortfolioAccess().toString())
+                .view(portfolio.getView())
+                .like(portfolio.getLike())
                 .build();
     }
 

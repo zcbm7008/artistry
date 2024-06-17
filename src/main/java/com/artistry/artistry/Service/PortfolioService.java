@@ -41,6 +41,22 @@ public class PortfolioService {
         return PortfolioResponse.from(portfolioRepository.save(portfolio));
     }
 
+    @Transactional
+    public PortfolioResponse findByIdAndIncreaseView(final Long id){
+        Portfolio portfolio = findEntityById(id);
+        portfolio.addView();
+
+        return PortfolioResponse.from(portfolio);
+    }
+
+    @Transactional
+    public PortfolioResponse increaseLike(final Long id){
+        Portfolio portfolio = findEntityById(id);
+        portfolio.addLike();
+
+        return PortfolioResponse.from(portfolio);
+    }
+
     public PortfolioResponse findPortfolioById(Long id){
         return PortfolioResponse.from(findEntityById(id));
     }

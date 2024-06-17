@@ -188,6 +188,28 @@ public class PortfolioServiceTest {
 
     }
 
+    @DisplayName("조회를 하면 view가 증가한다.")
+    @Test
+    void increaseView(){
+        portfolioService.findByIdAndIncreaseView(response.getId());
+        portfolioService.findByIdAndIncreaseView(response.getId());
+        portfolioService.findByIdAndIncreaseView(response.getId());
+        PortfolioResponse response1 = portfolioService.findByIdAndIncreaseView(response.getId());
+
+        assertThat(response1.getView()).isEqualTo(4L);
+    }
+
+    @DisplayName("좋아요를 하면 view가 증가한다.")
+    @Test
+    void increaseLike(){
+        portfolioService.increaseLike(response.getId());
+        portfolioService.increaseLike(response.getId());
+        portfolioService.increaseLike(response.getId());
+        PortfolioResponse response1 = portfolioService.increaseLike(response.getId());
+
+        assertThat(response1.getLike()).isEqualTo(4L);
+    }
+
     @DisplayName("모든 포트폴리오를 조회한다.")
     @Test
     void findPortfolios(){
@@ -284,7 +306,9 @@ public class PortfolioServiceTest {
                 response.getMember(),
                 "수정된 역할",
                 Arrays.asList(LinkResponse.from(content)),
-                "PRIVATE");
+                "PRIVATE",
+                0L,
+                0L);
 
         Role role1 = new Role("수정된 역할");
         roleRepository.save(role1);
