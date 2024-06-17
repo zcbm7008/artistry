@@ -330,6 +330,8 @@ class TeamApiDocTest extends ApiTest{
                                 fieldWithPath("role").description("지원한 역할"),
                                 fieldWithPath("portfolio.id").description("포트폴리오 id"),
                                 fieldWithPath("portfolio.title").description("포트폴리오 타이틀"),
+                                fieldWithPath("portfolio.view").description("포트폴리오 조회수"),
+                                fieldWithPath("portfolio.like").description("포트폴리오 like"),
                                 fieldWithPath("portfolio.roleName").ignored(),
                                 fieldWithPath("portfolio.member").description("포트폴리오 소유 멤버"),
                                 fieldWithPath("portfolio.member.id").description("멤버 id"),
