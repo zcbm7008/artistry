@@ -10,10 +10,12 @@ import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,44 +68,44 @@ public class PortfolioService {
                 .orElseThrow(PortfolioNotFoundException::new);
     }
 
-    public List<PortfolioResponse> findAll() {
-        List <Portfolio> portfolios = portfolioRepository.findAll();
+    public List<PortfolioResponse> findAll(final Pageable pageable) {
+        Slice<Portfolio> portfolios = portfolioRepository.findSliceBy(pageable);
 
         return getPortfolioResponses(portfolios);
     }
 
     @Transactional
-    public List<PortfolioResponse> findAllByAccess(PortfolioAccess portfolioAccess) {
-        List <Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(portfolioAccess);
+    public List<PortfolioResponse> findAllByAccess(PortfolioAccess portfolioAccess, final Pageable pageable) {
+        Slice<Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(portfolioAccess,pageable);
 
         return getPortfolioResponses(portfolios);
     }
 
     @Transactional
-    public List<PortfolioResponse> findAllPublicByTitle(String title){
-        List <Portfolio> portfolios = portfolioRepository.findByTitleContainingAndPortfolioAccess(title,PortfolioAccess.PUBLIC);
+    public List<PortfolioResponse> findAllPublicByTitle(String title, final Pageable pageable){
+        Slice<Portfolio> portfolios = portfolioRepository.findByTitleContainingAndPortfolioAccess(title,PortfolioAccess.PUBLIC,pageable);
 
         return getPortfolioResponses(portfolios);
     }
 
     @Transactional
-    public List<PortfolioResponse> findAllPublicByMember(MemberInfoRequest memberInfoRequest){
+    public List<PortfolioResponse> findAllPublicByMember(MemberInfoRequest memberInfoRequest, final Pageable pageable){
         Member member = memberService.findEntityById(memberInfoRequest.getId());
-        List <Portfolio> portfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PUBLIC);
+        Slice<Portfolio> portfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PUBLIC,pageable);
 
         return getPortfolioResponses(portfolios);
     }
 
     @Transactional
-    public List<PortfolioResponse> findAllPublicByRole(RoleRequest request){
+    public List<PortfolioResponse> findAllPublicByRole(RoleRequest request, final Pageable pageable){
         Role role = roleService.findEntityById(request.getId());
-        List <Portfolio> portfolios = portfolioRepository.findByRoleAndPortfolioAccess(role,PortfolioAccess.PUBLIC);
+        Slice<Portfolio> portfolios = portfolioRepository.findByRoleAndPortfolioAccess(role,PortfolioAccess.PUBLIC,pageable);
 
         return getPortfolioResponses(portfolios);
     }
 
     @Transactional
-    public List<PortfolioResponse> searchPublicPortfolios(PortfolioSearchRequest request) {
+    public List<PortfolioResponse> searchPublicPortfolios(PortfolioSearchRequest request, final Pageable pageable) {
         Specification<Portfolio> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -125,7 +127,7 @@ public class PortfolioService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        List<Portfolio> portfolios = portfolioRepository.findAll(spec);
+        Slice<Portfolio> portfolios = portfolioRepository.findAll(spec,pageable);
         return getPortfolioResponses(portfolios);
     }
 
@@ -144,7 +146,7 @@ public class PortfolioService {
         portfolioRepository.delete(portfolio);
     }
 
-    private static List<PortfolioResponse> getPortfolioResponses(List<Portfolio> portfolios) {
+    private static List<PortfolioResponse> getPortfolioResponses(Slice<Portfolio> portfolios) {
         return portfolios.stream()
                 .map(PortfolioResponse::from)
                 .collect(Collectors.toList());

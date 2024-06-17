@@ -18,6 +18,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -32,6 +34,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 @Transactional
 @SpringBootTest
 public class PortfolioServiceTest {
+    private static final Pageable PAGEABLE = PageRequest.of(0, 100);
 
     @Autowired
     private PortfolioService portfolioService;
@@ -44,45 +47,64 @@ public class PortfolioServiceTest {
     @Autowired
     private MemberRepository memberRepository;
     PortfolioResponse response;
+    PortfolioResponse response2;
+    PortfolioResponse response3;
+    PortfolioResponse response4;
     Member savedMember;
     Role role;
 
-
-
+    int PublicSize = 0;
+    int PrivateSize = 0;
 
     @BeforeEach
     void setUp(){
-        String title = "보컬 포트폴리오";
-        role = new Role("보컬");
-        Role savedRole = roleRepository.save(role);
-        savedMember = memberRepository.save(new Member("m1","m1@a.com","a.url"));
+        savedMember = memberRepository.save(new Member("m1", "m1@a.com", "a.url"));
 
-        RoleRequest roleRequest = new RoleRequest(savedRole.getId());
+        String title = "보컬 포트폴리오";
+
+        role = roleRepository.save(new Role("보컬"));
+
 
         LinkRequest linkRequest1 = new LinkRequest("https://www.youtube.com/watch?v=FWW9YYTz5T8", "Anita");
         LinkRequest linkRequest2 = new LinkRequest("https://www.youtube.com/watch?v=YmNj2FvdHho", "Amphetamine");
-
         List<LinkRequest> contents = Arrays.asList(linkRequest1, linkRequest2);
 
-        PortfolioCreateRequest request = new PortfolioCreateRequest(savedMember.getId(),title, roleRequest, contents, "PUBLIC");
-        //when
-        response = portfolioService.create(request);
+        response = createPublicPortfolio(savedMember,title,role,contents);
 
-
-        String title2 = "보컬 포트폴리오";
-        Role role2 = new Role("보컬");
-        Role savedRole2 = roleRepository.save(role2);
-
-        RoleRequest roleRequest2 = new RoleRequest(savedRole2.getId());
+        String title2 = "보컬 2";
 
         LinkRequest linkRequest3 = new LinkRequest("https://www.youtube.com/watch?v=FWW9YYTz5T8", "Anita");
         LinkRequest linkRequest4 = new LinkRequest("https://www.youtube.com/watch?v=YmNj2FvdHho", "Amphetamine");
-
         List<LinkRequest> contents2 = Arrays.asList(linkRequest3, linkRequest4);
 
-        PortfolioCreateRequest request2 = new PortfolioCreateRequest(savedMember.getId(),title2, roleRequest2, contents2, "PRIVATE");
-        //when
-        portfolioService.create(request2);
+        response2 = createPublicPortfolio(savedMember,title2,role,contents2);
+
+        String title3 = "보컬 3";
+
+        LinkRequest linkRequest5 = new LinkRequest("https://youtu.be/OvDFAmwu-FM?si=yn0RgYp69Mm9xmGD", "So High");
+        List<LinkRequest> contents3 = Arrays.asList(linkRequest5);
+
+        response3 = createPrivatePortfolio(savedMember,title3,role,contents3);
+        response4 = createPrivatePortfolio(savedMember,title,role,contents3);
+
+    }
+
+    private PortfolioResponse createPublicPortfolio(Member member, String title, Role role, List<LinkRequest> contents){
+        RoleRequest roleRequest = new RoleRequest(role.getId());
+        PortfolioCreateRequest request = new PortfolioCreateRequest(member.getId(),title,roleRequest,contents,"PUBLIC");
+
+        PublicSize+=1;
+
+        return portfolioService.create(request);
+    }
+
+    private PortfolioResponse createPrivatePortfolio(Member member, String title, Role role, List<LinkRequest> contents){
+        RoleRequest roleRequest = new RoleRequest(role.getId());
+        PortfolioCreateRequest request = new PortfolioCreateRequest(member.getId(),title,roleRequest,contents,"PRIVATE");
+
+        PrivateSize+=1;
+
+        return portfolioService.create(request);
     }
 
     @DisplayName("portfolio Id가 없을경우 예외를 던짐.")
@@ -117,7 +139,7 @@ public class PortfolioServiceTest {
 
     @DisplayName("portfolio를 생성한다")
     @Test
-    void createPortfolio() {
+    void createPublicPortfolio() {
         //given
         String title = "작곡가 포트폴리오";
         Role role = new Role("작곡가");
@@ -165,7 +187,6 @@ public class PortfolioServiceTest {
         portfolioRepository.save(portfolio);
 
         //when
-
         PortfolioResponse portfolioResponse = portfolioService.findPortfolioById(portfolio.getId());
 
         assertThat(portfolioResponse.getId()).isEqualTo(portfolio.getId());
@@ -214,50 +235,84 @@ public class PortfolioServiceTest {
     @Test
     void findPortfolios(){
         //when
-        List<PortfolioResponse> portfolios = portfolioService.findAll();
+        List<PortfolioResponse> portfolios = portfolioService.findAll(PAGEABLE);
+
+        //then
+        assertThat(portfolios).hasSize(PublicSize+PrivateSize);
+    }
+
+    @DisplayName("포트폴리오를 페이지네이션으로 조회한다.")
+    @Test
+    void findPagePortfolios(){
+        //when
+        List<PortfolioResponse> portfolios = portfolioService.findAll(PageRequest.of(0,3));
+
+        //then
+        assertThat(portfolios).hasSize(3);
+    }
+
+    @DisplayName("두번째 페이지의 첫번째 글을 조회한다.")
+    @Test
+    void find2PageFirstPortfolios(){
+        //when
+        List<PortfolioResponse> portfolios = portfolioService.findAll(PageRequest.of(1,2));
+
+        PortfolioResponse portfolioResponse = portfolios.get(0);
+
         //then
         assertThat(portfolios).hasSize(2);
+        assertThat(portfolioResponse.getTitle()).isEqualTo(response3.getTitle());
+        assertThat(portfolioResponse.getMember().getId()).isEqualTo(response3.getMember().getId());
+
+        assertThat(portfolioResponse.getContents())
+                .extracting(LinkResponse::getUrl)
+                .containsExactlyInAnyOrderElementsOf(response3.getContents().stream().map(LinkResponse::getUrl).collect(Collectors.toList()));
+
+        assertThat(portfolioResponse.getContents())
+                .extracting(LinkResponse::getComment)
+                .containsExactlyInAnyOrderElementsOf(response3.getContents().stream().map(LinkResponse::getComment).collect(Collectors.toList()));
+
     }
 
     @DisplayName("모든 Public 포트폴리오를 조회한다.")
     @Test
     void findPublicPortfolio(){
         //when
-        List<PortfolioResponse> portfolios = portfolioService.findAllByAccess(PortfolioAccess.PUBLIC);
+        List<PortfolioResponse> portfolios = portfolioService.findAllByAccess(PortfolioAccess.PUBLIC,PAGEABLE);
 
         //then
-        assertThat(portfolios).hasSize(1);
-        assertThat(portfolios).extracting(PortfolioResponse::getAccess).containsExactly(String.valueOf(PortfolioAccess.PUBLIC));
+        assertThat(portfolios).hasSize(PublicSize);
+        assertThat(portfolios).extracting(PortfolioResponse::getAccess).containsOnly(String.valueOf(PortfolioAccess.PUBLIC));
     }
 
     @DisplayName("모든 Private 포트폴리오를 조회한다.")
     @Test
     void findPrivatePortfolio(){
         //when
-        List<PortfolioResponse> portfolios = portfolioService.findAllByAccess(PortfolioAccess.PRIVATE);
+        List<PortfolioResponse> portfolios = portfolioService.findAllByAccess(PortfolioAccess.PRIVATE,PAGEABLE);
 
         //then
-        assertThat(portfolios).hasSize(1);
-        assertThat(portfolios).extracting(PortfolioResponse::getAccess).containsExactly(String.valueOf(PortfolioAccess.PRIVATE));
+        assertThat(portfolios).hasSize(PrivateSize);
+        assertThat(portfolios).extracting(PortfolioResponse::getAccess).containsOnly(String.valueOf(PortfolioAccess.PRIVATE));
     }
 
     @DisplayName("특정 member의 모든 포트폴리오를 조회한다.")
     @Test
     void findPublicPortfoliosByMember(){
         MemberInfoRequest request = new MemberInfoRequest(savedMember.getId());
-        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByMember(request);
+        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByMember(request,PAGEABLE);
 
         assertThat(portfolioResponses)
                 .extracting(PortfolioResponse::getMember)
                 .extracting(MemberResponse::getId)
-                .containsExactly(savedMember.getId());
+                .containsOnly(savedMember.getId());
     }
 
     @DisplayName("특정 title로 모든 포트폴리오를 조회한다.")
     @Test
     void findPublicPortfoliosByTitle(){
         String title = "보컬";
-        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByTitle(title);
+        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByTitle(title,PAGEABLE);
 
         assertThat(portfolioResponses).allMatch(portfolio -> portfolio.getTitle().contains(title));
     }
@@ -265,7 +320,7 @@ public class PortfolioServiceTest {
     @Test
     void findPublicPortfoliosByRole(){
         RoleRequest request = new RoleRequest(role.getId());
-        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByRole(request);
+        List <PortfolioResponse> portfolioResponses = portfolioService.findAllPublicByRole(request,PAGEABLE);
 
         assertThat(portfolioResponses).allMatch(portfolio -> portfolio.getRoleName().equals(role.getName()));
     }
@@ -279,7 +334,7 @@ public class PortfolioServiceTest {
         PortfolioSearchRequest request = new PortfolioSearchRequest(title,savedMember.getId(),role.getId());
         PortfolioSearchRequest request2 = new PortfolioSearchRequest(title,null,null);
         //When
-        List<PortfolioResponse> responses = portfolioService.searchPublicPortfolios(request);
+        List<PortfolioResponse> responses = portfolioService.searchPublicPortfolios(request,PAGEABLE);
 
         //Then
         assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getTitle().contains(title));
@@ -287,7 +342,7 @@ public class PortfolioServiceTest {
         assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getRoleName().equals(role.getName()));
 
         //When
-        List<PortfolioResponse> responses2 = portfolioService.searchPublicPortfolios(request2);
+        List<PortfolioResponse> responses2 = portfolioService.searchPublicPortfolios(request2,PAGEABLE);
         assertThat(responses2).allMatch(portfolioResponse -> portfolioResponse.getTitle().contains(title));
 
     }
@@ -334,7 +389,7 @@ public class PortfolioServiceTest {
         portfolioService.delete(response.getId());
 
         //then
-        List<PortfolioResponse> responses = portfolioService.findAll();
-        assertThat(responses).hasSize(1);
+        List<PortfolioResponse> responses = portfolioService.findAll(PAGEABLE);
+        assertThat(responses).hasSize(PublicSize+PrivateSize-1);
     }
 }
