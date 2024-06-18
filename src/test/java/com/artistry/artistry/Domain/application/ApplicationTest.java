@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 @SpringBootTest
@@ -66,16 +67,27 @@ public class ApplicationTest {
 
     @Test
     @DisplayName("팀의 특정한 역할에 지원서를 지원한다.")
-    public void applyToTeam(){
+    void applyToTeam(){
         team.apply(portfolio);
         assertEquals(application.getId(),team.getTeamRoles().get(0).getApplications().get(0).getId());
         assertEquals(application.getTeam().getId(),team.getId());
         assertEquals(application.getRole(),team.findTeamRoleByRole(appliedRole).getRole());
 
     }
+
+    @Test
+    @DisplayName("Application의 Type에 따라 승인 유저를 변경한다.")
+    void changeDecisionMakerByType() {
+        Application invitation = new Application(team.findTeamRoleByRole(appliedRole),portfolio,ApplicationType.INVITATION);
+        assertThat(invitation.getApprover().getId()).isEqualTo(portfolio.getMember().getId());
+
+        Application application = new Application(team.findTeamRoleByRole(appliedRole),portfolio,ApplicationType.APPLICATION);
+        assertThat(application.getApprover().getId()).isEqualTo(application.getTeam().getHost().getId());
+    }
+
     @Test
     @DisplayName("지원한 application의 상태는 PENDING이어야 한다.")
-    public void isStatusPending(){
+    void isStatusPending(){
         team.apply(portfolio);
         assertEquals(application.getStatus(),ApplicationStatus.PENDING);
     }

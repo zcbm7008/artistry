@@ -33,7 +33,7 @@ public class PortfolioResponse {
                 .member(MemberResponse.from(portfolio.getMember()))
                 .roleName(portfolio.getRole().getName())
                 .contents(portfolio.getContents().stream().map(LinkResponse::from).collect(Collectors.toList()))
-                .access(portfolio.getPortfolioAccess().toString())
+                .access(portfolio.getAccess().toString())
                 .view(portfolio.getView())
                 .like(portfolio.getLike())
                 .build();

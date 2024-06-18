@@ -1,7 +1,7 @@
 package com.artistry.artistry.Controller;
 
 import com.artistry.artistry.Dto.Request.PortfolioRequest;
-import com.artistry.artistry.Dto.Request.TeamRequest;
+import com.artistry.artistry.Dto.Request.TeamCreateRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
@@ -23,8 +23,8 @@ public class TeamController {
     }
 
    @PostMapping
-   public ResponseEntity<TeamResponse> createTeam(@RequestBody TeamRequest teamRequest){
-        TeamResponse teamResponse = teamService.create(teamRequest);
+   public ResponseEntity<TeamResponse> createTeam(@RequestBody TeamCreateRequest teamCreateRequest){
+        TeamResponse teamResponse = teamService.create(teamCreateRequest);
         return ResponseEntity.created(URI.create("api/teams/" + teamResponse.getId())).body(teamResponse);
    }
 

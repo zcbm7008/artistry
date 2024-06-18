@@ -9,7 +9,7 @@ import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Request.PortfolioRequest;
-import com.artistry.artistry.Dto.Request.TeamRequest;
+import com.artistry.artistry.Dto.Request.TeamCreateRequest;
 import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
@@ -39,12 +39,12 @@ public class TeamService {
     private final ApplicationRepository applicationRepository;
     private final PortfolioService portfolioService;
 
-    public TeamResponse create(TeamRequest teamRequest){
-        Member host = memberService.findEntityById(teamRequest.getHostId());
-        List<Tag> tags = tagService.findAllEntityById(teamRequest.getTags());
-        List<Role> roles = roleService.findAllById(teamRequest.getRoles());
+    public TeamResponse create(TeamCreateRequest teamCreateRequest){
+        Member host = memberService.findEntityById(teamCreateRequest.getHostId());
+        List<Tag> tags = tagService.findAllEntityById(teamCreateRequest.getTags());
+        List<Role> roles = roleService.findAllById(teamCreateRequest.getRoles());
 
-        Team team = new Team(teamRequest.getName(),host,tags,roles);
+        Team team = new Team(teamCreateRequest.getName(),host,tags,roles);
 
         return TeamResponse.from(teamRepository.save(team));
     }

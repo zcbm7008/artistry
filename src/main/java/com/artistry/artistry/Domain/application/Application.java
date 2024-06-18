@@ -6,7 +6,9 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamRole;
+import com.artistry.artistry.Exceptions.ArtistryUnauthorizedException;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 
@@ -32,15 +34,45 @@ public class Application {
     @JoinColumn(name = "portfolio_id")
     private Portfolio portfolio;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status = INIT_STATUS;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ApplicationType type = ApplicationType.APPLICATION;
+
     public Application(Portfolio portfolio){
-        this(null,null,portfolio,INIT_STATUS);
+        this(null,null,portfolio,INIT_STATUS,ApplicationType.APPLICATION);
     }
 
     public Application(TeamRole teamRole,Portfolio portfolio){
-        this(null,teamRole,portfolio,INIT_STATUS);
+        this(null,teamRole,portfolio,INIT_STATUS,ApplicationType.APPLICATION);
+    }
+
+    public Application(TeamRole teamRole, Portfolio portfolio, ApplicationType type) {
+        this(null,teamRole,portfolio,INIT_STATUS, type);
+    }
+
+    public void changeStatus(ApplicationStatus status, Member member){
+        validateAuth(member);
+        setStatus(status);
+    }
+
+    public void validateAuth(Member member) {
+        if (!member.equals(getApprover())) {
+            throw new ArtistryUnauthorizedException("You do not have the authority to approve or reject this application.");
+        }
+    }
+
+    public Member getApprover(){
+        if (type == ApplicationType.APPLICATION) {
+            return this.teamRole.getTeam().getHost();
+        } else if (type == ApplicationType.INVITATION) {
+            return this.portfolio.getMember();
+        } else {
+            throw new IllegalArgumentException("Unknown application type: " + type);
+        }
     }
 
     public Role getRole(){

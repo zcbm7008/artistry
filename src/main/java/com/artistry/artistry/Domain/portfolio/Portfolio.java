@@ -2,6 +2,7 @@ package com.artistry.artistry.Domain.portfolio;
 
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Exceptions.ArtistryUnauthorizedException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,26 +45,26 @@ public class Portfolio {
     private Long like = 0L;
 
     @Enumerated(EnumType.STRING)
-    private PortfolioAccess portfolioAccess = INIT_ACCESS;
+    private PortfolioAccess access = INIT_ACCESS;
 
     public Portfolio(Member member,String title,Role role){
         this(null,member,title,role,null,INIT_ACCESS);
     }
 
-    public Portfolio(Long id, @NonNull Member member, @NonNull String title, Role role, List<Content> contents, PortfolioAccess portfolioAccess) {
+    public Portfolio(Long id, @NonNull Member member, @NonNull String title, Role role, List<Content> contents, PortfolioAccess access) {
         this.id = id;
         this.member = member;
         this.title = title;
         this.role = role;
         this.contents = (contents != null) ? contents : new ArrayList<>();
-        this.portfolioAccess = portfolioAccess;
+        this.access = access;
     }
 
     public void update(final String title, Role role, List<Content> contents, PortfolioAccess portfolioAccess){
         this.title = title;
         this.role = role;
         this.contents = contents;
-        this.portfolioAccess = portfolioAccess;
+        this.access = portfolioAccess;
     }
 
     public void addContents(List<Content> contents){
@@ -78,6 +79,10 @@ public class Portfolio {
 
     public void addLike() { like+=1; }
 
-
+    public void validateOwner(Member member){
+        if(!this.member.equals(member)){
+            throw new ArtistryUnauthorizedException("이 멤버는 application을 소유하고 있지 않습니다.");
+        }
+    }
 
 }

@@ -53,17 +53,6 @@ public class TeamServiceTest {
     @Autowired
     ApplicationRepository applicationRepository;
 
-    private TagRequest createTagRequest(String name){
-        Tag tag = tagRepository.save(new Tag(name));
-        return new TagRequest(tag.getId());
-    }
-
-    private RoleRequest createRoleRequest(String name){
-        Role role = roleRepository.save(new Role(name));
-        return new RoleRequest(role.getId());
-    }
-
-
     @DisplayName("팀을 생성한다")
     @Test
     void createTeam(){
@@ -79,14 +68,14 @@ public class TeamServiceTest {
         RoleRequest roleRequest1 = createRoleRequest(roleName1);
         RoleRequest roleRequest2 = createRoleRequest(roleName2);
 
-        TeamRequest teamRequest =
-                new TeamRequest(
+        TeamCreateRequest teamCreateRequest =
+                new TeamCreateRequest(
                         teamName,
                         member1.getId(),
                         Arrays.asList(tagRequest1,tagRequest2),
                         Arrays.asList(roleRequest1,roleRequest2));
 
-        TeamResponse responseDto = teamService.create(teamRequest);
+        TeamResponse responseDto = teamService.create(teamCreateRequest);
 
         assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getTeamRoles())
@@ -273,8 +262,8 @@ public class TeamServiceTest {
         ApplicationResponse application1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
         ApplicationResponse application2 = teamService.apply(team2.getId(),new PortfolioRequest(portfolio2.getId()));
 
-        applicationService.changedApplicationStatus(application1.getId(),ApplicationStatus.APPROVED);
-        applicationService.changedApplicationStatus(application2.getId(),ApplicationStatus.APPROVED);
+        applicationService.updateStatus(application1.getId(),team1.getHost().getId(),new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
+        applicationService.updateStatus(application2.getId(),team1.getHost().getId(),new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
 
         List <TeamResponse> responses = teamService.findTeamsByApprovedMember(member1.getId());
 
@@ -303,14 +292,14 @@ public class TeamServiceTest {
         RoleRequest roleRequest2 = createRoleRequest(roleName2);
         RoleRequest roleRequest3 = createRoleRequest(roleName3);
 
-        TeamRequest teamRequest =
-                new TeamRequest(
+        TeamCreateRequest teamCreateRequest =
+                new TeamCreateRequest(
                         teamName,
                         member1.getId(),
                         Arrays.asList(tagRequest1,tagRequest2),
                         Arrays.asList(roleRequest1,roleRequest2));
 
-        TeamResponse responseDto = teamService.create(teamRequest);
+        TeamResponse responseDto = teamService.create(teamCreateRequest);
 
         String changedName = "밴드팀팀팀";
 
@@ -352,14 +341,14 @@ public class TeamServiceTest {
         RoleRequest roleRequest2 = createRoleRequest(roleName2);
         RoleRequest roleRequest3 = createRoleRequest(roleName3);
 
-        TeamRequest teamRequest =
-                new TeamRequest(
+        TeamCreateRequest teamCreateRequest =
+                new TeamCreateRequest(
                         teamName,
                         member1.getId(),
                         Arrays.asList(tagRequest1,tagRequest2),
                         Arrays.asList(roleRequest1,roleRequest2));
 
-        TeamResponse responseDto = teamService.create(teamRequest);
+        TeamResponse responseDto = teamService.create(teamCreateRequest);
 
         String changedName = "밴드팀팀팀";
 
@@ -408,7 +397,7 @@ public class TeamServiceTest {
 
         ApplicationResponse applicationResponse1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
 
-        applicationService.changedApplicationStatus(applicationResponse1.getId(),ApplicationStatus.APPROVED);
+        applicationService.updateStatus(applicationResponse1.getId(), team1.getHost().getId(), new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
 
         //when
         team1.cancel();
@@ -449,7 +438,7 @@ public class TeamServiceTest {
         ApplicationResponse applicationResponse = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
         team1.apply(portfolio2);
 
-        applicationService.changedApplicationStatus(applicationResponse.getId(),ApplicationStatus.APPROVED);
+        applicationService.updateStatus(applicationResponse.getId(),team1.getHost().getId(), new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
 
         //when
         TeamRole teamRole1 = team1.findTeamRoleByRole(role1);
@@ -471,6 +460,16 @@ public class TeamServiceTest {
     void teamNotFound(){
         assertThatThrownBy(() -> teamService.findById(Long.MAX_VALUE))
                 .isInstanceOf(TeamNotFoundException.class);
+    }
+
+    private TagRequest createTagRequest(String name){
+        Tag tag = tagRepository.save(new Tag(name));
+        return new TagRequest(tag.getId());
+    }
+
+    private RoleRequest createRoleRequest(String name){
+        Role role = roleRepository.save(new Role(name));
+        return new RoleRequest(role.getId());
     }
 
 }

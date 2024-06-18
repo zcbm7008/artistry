@@ -21,7 +21,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static com.artistry.artistry.Domain.portfolio.Portfolio.INIT_ACCESS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +55,7 @@ public class PortfolioRepositoryTest {
         createdportfolio = new Portfolio(member,"작곡가 포트폴리오1",role);
 
         createdportfolio.addContents(Arrays.asList(content1, content2));
-        createdportfolio.setPortfolioAccess(PortfolioAccess.PUBLIC);
+        createdportfolio.setAccess(PortfolioAccess.PUBLIC);
         savedPublicPortfolio = portfolioRepository.save(createdportfolio);
 
         Role role2 = new Role("보컬");
@@ -67,7 +66,7 @@ public class PortfolioRepositoryTest {
         createdportfolio2 = new Portfolio(member,"작곡가 포트폴리오3",role);
 
         createdportfolio2.addContents(Arrays.asList(content3, content4));
-        createdportfolio2.setPortfolioAccess(PortfolioAccess.PRIVATE);
+        createdportfolio2.setAccess(PortfolioAccess.PRIVATE);
         savedPrivatePortfolio = portfolioRepository.save(createdportfolio2);
 
     }
@@ -91,7 +90,7 @@ public class PortfolioRepositoryTest {
         assertThat(savedPortfolio.getTitle()).isEqualTo(portfolio.getTitle());
         assertThat(savedPortfolio.getRole().getName()).isEqualTo(role.getName());
         assertThat(savedPortfolio.getContents()).hasSize(2).contains(content1, content2);
-        assertThat(savedPortfolio.getPortfolioAccess()).isEqualTo(INIT_ACCESS);
+        assertThat(savedPortfolio.getAccess()).isEqualTo(INIT_ACCESS);
     }
 
     @DisplayName("포트폴리오를 Id로 조회한다.")
@@ -108,33 +107,33 @@ public class PortfolioRepositoryTest {
     @Test
     void findPublicPortfolio(){
         //when
-        Slice<Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(PortfolioAccess.PUBLIC,PAGEABLE);
+        Slice<Portfolio> portfolios = portfolioRepository.findByAccess(PortfolioAccess.PUBLIC,PAGEABLE);
 
         //then
         assertThat(portfolios).hasSize(1);
-        assertThat(portfolios).extracting(Portfolio::getPortfolioAccess).containsExactly(PortfolioAccess.PUBLIC);
+        assertThat(portfolios).extracting(Portfolio::getAccess).containsExactly(PortfolioAccess.PUBLIC);
     }
 
     @DisplayName("모든 Private 포트폴리오를 조회한다.")
     @Test
     void findPrivatePortfolio(){
         //when
-        Slice<Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(PortfolioAccess.PRIVATE,PAGEABLE);
+        Slice<Portfolio> portfolios = portfolioRepository.findByAccess(PortfolioAccess.PRIVATE,PAGEABLE);
 
         //then
         assertThat(portfolios).hasSize(1);
-        assertThat(portfolios).extracting(Portfolio::getPortfolioAccess).containsExactly(PortfolioAccess.PRIVATE);
+        assertThat(portfolios).extracting(Portfolio::getAccess).containsExactly(PortfolioAccess.PRIVATE);
     }
 
     @DisplayName("특정 멤버로 특정 엑세스의 포트폴리오를 조회한다.")
     @Test
     void findPortfoliosByMember(){
-        Slice<Portfolio> publicPortfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PUBLIC,PAGEABLE);
+        Slice<Portfolio> publicPortfolios = portfolioRepository.findByMemberAndAccess(member,PortfolioAccess.PUBLIC,PAGEABLE);
 
         assertThat(publicPortfolios).hasSize(1)
                 .allMatch(portfolio -> portfolio.getMember().getId().equals(member.getId()));
 
-        Slice<Portfolio> privatePortfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PRIVATE,PAGEABLE);
+        Slice<Portfolio> privatePortfolios = portfolioRepository.findByMemberAndAccess(member,PortfolioAccess.PRIVATE,PAGEABLE);
 
         assertThat(privatePortfolios).hasSize(1)
                 .allMatch(portfolio -> portfolio.getMember().getId().equals(member.getId()));
@@ -144,7 +143,7 @@ public class PortfolioRepositoryTest {
     @Test
     void findPortfoliosByTest(){
         String title = "작곡가";
-        Slice<Portfolio> publicPortfolios = portfolioRepository.findByTitleContainingAndPortfolioAccess(title,PortfolioAccess.PUBLIC,PAGEABLE);
+        Slice<Portfolio> publicPortfolios = portfolioRepository.findByTitleContainingAndAccess(title,PortfolioAccess.PUBLIC,PAGEABLE);
 
         assertThat(publicPortfolios).hasSize(1)
                 .allMatch(portfolio -> portfolio.getTitle().contains(title));
@@ -154,7 +153,7 @@ public class PortfolioRepositoryTest {
     @Test
     void findPortfoliosByRole(){
         String title = "작곡가";
-        Slice<Portfolio> publicPortfolios = portfolioRepository.findByRoleAndPortfolioAccess(role,PortfolioAccess.PUBLIC,PAGEABLE);
+        Slice<Portfolio> publicPortfolios = portfolioRepository.findByRoleAndAccess(role,PortfolioAccess.PUBLIC,PAGEABLE);
 
         assertThat(publicPortfolios).hasSize(1)
                 .allMatch(portfolio -> portfolio.getTitle().contains(title));

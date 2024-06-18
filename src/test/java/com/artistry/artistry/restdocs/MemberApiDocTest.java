@@ -50,34 +50,6 @@ public class MemberApiDocTest extends ApiTest{
                 .extract().body().as(MemberResponse.class);
     }
 
-
-    @DisplayName("엑세스 토큰을 사용해 자신의 정보를 확인할 수 있다.")
-    @Test
-    void checkProfile(){
-        String email = createdMembers.get(0).getEmail();
-
-        AccessTokenResponse accessTokenResponse = given().when().get("/api/auth/fake/tokens?email=" + email)
-                .then().log().all()
-                .extract()
-                .as(AccessTokenResponse.class);
-
-        String accessToken = accessTokenResponse.getAccessToken();
-        parameters.put(email,accessToken);
-
-        MemberResponse member = createdMembers.get(0);
-        String accesstoken = (String) parameters.get(email);
-
-        MemberResponse response = given().log().all().header(HttpHeaders.AUTHORIZATION, accesstoken)
-                .when()
-                .get("/api/members/me")
-                .then().log().all().extract()
-                .as(MemberResponse.class);
-
-        assertThat(response.getEmail()).isEqualTo(member.getEmail());
-        assertThat(response.getNickName()).isEqualTo(member.getNickName());
-        assertThat(response.getIconUrl()).isEqualTo(member.getIconUrl());
-    }
-
     @DisplayName("멤버를 생성한다.")
     @Test
     void createMember() {
@@ -105,6 +77,34 @@ public class MemberApiDocTest extends ApiTest{
                         .when().post("/api/members")
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().as(MemberResponse.class);
+    }
+
+    @DisplayName("엑세스 토큰을 사용해 자신의 정보를 확인할 수 있다.")
+    @Test
+    void checkProfile(){
+        String email = createdMembers.get(0).getEmail();
+
+        AccessTokenResponse accessTokenResponse = given().when().get("/api/auth/fake/tokens?email=" + email)
+                .then().log().all()
+                .extract()
+                .as(AccessTokenResponse.class);
+
+        String accessToken = accessTokenResponse.getAccessToken();
+        parameters.put(email,accessToken);
+
+        String accesstoken = (String) parameters.get(email);
+
+        MemberResponse member = createdMembers.get(0);
+
+        MemberResponse response = given().log().all().header(HttpHeaders.AUTHORIZATION, accesstoken)
+                .when()
+                .get("/api/members/me")
+                .then().log().all().extract()
+                .as(MemberResponse.class);
+
+        assertThat(response.getEmail()).isEqualTo(member.getEmail());
+        assertThat(response.getNickName()).isEqualTo(member.getNickName());
+        assertThat(response.getIconUrl()).isEqualTo(member.getIconUrl());
     }
 
     @DisplayName("멤버 정보를 수정한다.")
