@@ -9,6 +9,7 @@ import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
+import com.artistry.artistry.Repository.TeamRoleRepository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,11 +26,13 @@ public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final RoleService roleService;
     private final MemberService memberService;
+    private final TeamRoleRepository teamRoleRepository;
 
-    public PortfolioService(PortfolioRepository portfolioRepository,RoleService roleService,MemberService memberService){
+    public PortfolioService(PortfolioRepository portfolioRepository,RoleService roleService,MemberService memberService,TeamRoleRepository teamRoleRepository){
         this.portfolioRepository = portfolioRepository;
         this.roleService = roleService;
         this.memberService = memberService;
+        this.teamRoleRepository = teamRoleRepository;
     }
     @Transactional
     public PortfolioResponse create(final PortfolioCreateRequest request){
@@ -38,7 +41,7 @@ public class PortfolioService {
 
         Portfolio portfolio = new Portfolio(member,request.getTitle(),role);
         portfolio.addContents(ContentToEntity(request.getContents()));
-        portfolio.setPortfolioAccess(PortfolioAccess.valueOf(request.getAccess()));
+        portfolio.setAccess(PortfolioAccess.valueOf(request.getAccess()));
 
         return PortfolioResponse.from(portfolioRepository.save(portfolio));
     }
@@ -76,14 +79,14 @@ public class PortfolioService {
 
     @Transactional
     public List<PortfolioResponse> findAllByAccess(PortfolioAccess portfolioAccess, final Pageable pageable) {
-        Slice<Portfolio> portfolios = portfolioRepository.findByPortfolioAccess(portfolioAccess,pageable);
+        Slice<Portfolio> portfolios = portfolioRepository.findByAccess(portfolioAccess,pageable);
 
         return getPortfolioResponses(portfolios);
     }
 
     @Transactional
     public List<PortfolioResponse> findAllPublicByTitle(String title, final Pageable pageable){
-        Slice<Portfolio> portfolios = portfolioRepository.findByTitleContainingAndPortfolioAccess(title,PortfolioAccess.PUBLIC,pageable);
+        Slice<Portfolio> portfolios = portfolioRepository.findByTitleContainingAndAccess(title,PortfolioAccess.PUBLIC,pageable);
 
         return getPortfolioResponses(portfolios);
     }
@@ -91,7 +94,7 @@ public class PortfolioService {
     @Transactional
     public List<PortfolioResponse> findAllPublicByMember(MemberInfoRequest memberInfoRequest, final Pageable pageable){
         Member member = memberService.findEntityById(memberInfoRequest.getId());
-        Slice<Portfolio> portfolios = portfolioRepository.findByMemberAndPortfolioAccess(member,PortfolioAccess.PUBLIC,pageable);
+        Slice<Portfolio> portfolios = portfolioRepository.findByMemberAndAccess(member,PortfolioAccess.PUBLIC,pageable);
 
         return getPortfolioResponses(portfolios);
     }
@@ -99,7 +102,7 @@ public class PortfolioService {
     @Transactional
     public List<PortfolioResponse> findAllPublicByRole(RoleRequest request, final Pageable pageable){
         Role role = roleService.findEntityById(request.getId());
-        Slice<Portfolio> portfolios = portfolioRepository.findByRoleAndPortfolioAccess(role,PortfolioAccess.PUBLIC,pageable);
+        Slice<Portfolio> portfolios = portfolioRepository.findByRoleAndAccess(role,PortfolioAccess.PUBLIC,pageable);
 
         return getPortfolioResponses(portfolios);
     }
@@ -122,7 +125,7 @@ public class PortfolioService {
             if (roleId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("role").get("id"), roleId));
             }
-            predicates.add(criteriaBuilder.equal(root.get("portfolioAccess"), PortfolioAccess.PUBLIC));
+            predicates.add(criteriaBuilder.equal(root.get("access"), PortfolioAccess.PUBLIC));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
