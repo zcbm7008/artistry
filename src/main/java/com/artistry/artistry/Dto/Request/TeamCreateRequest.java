@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeamRequest {
+public class TeamCreateRequest {
     @NonNull
     private String name;
     @NonNull

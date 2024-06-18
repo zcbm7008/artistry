@@ -25,7 +25,7 @@ public class ApplicationResponse {
                 .role(application.getRole().getName())
                 .portfolio(PortfolioResponse.from(application.getPortfolio()))
                 .status(application.getStatus().toString())
-                .type(application.getApplicationType().toString())
+                .type(application.getType().toString())
                 .build();
     }
 
