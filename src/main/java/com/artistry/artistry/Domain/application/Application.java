@@ -40,7 +40,7 @@ public class Application {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ApplicationType applicationType = ApplicationType.APPLICATION;
+    private ApplicationType type = ApplicationType.APPLICATION;
 
     public Application(Portfolio portfolio){
         this(null,null,portfolio,INIT_STATUS,ApplicationType.APPLICATION);
@@ -50,8 +50,8 @@ public class Application {
         this(null,teamRole,portfolio,INIT_STATUS,ApplicationType.APPLICATION);
     }
 
-    public Application(TeamRole teamRole, Portfolio portfolio, ApplicationType applicationType) {
-        this(null,teamRole,portfolio,INIT_STATUS,applicationType);
+    public Application(TeamRole teamRole, Portfolio portfolio, ApplicationType type) {
+        this(null,teamRole,portfolio,INIT_STATUS, type);
     }
 
     public void changeStatus(ApplicationStatus status, Member member){
@@ -66,12 +66,12 @@ public class Application {
     }
 
     public Member getApprover(){
-        if (applicationType == ApplicationType.APPLICATION) {
+        if (type == ApplicationType.APPLICATION) {
             return this.teamRole.getTeam().getHost();
-        } else if (applicationType == ApplicationType.INVITATION) {
+        } else if (type == ApplicationType.INVITATION) {
             return this.portfolio.getMember();
         } else {
-            throw new IllegalArgumentException("Unknown application type: " + applicationType);
+            throw new IllegalArgumentException("Unknown application type: " + type);
         }
     }
 
