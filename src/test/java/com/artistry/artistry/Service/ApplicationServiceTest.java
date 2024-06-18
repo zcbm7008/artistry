@@ -48,12 +48,14 @@ public class ApplicationServiceTest {
     Member host;
     Role role1;
     Member applicant;
+    Member otherMember;
     Portfolio portfolio;
 
     @BeforeEach
     void setUp(){
         host = memberRepository.save(new Member("host","host@host.com","hosturl"));
         applicant = memberRepository.save(new Member("applicant","applicant@applicant.com","applicanturl"));
+        otherMember = memberRepository.save(new Member("otherMember","other@applicant.com","applicanturl"));
         Tag tag1 = tagRepository.save(new Tag("tag1"));
         Tag tag2 = tagRepository.save(new Tag("tag2"));
         role1 = roleRepository.save(new Role("role1"));
@@ -88,7 +90,7 @@ public class ApplicationServiceTest {
                         .type(String.valueOf(ApplicationType.APPLICATION))
                         .build();
 
-        ApplicationResponse response = applicationService.createApplication(request, applicant.getId());
+        ApplicationResponse response = applicationService.createApplication(applicant.getId(),request);
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getTeamId()).isEqualTo(team1.getId());
@@ -110,7 +112,7 @@ public class ApplicationServiceTest {
                         .type(String.valueOf(ApplicationType.INVITATION))
                         .build();
 
-        ApplicationResponse response = applicationService.createApplication(request, host.getId());
+        ApplicationResponse response = applicationService.createApplication(host.getId(), request);
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getTeamId()).isEqualTo(team1.getId());
@@ -118,6 +120,23 @@ public class ApplicationServiceTest {
         assertThat(response.getRole()).isEqualTo(role1.getName());
         assertThat(response.getStatus()).isEqualTo(ApplicationStatus.PENDING.toString());
         assertThat(response.getType()).isEqualTo(ApplicationType.INVITATION.toString());
+    }
+
+    @DisplayName("지원서를 생성할 때, 주어진 Id가 포트폴리오의 소유자가 아닐경우 예외를 출력한다.")
+    @Test
+    void invitationExceptionWhenNotOwner(){
+        ApplicationCreateRequest request =
+                ApplicationCreateRequest.builder()
+                        .team(new TeamInfoRequest(team1.getId()))
+                        .portfolio(new PortfolioRequest(portfolio.getId()))
+                        .role(new RoleRequest(role1.getId()))
+                        .status(String.valueOf(ApplicationStatus.PENDING))
+                        .type(String.valueOf(ApplicationType.INVITATION))
+                        .build();
+
+        assertThatThrownBy(() -> applicationService.createApplication(otherMember.getId(), request))
+                .isInstanceOf(ArtistryUnauthorizedException.class);
+
     }
 
     @DisplayName("제안서를 생성할 때, 주어진 Id가 팀의 host가 아닐경우 예외를 출력한다.")
@@ -132,7 +151,7 @@ public class ApplicationServiceTest {
                         .type(String.valueOf(ApplicationType.INVITATION))
                         .build();
 
-        assertThatThrownBy(() -> applicationService.createApplication(request, applicant.getId()))
+        assertThatThrownBy(() -> applicationService.createApplication(applicant.getId(), request))
                 .isInstanceOf(ArtistryUnauthorizedException.class);
 
     }

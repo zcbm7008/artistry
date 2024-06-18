@@ -42,23 +42,27 @@ public class ApplicationService {
     private PortfolioService portfolioService;
 
     @Transactional
-    public ApplicationResponse createApplication(final ApplicationCreateRequest request, Long memberId){
+    public ApplicationResponse createApplication(Long memberId, final ApplicationCreateRequest request){
         Team team = teamRepository.findById(request.getTeam().getId())
                 .orElseThrow(TeamNotFoundException::new);
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
 
-        validateAuth(ApplicationType.of(request.getType()),team,member);
-
         Portfolio portfolio = portfolioService.findEntityById(request.getPortfolio().getId());
-        Role role = roleService.findEntityById(request.getRole().getId());
 
+        validateAuth(ApplicationType.of(request.getType()),team,member,portfolio);
+
+        Role role = roleService.findEntityById(request.getRole().getId());
         Application application = buildApplication(request, portfolio, team, role);
 
         return ApplicationResponse.from(applicationRepository.save(application));
     }
 
-    private void validateAuth(ApplicationType applicationType,Team team,Member member){
+    private void validateAuth(ApplicationType applicationType,Team team,Member member,Portfolio portfolio){
+        if(applicationType.equals(ApplicationType.APPLICATION)){
+            portfolio.validateOwner(member);
+        }
+
         if(applicationType.equals(ApplicationType.INVITATION)){
             team.validateHost(member);
         }
@@ -85,10 +89,10 @@ public class ApplicationService {
     }
 
     @Transactional
-    public ApplicationResponse changeStatus(ApplicationStatusUpdateRequest request){
-        Application application = findEntityById(request.getApplication().getId());
+    public ApplicationResponse updateStatus(Long applicationId,Long memberId,ApplicationStatusUpdateRequest request){
+        Application application = findEntityById(applicationId);
 
-        Member approver = memberRepository.findById(request.getMemberId())
+        Member approver = memberRepository.findById(memberId)
                         .orElseThrow(MemberNotFoundException::new);
 
         application.changeStatus(ApplicationStatus.of(request.getStatus()),approver);

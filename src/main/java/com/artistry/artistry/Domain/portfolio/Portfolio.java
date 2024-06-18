@@ -2,6 +2,7 @@ package com.artistry.artistry.Domain.portfolio;
 
 import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.member.Member;
+import com.artistry.artistry.Exceptions.ArtistryUnauthorizedException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -77,5 +78,11 @@ public class Portfolio {
     public void addView() { view+=1; }
 
     public void addLike() { like+=1; }
+
+    public void validateOwner(Member member){
+        if(!this.member.equals(member)){
+            throw new ArtistryUnauthorizedException("이 멤버는 application을 소유하고 있지 않습니다.");
+        }
+    }
 
 }
