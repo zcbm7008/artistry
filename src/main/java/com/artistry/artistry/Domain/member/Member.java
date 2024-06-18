@@ -46,7 +46,7 @@ public class Member {
 
     @OneToMany(mappedBy = "host")
     @JsonIgnore
-    private List<Team> teams;
+    private List<Team> hostTeams;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Portfolio> portfolios;
@@ -75,7 +75,7 @@ public class Member {
                   final String iconUrl,
                   final String bio,
                   final List<MemberLink> memberLinks,
-                  final List<Team> teams,
+                  final List<Team> hostTeams,
                   final List<Portfolio> portfolios,
                   final boolean deleted) {
         validateEmail(email);
@@ -85,7 +85,7 @@ public class Member {
         this.iconUrl = iconUrl;
         this.bio = new MemberBio(bio);
         this.memberLinks = memberLinks;
-        this.teams = teams;
+        this.hostTeams = hostTeams;
         this.portfolios = portfolios;
         this.deleted = deleted;
     }
