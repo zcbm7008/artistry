@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApplicationStatusUpdateRequest {
-    private ApplicationInfoRequest application;
-    private Long memberId;
     private String status;
 
 }

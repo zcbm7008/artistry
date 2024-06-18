@@ -25,10 +25,8 @@ public class FakeLoginController {
         if(member == null){
             member = memberRepository.save(new Member("loginTestMember","email","a.url"));
         }
-
-
         Long id = member.getId();
-        System.out.println(id);
+
         return ResponseEntity.ok(new AccessTokenResponse(jwtTokenProvider.createIdToken(id)));
     }
 }

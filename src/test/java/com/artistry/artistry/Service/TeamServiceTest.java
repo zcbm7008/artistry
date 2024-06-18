@@ -262,8 +262,8 @@ public class TeamServiceTest {
         ApplicationResponse application1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
         ApplicationResponse application2 = teamService.apply(team2.getId(),new PortfolioRequest(portfolio2.getId()));
 
-        applicationService.changeStatus(createUpdateRequest(application1,team1.getHost().getId(),ApplicationStatus.APPROVED));
-        applicationService.changeStatus(createUpdateRequest(application2,team1.getHost().getId(),ApplicationStatus.APPROVED));
+        applicationService.updateStatus(application1.getId(),team1.getHost().getId(),new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
+        applicationService.updateStatus(application2.getId(),team1.getHost().getId(),new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
 
         List <TeamResponse> responses = teamService.findTeamsByApprovedMember(member1.getId());
 
@@ -397,7 +397,7 @@ public class TeamServiceTest {
 
         ApplicationResponse applicationResponse1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
 
-        applicationService.changeStatus(createUpdateRequest(applicationResponse1,team1.getHost().getId(), ApplicationStatus.APPROVED));
+        applicationService.updateStatus(applicationResponse1.getId(), team1.getHost().getId(), new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
 
         //when
         team1.cancel();
@@ -438,7 +438,7 @@ public class TeamServiceTest {
         ApplicationResponse applicationResponse = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
         team1.apply(portfolio2);
 
-        applicationService.changeStatus(createUpdateRequest(applicationResponse,team1.getHost().getId(),ApplicationStatus.APPROVED));
+        applicationService.updateStatus(applicationResponse.getId(),team1.getHost().getId(), new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
 
         //when
         TeamRole teamRole1 = team1.findTeamRoleByRole(role1);
@@ -470,13 +470,6 @@ public class TeamServiceTest {
     private RoleRequest createRoleRequest(String name){
         Role role = roleRepository.save(new Role(name));
         return new RoleRequest(role.getId());
-    }
-
-    private ApplicationStatusUpdateRequest createUpdateRequest(ApplicationResponse response, Long memberId, ApplicationStatus status){
-        return new ApplicationStatusUpdateRequest(
-                new ApplicationInfoRequest(response.getId()),
-                memberId,
-                status.toString());
     }
 
 }
