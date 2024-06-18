@@ -7,6 +7,8 @@ import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
+import com.artistry.artistry.Dto.Request.ApplicationInfoRequest;
+import com.artistry.artistry.Dto.Request.ApplicationStatusUpdateRequest;
 import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.RoleRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
@@ -287,7 +289,11 @@ class TeamApiDocTest extends ApiTest{
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().as(ApplicationResponse.class);
 
-        applicationService.changedApplicationStatus(appResponse.getId(), teamResponse1.getHost().getId(),ApplicationStatus.APPROVED);
+        applicationService.changeStatus(
+                new ApplicationStatusUpdateRequest(
+                        new ApplicationInfoRequest(appResponse.getId()),
+                        teamResponse1.getHost().getId(),
+                        ApplicationStatus.APPROVED.toString()));
 
         TeamResponse response = given().filter(RestAssuredRestDocumentationWrapper.document("finish-team",
                         "팀 모집 완료 API"))
