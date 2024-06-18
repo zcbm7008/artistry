@@ -85,7 +85,6 @@ public class ApplicationTest {
         assertThat(application.getApprover().getId()).isEqualTo(application.getTeam().getHost().getId());
     }
 
-
     @Test
     @DisplayName("지원한 application의 상태는 PENDING이어야 한다.")
     void isStatusPending(){

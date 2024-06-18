@@ -8,9 +8,9 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.ApplicationCreateRequest;
+import com.artistry.artistry.Dto.Request.ApplicationStatusUpdateRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Exceptions.ApplicationNotFoundException;
-import com.artistry.artistry.Exceptions.ArtistryUnauthorizedException;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,30 +41,38 @@ public class ApplicationService {
     @Autowired
     private PortfolioService portfolioService;
 
-    public ApplicationResponse create(final ApplicationCreateRequest request, Long hostId){
+    @Transactional
+    public ApplicationResponse createApplication(final ApplicationCreateRequest request, Long memberId){
         Team team = teamRepository.findById(request.getTeam().getId())
                 .orElseThrow(TeamNotFoundException::new);
-
-        Member host = memberRepository.findById(hostId)
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
 
-        team.validateHost(host);
+        validateAuth(ApplicationType.of(request.getType()),team,member);
 
         Portfolio portfolio = portfolioService.findEntityById(request.getPortfolio().getId());
-
         Role role = roleService.findEntityById(request.getRole().getId());
 
+        Application application = buildApplication(request, portfolio, team, role);
+
+        return ApplicationResponse.from(applicationRepository.save(application));
+    }
+
+    private void validateAuth(ApplicationType applicationType,Team team,Member member){
+        if(applicationType.equals(ApplicationType.INVITATION)){
+            team.validateHost(member);
+        }
+    }
+
+    private static Application buildApplication(ApplicationCreateRequest request, Portfolio portfolio, Team team, Role role) {
         Application application =
                 Application.builder()
                         .portfolio(portfolio)
                         .teamRole(team.findTeamRoleByRole(role))
                         .status(ApplicationStatus.of(request.getStatus()))
-                        .applicationType(ApplicationType.of(request.getType()))
+                        .type(ApplicationType.of(request.getType()))
                         .build();
-
-        applicationRepository.save(application);
-
-        return ApplicationResponse.from(application);
+        return application;
     }
 
     public ApplicationResponse findById(Long id){
@@ -78,12 +85,13 @@ public class ApplicationService {
     }
 
     @Transactional
-    public ApplicationResponse changedApplicationStatus(Long id,Long memberId,ApplicationStatus status){
-        Application application = findEntityById(id);
-        Member approver = memberRepository.findById(memberId)
+    public ApplicationResponse changeStatus(ApplicationStatusUpdateRequest request){
+        Application application = findEntityById(request.getApplication().getId());
+
+        Member approver = memberRepository.findById(request.getMemberId())
                         .orElseThrow(MemberNotFoundException::new);
 
-        application.changeStatus(status,approver);
+        application.changeStatus(ApplicationStatus.of(request.getStatus()),approver);
 
         return ApplicationResponse.from(application);
     }
