@@ -54,6 +54,7 @@
     const ctx = thumbnailCanvas.getContext('2d');
     const selection = document.getElementById('selection');
     const responseText = document.getElementById('responseText');
+    const croppedImage = document.getElementById('croppedImage');
     let isDragging = false;
     let isResizing = false;
     let startX, startY, startWidth, startHeight;
@@ -160,16 +161,14 @@
         formData.append('width', size);
         formData.append('height', size);
 
-        fetch('/api/images/upload', {
+        fetch('api/images/upload', {
             method: 'POST',
             body: formData
         })
         .then(response => response.text())
         .then(data => {
             responseText.innerText = `Uploaded Image Base64: ${data}`;
-            const img = new Image();
-            img.src = `data:image/png;base64,${data}`;
-            document.body.appendChild(img);
+            croppedImage.src = data;
         })
         .catch(error => console.error('Error:', error));
     });
