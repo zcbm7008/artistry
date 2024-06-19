@@ -36,7 +36,7 @@ public class Member {
     @NonNull
     private String email;
 
-    private String iconUrl;
+    private ProfileImage thumbnail = new ProfileImage();
 
     private MemberBio bio;
 
@@ -55,11 +55,11 @@ public class Member {
     private boolean deleted;
 
     public Member (String nickName,String email) {
-        this(null,nickName,email,null," ",new ArrayList<>(),null,null,false);
+        this(null,nickName,email,new ProfileImage()," ",new ArrayList<>(),null,null,false);
     }
 
-    public Member(String nickName, String email, String iconUrl) {
-        this(null,nickName,email,iconUrl," ",new ArrayList<>(),null,null,false);
+    public Member(String nickName, String email, String thumbnail) {
+        this(null,nickName,email, new ProfileImage(thumbnail)," ",new ArrayList<>(),null,null,false);
     }
 
     public String getNickname() {
@@ -72,7 +72,7 @@ public class Member {
     public Member(final Long id,
                   @NonNull final String nickName,
                   final @NonNull String email,
-                  final String iconUrl,
+                  final ProfileImage thumbnail,
                   final String bio,
                   final List<MemberLink> memberLinks,
                   final List<Team> hostTeams,
@@ -82,7 +82,7 @@ public class Member {
         this.id = id;
         this.nickname = new Nickname(nickName);
         this.email = email;
-        this.iconUrl = iconUrl;
+        this.thumbnail = thumbnail;
         this.bio = new MemberBio(bio);
         this.memberLinks = memberLinks;
         this.hostTeams = hostTeams;
@@ -90,9 +90,9 @@ public class Member {
         this.deleted = deleted;
     }
 
-    public void update(String nickName, String iconUrl,String bio,List<MemberLink> links){
+    public void update(String nickName, ProfileImage thumbnail,String bio,List<MemberLink> links){
         this.nickname = new Nickname(nickName);
-        this.iconUrl = iconUrl;
+        this.thumbnail = thumbnail;
         this.bio = new MemberBio(bio);
         if(this.memberLinks == null || this.memberLinks.isEmpty()){
             this.memberLinks = new ArrayList<>();
