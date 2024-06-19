@@ -26,7 +26,7 @@ public class MemberResponse {
                 member.getId(),
                 member.getNickname(),
                 member.getEmail(),
-                member.getThumbnail(),
+                member.getThumbnail().getUrl(),
                 member.getBio(),
                 getLinks(member)
         );
