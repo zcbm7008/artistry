@@ -36,7 +36,7 @@ public class S3ImageService {
 
         String imageType = file.getContentType();
         String fileExtension = imageType.substring(imageType.indexOf("/") + 1);
-        String filePath = member.getId().toString() + "/images/thumbnail." + fileExtension;
+        String filePath = getFilePath(member, fileExtension);
 
         // 원본 이미지 로드
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
@@ -50,6 +50,10 @@ public class S3ImageService {
 
         // S3에서 이미지를 가져와 Base64로 인코딩
         return getImageBase64FromS3(filePath);
+    }
+
+    public static String getFilePath(Member member, String fileExtension) {
+        return "member/" + member.getId().toString() + "/images/thumbnail." + fileExtension;
     }
 
     private BufferedImage resizeImage(BufferedImage image, int width, int height) throws IOException {
