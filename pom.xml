@@ -171,6 +171,17 @@
 			<version>0.12.5</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- 썸네일 이미지 생성 Thumbnailator -->
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>0.4.20</version>
+		</dependency>
+		<!-- 프론트엔드 테스트 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>io.awspring.cloud</groupId>
 			<artifactId>spring-cloud-aws-starter-s3</artifactId>

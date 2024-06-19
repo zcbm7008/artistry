@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Image Upload and Crop</title>
+    <style>
+        #thumbnailCanvas {
+            border: 1px solid #ccc;
+        }
+        #selection {
+            position: absolute;
+            border: 2px dashed blue;
+            cursor: move;
+            display: none;
+            justify-content: space-between;
+            align-items: space-between;
+        }
+        .handle {
+            width: 10px;
+            height: 10px;
+            background-color: blue;
+            position: absolute;
+        }
+        .handle.nw { top: -5px; left: -5px; cursor: nwse-resize; }
+        .handle.ne { top: -5px; right: -5px; cursor: nesw-resize; }
+        .handle.sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
+        .handle.se { bottom: -5px; right: -5px; cursor: nwse-resize; }
+    </style>
+</head>
+<body>
+<h1>Upload and Crop Image</h1>
+<input type="file" id="imageUpload" accept="image/*">
+<br><br>
+<div style="position: relative;">
+    <img id="uploadedImage" src="" alt="Uploaded Image" style="max-width: 500px;">
+    <div id="selection">
+        <div class="handle nw"></div>
+        <div class="handle ne"></div>
+        <div class="handle sw"></div>
+        <div class="handle se"></div>
+    </div>
+</div>
+<br><br>
+<canvas id="thumbnailCanvas" style="display: none;"></canvas>
+<br><br>
+<button id="cropButton">Crop</button>
+<br><br>
+<p id="responseText"></p>
+<img id="croppedImage" src="" alt="Cropped Image">
+
+<script>
+    const imageUpload = document.getElementById('imageUpload');
+    const uploadedImage = document.getElementById('uploadedImage');
+    const thumbnailCanvas = document.getElementById('thumbnailCanvas');
+    const ctx = thumbnailCanvas.getContext('2d');
+    const selection = document.getElementById('selection');
+    const responseText = document.getElementById('responseText');
+    const croppedImage = document.getElementById('croppedImage');
+    let isDragging = false;
+    let isResizing = false;
+    let startX, startY, startWidth, startHeight;
+    let maxSize, minSize = 48;
+    let selectedFile;
+
+    function constrainSelection(x, y, size) {
+        const imgRect = uploadedImage.getBoundingClientRect();
+        if (x < 0) x = 0;
+        if (y < 0) y = 0;
+        if (x + size > imgRect.width) x = imgRect.width - size;
+        if (y + size > imgRect.height) y = imgRect.height - size;
+        return { x, y, size };
+    }
+
+    function centerSelection() {
+        const imgRect = uploadedImage.getBoundingClientRect();
+        maxSize = Math.min(imgRect.width, imgRect.height);
+        const { x, y, size } = constrainSelection(
+            (imgRect.width - maxSize) / 2,
+            (imgRect.height - maxSize) / 2,
+            maxSize
+        );
+        selection.style.width = `${size}px`;
+        selection.style.height = `${size}px`;
+        selection.style.left = `${x}px`;
+        selection.style.top = `${y}px`;
+        selection.style.display = 'block';
+    }
+
+    imageUpload.addEventListener('change', function(event) {
+        selectedFile = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function() {
+            uploadedImage.src = reader.result;
+            uploadedImage.style.display = 'block';
+        };
+        reader.readAsDataURL(selectedFile);
+    });
+
+    uploadedImage.onload = function() {
+        thumbnailCanvas.width = uploadedImage.width;
+        thumbnailCanvas.height = uploadedImage.height;
+        ctx.drawImage(uploadedImage, 0, 0);
+        centerSelection();
+    };
+
+    selection.addEventListener('mousedown', function(event) {
+        if (event.target.classList.contains('handle')) {
+            isResizing = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            startWidth = parseInt(selection.style.width);
+            startHeight = parseInt(selection.style.height);
+        } else {
+            isDragging = true;
+            startX = event.clientX - parseInt(selection.style.left);
+            startY = event.clientY - parseInt(selection.style.top);
+        }
+        event.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(event) {
+        if (isDragging) {
+            const x = event.clientX - startX;
+            const y = event.clientY - startY;
+            const size = parseInt(selection.style.width);
+            const constrained = constrainSelection(x, y, size);
+            selection.style.left = `${constrained.x}px`;
+            selection.style.top = `${constrained.y}px`;
+        } else if (isResizing) {
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
+            let newSize = startWidth + Math.max(dx, dy);
+            newSize = Math.max(minSize, Math.min(newSize, maxSize));
+            const imgRect = uploadedImage.getBoundingClientRect();
+            if (parseInt(selection.style.left) + newSize > imgRect.width) {
+                newSize = imgRect.width - parseInt(selection.style.left);
+            }
+            if (parseInt(selection.style.top) + newSize > imgRect.height) {
+                newSize = imgRect.height - parseInt(selection.style.top);
+            }
+            selection.style.width = `${newSize}px`;
+            selection.style.height = `${newSize}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+        isResizing = false;
+    });
+
+    document.getElementById('cropButton').addEventListener('click', function() {
+        const rect = selection.getBoundingClientRect();
+        const imgRect = uploadedImage.getBoundingClientRect();
+        const x = rect.left - imgRect.left;
+        const y = rect.top - imgRect.top;
+        const size = rect.width;
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('x', x);
+        formData.append('y', y);
+        formData.append('width', size);
+        formData.append('height', size);
+
+        fetch('api/images/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            responseText.innerText = `Uploaded Image Base64: ${data}`;
+            croppedImage.src = data;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>

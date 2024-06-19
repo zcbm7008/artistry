@@ -31,7 +31,7 @@ public class MemberRepositoryTest {
         assertThat(savedMember.getId()).isNotNull();
         assertThat(savedMember.getNickname()).isEqualTo(member.getNickname());
         assertThat(savedMember.getEmail()).isEqualTo(member.getEmail());
-        assertThat(savedMember.getIconUrl()).isEqualTo(member.getIconUrl());
+        assertThat(savedMember.getThumbnail()).isEqualTo(member.getThumbnail());
 
     }
     @DisplayName("특정 이메일을 가진 Member를 조회한다.")

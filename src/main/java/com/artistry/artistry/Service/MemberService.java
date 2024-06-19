@@ -4,6 +4,7 @@ import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.member.MemberLink;
+import com.artistry.artistry.Domain.member.ProfileImage;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
@@ -68,7 +69,7 @@ public class MemberService {
     @Transactional
     public MemberResponse update(final Long memberId, final MemberUpdateRequest request){
         Member member = findEntityById(memberId);
-        member.update(request.getNickName(),request.getIconUrl(),request.getBio(),createLinks(request.getLinks()));
+        member.update(request.getNickName(),new ProfileImage(request.getIconUrl()),request.getBio(),createLinks(request.getLinks()));
 
         return MemberResponse.from(findEntityById(memberId));
     }
