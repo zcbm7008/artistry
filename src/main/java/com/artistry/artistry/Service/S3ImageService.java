@@ -5,13 +5,11 @@ import com.artistry.artistry.Domain.member.ProfileImage;
 import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Repository.S3Repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.s3.S3Resource;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.sync.ResponseTransformer;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -71,16 +69,9 @@ public class S3ImageService {
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
-    private String getImageBase64FromS3(String fileName) throws IOException {
-        S3Client s3Client = S3Client.builder().build();
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket("artistry-bucket")
-                .key(fileName)
-                .build();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        s3Client.getObject(getObjectRequest, ResponseTransformer.toOutputStream(baos));
-        byte[] imageBytes = baos.toByteArray();
+    public String getImageBase64FromS3(String fileName) throws IOException {
+        S3Resource s3Resource = s3Repository.download(fileName);
+        byte[] imageBytes = s3Resource.getContentAsByteArray();
 
         return "data:image/png;base64," + Base64.getEncoder().encodeToString(imageBytes);
     }
