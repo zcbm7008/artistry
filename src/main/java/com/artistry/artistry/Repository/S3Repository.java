@@ -19,8 +19,8 @@ public class S3Repository {
         this.s3Template = s3Template;
     }
 
-    public void upload(String fileName, Object object){
-        s3Template.store(bucketName,fileName,object);
+    public S3Resource upload(String fileName, Object object){
+        return s3Template.store(bucketName,fileName,object);
     }
 
     public S3Resource download(String key){
