@@ -25,6 +25,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -37,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 @SpringBootTest
 public class MemberServiceTest {
+    private static final Pageable PAGEABLE = PageRequest.of(0, 100);
+
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -78,6 +82,31 @@ public class MemberServiceTest {
         assertThat(response.getNickName()).isEqualTo(expectedName);
         assertThat(response.getEmail()).isEqualTo(expectedEmail);
         assertThat(response.getIconUrl()).isEqualTo(expectedIconUrl);
+    }
+
+    @DisplayName("nickname으로 member를 검색한다.")
+    @Test
+    void findByNickName(){
+        memberRepository.save(new Member("superhotfire","a@a.com","url"));
+        memberRepository.save(new Member("superhotfire22","a@a.com","url"));
+        memberRepository.save(new Member("superhotfire33","a@a.com","url"));
+
+        memberRepository.save(new Member("rapname32","a@a.com","url"));
+        memberRepository.save(new Member("rapname322","a@a.com","url"));
+
+        String nicknameToFind = "superhotfire";
+
+        String nicknameToFind2 = "rapname";
+
+        List<MemberResponse> responses = memberService.findAllByNickName(nicknameToFind,PAGEABLE);
+        List<MemberResponse> responses2 = memberService.findAllByNickName(nicknameToFind2,PAGEABLE);
+
+        assertThat(responses).hasSize(3).
+                allMatch(memberResponse -> memberResponse.getNickName().contains(nicknameToFind));
+
+        assertThat(responses2).hasSize(2)
+                .allMatch(memberResponse -> memberResponse.getNickName().contains(nicknameToFind2));
+
     }
 
     @DisplayName("중복된 Email로 생성할 때 예외를 던짐.")
