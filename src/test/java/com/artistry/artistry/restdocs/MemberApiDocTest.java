@@ -4,6 +4,7 @@ package com.artistry.artistry.restdocs;
 import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Response.AccessTokenResponse;
 import com.artistry.artistry.Dto.Response.MemberResponse;
+import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.auth.jwt.JwtTokenProvider;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import org.assertj.core.api.AssertionsForClassTypes;
@@ -35,13 +36,15 @@ public class MemberApiDocTest extends ApiTest{
     }
     @BeforeEach
     void setUp(){
-       createdMembers.add(memberSave("member1"));
+       createdMembers.add(memberSave("superhotfire1","a@a.com"));
+        createdMembers.add(memberSave("superhotfire","b@b.com"));
+        createdMembers.add(memberSave("member1","c@c.com"));
     }
 
-    public static MemberResponse memberSave(final String memberName){
+    public static MemberResponse memberSave(final String memberName,final String email){
         Map<String, Object> body = new HashMap<>();
         body.put("nickName",memberName);
-        body.put("email","test@t.com");
+        body.put("email",email);
         body.put("iconUrl","test.url");
 
         return given().body(body)
@@ -55,7 +58,7 @@ public class MemberApiDocTest extends ApiTest{
     void createMember() {
         Map<String, Object> body = new HashMap<>();
         body.put("nickName", "nickname1");
-        body.put("email", "a@a.com");
+        body.put("email", "created@create.com");
         body.put("iconUrl", "asdsd.url");
 
         MemberResponse response =
@@ -77,6 +80,29 @@ public class MemberApiDocTest extends ApiTest{
                         .when().post("/api/members")
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().as(MemberResponse.class);
+    }
+
+    @DisplayName("닉네임으로 멤버를 검색한다.")
+    @Test
+    void findByNickname(){
+        String nickname = "superhotfire";
+
+        List<MemberResponse> responses =
+                given()
+                        .filter(RestAssuredRestDocumentationWrapper.document("search-members-by-nickname",
+                                "멤버 닉네임 검색 API",
+                                responseFields(
+                                        fieldWithPath("[].id").description("멤버 Id"),
+                                        fieldWithPath("[].nickName").description("멤버 이름"),
+                                        fieldWithPath("[].iconUrl").description("멤버 아이콘 url"),
+                                        fieldWithPath("[].email").description("멤버 이메일"),
+                                        fieldWithPath("[].bio").description("멤버 소개"),
+                                        fieldWithPath("[].links").description("멤버 링크"))))
+                        .when().get("/api/members/nickname?nickname={nickname}", nickname)
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().jsonPath().getList(".", MemberResponse.class);
+
+        assertThat(responses).hasSize(2);
     }
 
     @DisplayName("엑세스 토큰을 사용해 자신의 정보를 확인할 수 있다.")
