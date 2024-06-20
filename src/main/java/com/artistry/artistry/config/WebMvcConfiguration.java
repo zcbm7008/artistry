@@ -27,6 +27,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .excludePathPatterns("/api/auth/**")
                 .excludePathPatterns("/api/members/{id:[0-9]\\d*}")
                 .excludePathPatterns("/api/members")
+                .excludePathPatterns("/api/members/nickname")
                 .excludePathPatterns("/api/tags/**")
                 .excludePathPatterns("/api/roles/**")
                 .excludePathPatterns("/api/portfolios/**")

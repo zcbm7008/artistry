@@ -5,6 +5,8 @@ import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.member.ProfileImage;
+import com.artistry.artistry.Domain.portfolio.Portfolio;
+import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
@@ -12,10 +14,13 @@ import com.artistry.artistry.Dto.Request.MemberInfoRequest;
 import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
 import com.artistry.artistry.Dto.Response.MemberResponse;
 import com.artistry.artistry.Dto.Response.MemberTeamsResponse;
+import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.ArtistryDuplicatedException;
 import com.artistry.artistry.Exceptions.MemberNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
 import com.artistry.artistry.Repository.MemberRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +46,18 @@ public class MemberService {
     public MemberResponse findById(Long id){
         return MemberResponse.from(findEntityById(id));
     }
+
+    @Transactional
+    public List<MemberResponse> findAllByNickName(String nickName, final Pageable pageable){
+        Slice<Member> members = memberRepository.findByNickname_valueContaining(nickName, pageable);
+
+        return getMemberResponses(members);
+    }
+
+    private List<MemberResponse> getMemberResponses(Slice<Member> members){
+        return members.stream().map(MemberResponse::from).collect(Collectors.toList());
+    }
+
 
     @Transactional(readOnly = true)
     public MemberTeamsResponse getParticipatedTeams(final MemberInfoRequest request){
