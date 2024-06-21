@@ -183,15 +183,15 @@ INSERT INTO `team` (`name`,`host_id`,`team_status`) VALUES
 DROP TABLE IF EXISTS `teamRole`;
 
 CREATE TABLE `teamRole` (
-    `id` BIGINT(255) NOT NULL AUTO_INCREMENT,
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `role_id` BIGINT(20) NOT NULL,
     `team_id` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`),
-    KEY `fk_team_role_team` (`team_id`),
-    KEY `fk_team_role_role` (`role_id`),
-    CONSTRAINT `fk_team_role_team` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_team_role_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE
-);
+    KEY `fk_teamRole_team` (`team_id`),
+    KEY `fk_teamRole_role` (`role_id`),
+    CONSTRAINT `fk_teamRole_team` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`),
+    CONSTRAINT `fk_teamRole_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `teamRole` (`role_id`, `team_id`) VALUES
 (1, 1), (2, 1), (3, 1),
