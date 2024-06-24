@@ -57,12 +57,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
-        
-
-      # Ensure the target directory and JAR file are available for Docker build
-
-      - name: List target directory
-        run: ls -l target
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -118,6 +112,10 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+      # Ensure the target directory and JAR file are available for Docker build
+      - name: List target directory
+        run: ls -l target
 
       #docker-compose 파일을 ec2 서버에 배포
       - name: Deploy to Prod
