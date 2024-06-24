@@ -2,9 +2,6 @@ spring:
   application:
     name: artistry
 
-  profiles:
-    active: dev
-
   cloud:
     aws:
       credentials:
