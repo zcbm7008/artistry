@@ -6,10 +6,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect
 
 AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
 AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
