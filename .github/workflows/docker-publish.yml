@@ -7,6 +7,8 @@ name: Docker
 
 on:
   push:
+    branches: [ "master" ]
+    # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ "master" ]
@@ -22,6 +24,7 @@ env:
   NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
   NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
   NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
+
 
 jobs:
   build:
@@ -44,34 +47,22 @@ jobs:
           java-version: '21'
           distribution: 'adopt'
 
-      - name: Cache Maven repository
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-          
-
-      - name: Set environment variables
-        run: |
-          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::549201086101:role/artistryaces
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
-
-      - name: test Maven
-        run: mvn clean test   
-
+        
+      - name: Set environment variables
+        run: |
+          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
       - name: Build with Maven
-        run: mvn package -Pdev -DskipTests
+        run: mvn clean package -f pom.xml -Pdev
 
+      # Ensure the target directory and JAR file are available for Docker build
+      - name: List target directory
+        run: ls -l target
         
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -87,7 +78,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
 
-
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -116,10 +115,6 @@ jobs:
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
-      # Ensure the target directory and JAR file are available for Docker build
-      - name: List target directory
-        run: ls -l target
-
       #docker-compose 파일을 ec2 서버에 배포
       - name: Deploy to Prod
         uses: appleboy/ssh-action@master
@@ -142,22 +137,3 @@ jobs:
               else
                   echo "No dangling images to remove."
               fi
-
-      - name: create zip file
-        run: |
-          mkdir deploy
-          cp ./docker-compose.blue.yml ./deploy/
-          cp ./docker-compose.green.yml ./deploy/
-          cp ./appspec.yml ./deploy/
-          cp ./Dockerfile ./deploy/
-          cp ./scripts/deploy.sh ./deploy/
-          cp ./target/artistry-0.0.1-SNAPSHOT.jar ./deploy/
-          zip -r -qq -j ./$GITHUB_SHA.zip ./deploy
-          
-      - name: upload to s3
-        run: |
-          aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://artistry-bucket/$GITHUB_SHA.zip
-        
-      - name: Code Deploy 배포 요청
-        run: aws deploy create-deployment --application-name artistry-codedeploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name test-group --s3-location bucket=artistry-bucket,bundleType=zip,key=$GITHUB_SHA.zip
-
