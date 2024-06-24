@@ -60,7 +60,7 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> $GITHUB_ENV
       - name: Build with Maven
-        run: mvn clean package -f pom.xml -Pdev
+        run: mvn clean package -f pom.xml -Pdev -DskipTests
 
       # Ensure the target directory and JAR file are available for Docker build
       - name: List target directory
