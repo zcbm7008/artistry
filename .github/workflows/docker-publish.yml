@@ -137,3 +137,6 @@ jobs:
               else
                   echo "No dangling images to remove."
               fi
+              else
+                  echo "No dangling images to remove."
+              fi
