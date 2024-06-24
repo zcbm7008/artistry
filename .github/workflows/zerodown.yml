@@ -1,4 +1,4 @@
-name: Docker
+name: Zerodown
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -7,9 +7,11 @@ name: Docker
 
 on:
   push:
+    branches: [ "feat/zeto-downtime-deploy" ]
+    # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ "master" ]
+
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -22,8 +24,7 @@ env:
   NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
   NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
   NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
-  MYSQL_USER: ${{ secrets.MYSQL_USER }}
-  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+
 
 jobs:
   build:
@@ -45,26 +46,12 @@ jobs:
         with:
           java-version: '21'
           distribution: 'adopt'
-          
-
-      - name: Set environment variables
-        run: |
-          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> $GITHUB_ENV
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> $GITHUB_ENV
-          
-      - name: Build with Maven
-        run: mvn clean package -f pom.xml -Pdev
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::549201086101:role/artistryaces
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-        
+
 
       # Ensure the target directory and JAR file are available for Docker build
       - name: List target directory
@@ -92,12 +79,3 @@ jobs:
           cp ./appspec.yml ./deploy/
           cp ./Dockerfile ./deploy/
           cp ./scripts/deploy.sh ./deploy/
-          cp ./target/artistry-0.0.1-SNAPSHOT.jar ./deploy/
-          zip -r -qq -j ./$GITHUB_SHA.zip ./deploy
-          
-      - name: upload to s3
-        run: |
-          aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://artistry-bucket/$GITHUB_SHA.zip
-        
-      - name: Code Deploy 배포 요청
-        run: aws deploy create-deployment --application-name artistry-codedeploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name test-group --s3-location bucket=artistry-bucket,bundleType=zip,key=$GITHUB_SHA.zip
