@@ -1,7 +1,6 @@
 package com.artistry.artistry.auth;
 
 import com.artistry.artistry.Domain.member.Member;
-import com.artistry.artistry.Repository.MemberRepository;
 import com.artistry.artistry.Service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

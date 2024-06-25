@@ -17,11 +17,12 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
@@ -84,7 +85,7 @@ public class OAuthServiceTest {
         when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
         when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
-        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(1L,"nickname","email@example.com","image.url"));
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(1L,"nickname","email@example.com","image.url"," ",new ArrayList<>()));
 
         // When
         AccessTokenResponse actualAccessTokenResponse = mockOAuthService.createMemberAccessToken(socialType, code);
@@ -113,7 +114,7 @@ public class OAuthServiceTest {
         when(mockOAuthClient.getAccessToken(eq(code))).thenReturn(tokenResponse);
         when(mockOAuthClient.createOAuthMember(eq(tokenResponse))).thenReturn(oAuthMemberResponse);
         when(jwtTokenProvider.generateEmailToken(eq("email@example.com"))).thenReturn("jwt_token");
-        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1","a.url","a@a.com"));
+        when(memberService.findByEmail(any(String.class))).thenReturn(new MemberResponse(0L,"member1","a.url","a@a.com"," ",new ArrayList<>()));
         when(memberService.isEmailExists(any(String.class))).thenReturn(true);
         // When,Then
 

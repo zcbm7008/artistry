@@ -6,5 +6,5 @@ services:
     env_file:
       - .env
     ports:
-      - "8081:80"
+      - "8081:8080"
     container_name: artistry-blue

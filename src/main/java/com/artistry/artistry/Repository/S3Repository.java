@@ -3,11 +3,7 @@ package com.artistry.artistry.Repository;
 import io.awspring.cloud.s3.S3Resource;
 import io.awspring.cloud.s3.S3Template;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.List;
 
@@ -23,8 +19,8 @@ public class S3Repository {
         this.s3Template = s3Template;
     }
 
-    public void upload(String fileName, Object object){
-        s3Template.store(bucketName,fileName,object);
+    public S3Resource upload(String fileName, Object object){
+        return s3Template.store(bucketName,fileName,object);
     }
 
     public S3Resource download(String key){

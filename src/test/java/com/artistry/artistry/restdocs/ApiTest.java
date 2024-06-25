@@ -19,6 +19,7 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,6 +45,8 @@ public abstract class ApiTest {
     protected RoleRepository roleRepository;
     @Autowired
     protected TeamRepository teamRepository;
+    @Autowired
+    protected ApplicationRepository applicationRepository;
 
     @BeforeEach
     protected void setUp(RestDocumentationContextProvider restDocumentation) {
@@ -66,6 +69,7 @@ public abstract class ApiTest {
         initializeDatabase();
     }
 
+    @Transactional
     private void clearDatabase() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         List<String> tableNames = jdbcTemplate.queryForList("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='PUBLIC'", String.class);
@@ -74,6 +78,7 @@ public abstract class ApiTest {
         }
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
+    @Transactional
     private void initializeDatabase() throws Exception {
         DataLoader dataLoader = new DataLoader(tagRepository,memberRepository,roleRepository,portfolioRepository);
         dataLoader.run();

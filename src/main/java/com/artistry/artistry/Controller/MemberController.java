@@ -4,11 +4,15 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Dto.Request.MemberCreateRequest;
 import com.artistry.artistry.Dto.Request.MemberUpdateRequest;
 import com.artistry.artistry.Dto.Response.MemberResponse;
+import com.artistry.artistry.Dto.Response.TagNameResponse;
 import com.artistry.artistry.Service.MemberService;
 import com.artistry.artistry.auth.Authorization;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("/api/members")
 @RestController
@@ -38,6 +42,11 @@ public class MemberController {
                                                  @Valid @RequestBody final MemberUpdateRequest request){
         MemberResponse response = memberService.update(memberId,request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/nickname")
+    public ResponseEntity<List<MemberResponse>> findNickname(@RequestParam(defaultValue = "") final String nickname, final Pageable pageable){
+        return ResponseEntity.ok(memberService.findAllByNickName(nickname, pageable));
     }
 
     @DeleteMapping(value = "/{memberId}")

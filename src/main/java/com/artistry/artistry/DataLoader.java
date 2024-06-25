@@ -26,10 +26,10 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        prepareDummyTags();
-        prepareDummyMembers();
-        prepareDummyRoles();
-        prepareDummyPortfolios();
+//        prepareDummyTags();
+//        prepareDummyMembers();
+//        prepareDummyRoles();
+//        prepareDummyPortfolios();
     }
 
 

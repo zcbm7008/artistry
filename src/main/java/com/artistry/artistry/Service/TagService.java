@@ -75,7 +75,7 @@ public class TagService {
     }
 
     @Transactional
-    public void deleteTag(final Long tagId){
+    public void delete(final Long tagId){
         Tag tag = findEntityById(tagId);
         tagRepository.delete(tag);
     }

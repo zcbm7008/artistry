@@ -16,17 +16,26 @@ import java.util.stream.Collectors;
 public class PortfolioResponse {
     private Long id;
     private String title;
+    private MemberResponse member;
     private String roleName;
-    private List<ContentResponse> contents;
+    private List<LinkResponse> contents;
     private String access;
+
+    private Long view;
+    private Long like;
+
+
 
     public static PortfolioResponse from(Portfolio portfolio){
         return PortfolioResponse.builder()
                 .id(portfolio.getId())
                 .title(portfolio.getTitle())
+                .member(MemberResponse.from(portfolio.getMember()))
                 .roleName(portfolio.getRole().getName())
-                .contents(portfolio.getContents().stream().map(ContentResponse::from).collect(Collectors.toList()))
-                .access(portfolio.getPortfolioAccess().toString())
+                .contents(portfolio.getContents().stream().map(LinkResponse::from).collect(Collectors.toList()))
+                .access(portfolio.getAccess().toString())
+                .view(portfolio.getView())
+                .like(portfolio.getLike())
                 .build();
     }
 

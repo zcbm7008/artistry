@@ -19,21 +19,23 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TeamResponse {
-    private Long teamId;
-    private String teamName;
+    private Long id;
+    private String name;
     private String createdAt;
     private HostResponse host;
     private List<String> tags;
     private List<TeamRoleResponse> teamRoles;
+    private String teamStatus;
 
     public static TeamResponse from(Team team){
         return TeamResponse.builder()
-                .teamId(team.getId())
-                .teamName(team.getName())
+                .id(team.getId())
+                .name(team.getName())
                 .createdAt(team.getCreatedAt().toString())
                 .host(HostResponse.from(team.getHost()))
                 .teamRoles(team.getTeamRoles().stream().map(TeamRoleResponse::from).collect(Collectors.toList()))
                 .tags(tagNames(team.getTags()))
+                .teamStatus(team.getTeamStatus().toString())
                 .build();
     }
 

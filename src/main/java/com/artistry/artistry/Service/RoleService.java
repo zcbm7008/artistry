@@ -24,17 +24,17 @@ public class RoleService {
     }
 
     public RoleResponse findById(Long id){
-        return RoleResponse.from(findRoleById(id));
+        return RoleResponse.from(findEntityById(id));
     }
 
-    public Role findRoleById(Long id){
+    public Role findEntityById(Long id){
         return roleRepository.findById(id)
                 .orElseThrow(RoleNotFoundException::new);
     }
 
     public List<Role> findAllById(final List<RoleRequest> roleRequests){
         return roleRequests.stream()
-                .map(roleRequest -> findRoleById(roleRequest.getId()))
+                .map(roleRequest -> findEntityById(roleRequest.getId()))
                 .collect(Collectors.toList());
     }
     public List<RoleResponse> findAll() {
@@ -53,15 +53,15 @@ public class RoleService {
 
     @Transactional
     public RoleResponse updateRole(final Long roleId, final RoleUpdateRequest request){
-        Role role = findRoleById(roleId);
+        Role role = findEntityById(roleId);
         role.update(request.getName());
 
-        return RoleResponse.from(findRoleById(roleId));
+        return RoleResponse.from(findEntityById(roleId));
     }
 
     @Transactional
     public void deleteRole(final Long roleId){
-        Role role = findRoleById(roleId);
+        Role role = findEntityById(roleId);
         roleRepository.delete(role);
     }
 

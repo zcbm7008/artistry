@@ -134,7 +134,7 @@ public class TagServiceTest {
 
             //when
             assertThat(tagRepository.findById(tag.getId())).isPresent();
-            tagService.deleteTag(tag.getId());
+            tagService.delete(tag.getId());
 
             //Then
             assertThat(tagRepository.findById(tag.getId())).isNotPresent();
@@ -144,7 +144,7 @@ public class TagServiceTest {
         @DisplayName("id에 해당하는 태그가 없으면 예외가 발생한다.")
         @Test
         void deleteTagException() {
-            assertThatThrownBy(() -> tagService.deleteTag(Long.MAX_VALUE))
+            assertThatThrownBy(() -> tagService.delete(Long.MAX_VALUE))
                     .isExactlyInstanceOf(TagNotFoundException.class);
         }
     }

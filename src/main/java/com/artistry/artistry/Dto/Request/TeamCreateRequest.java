@@ -10,9 +10,9 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeamRequest {
+public class TeamCreateRequest {
     @NonNull
-    private String teamName;
+    private String name;
     @NonNull
     private Long hostId;
     private List<TagRequest> tags;

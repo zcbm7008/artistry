@@ -1,8 +1,8 @@
 package com.artistry.artistry.auth;
 
+import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.artistry.artistry.auth.oauth.Client.GoogleOAuthClient;
 import com.artistry.artistry.auth.oauth.OAuthMemberResponse;
-import com.artistry.artistry.Dto.Response.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

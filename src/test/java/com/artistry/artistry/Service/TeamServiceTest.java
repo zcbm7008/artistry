@@ -7,12 +7,14 @@ import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
-import com.artistry.artistry.Dto.Request.RoleRequest;
-import com.artistry.artistry.Dto.Request.TagRequest;
-import com.artistry.artistry.Dto.Request.TeamRequest;
+import com.artistry.artistry.Domain.team.TeamRole;
+import com.artistry.artistry.Domain.team.TeamStatus;
+import com.artistry.artistry.Dto.Request.*;
+import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
-import com.artistry.artistry.Dto.Response.TeamRoleResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
+import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
+import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import com.artistry.artistry.Repository.*;
 import org.junit.jupiter.api.DisplayName;
@@ -22,11 +24,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -42,11 +43,13 @@ public class TeamServiceTest {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
+    private RoleService roleService;
+    @Autowired
+    ApplicationService applicationService;
+    @Autowired
     MemberRepository memberRepository;
     @Autowired
     PortfolioRepository portfolioRepository;
-    @Autowired
-    TeamRoleRepository teamRoleRepository;
     @Autowired
     ApplicationRepository applicationRepository;
 
@@ -59,19 +62,22 @@ public class TeamServiceTest {
         String tagName1 = "밴드";
         String tagName2 = "락";
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
-        Role role1 = roleRepository.save(new Role(roleName1));
-        Role role2 = roleRepository.save(new Role(roleName2));
-        Tag tag1 = tagRepository.save(new Tag(tagName1));
-        Tag tag2 = tagRepository.save(new Tag(tagName2));
-        TagRequest tagRequest1 = new TagRequest(tag1.getId());
-        TagRequest tagRequest2 = new TagRequest(tag2.getId());
-        RoleRequest roleRequest1 = new RoleRequest(role1.getId());
-        RoleRequest roleRequest2 = new RoleRequest(role2.getId());
 
-        TeamRequest teamRequest = new TeamRequest(teamName,member1.getId(),Arrays.asList(tagRequest1,tagRequest2),Arrays.asList(roleRequest1,roleRequest2));
-        TeamResponse responseDto = teamService.create(teamRequest);
+        TagRequest tagRequest1 = createTagRequest(tagName1);
+        TagRequest tagRequest2 = createTagRequest(tagName2);
+        RoleRequest roleRequest1 = createRoleRequest(roleName1);
+        RoleRequest roleRequest2 = createRoleRequest(roleName2);
 
-        assertThat(responseDto.getTeamId()).isNotNull();
+        TeamCreateRequest teamCreateRequest =
+                new TeamCreateRequest(
+                        teamName,
+                        member1.getId(),
+                        Arrays.asList(tagRequest1,tagRequest2),
+                        Arrays.asList(roleRequest1,roleRequest2));
+
+        TeamResponse responseDto = teamService.create(teamCreateRequest);
+
+        assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getTeamRoles())
                 .extracting(teamRole -> teamRole.getRole().getName())
                 .containsExactly(roleName1, roleName2);
@@ -87,28 +93,24 @@ public class TeamServiceTest {
         String roleName1 = "작곡가";
         String invalidRoleName = "일러스트레이터";
         String tagName1 = "밴드";
+
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
         Member member2 = memberRepository.save(new Member("member2","b@b.com"));
         Member applicant1 = memberRepository.save(new Member("applicant1","c@c.com"));
-
 
         Role role1 = roleRepository.save(new Role(roleName1));
         Role invalidRole = roleRepository.save(new Role(invalidRoleName));
 
         Tag tag1 = tagRepository.save(new Tag(tagName1));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", invalidRole));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1, "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member2, "portfolio2 for drummer", invalidRole));
 
-        Team team = new Team(teamName, member1, List.of(tag1), List.of(role1));
+        Team team = teamRepository.save(new Team(teamName, member1, List.of(tag1), List.of(role1)));
 
-        teamRepository.save(team);
+        team.apply(portfolio1);
 
-        Application application1 = applicationRepository.save(new Application(team, role1, member2, portfolio1));
-        Application application2 = applicationRepository.save(new Application(team, invalidRole, applicant1, portfolio2));
-
-        team.findTeamRoleByRole(role1).addApplication(application1);
-        assertThatThrownBy(() -> team.findTeamRoleByRole(invalidRole).getApplications().add(application2)).isInstanceOf(TeamRoleNotFoundException.class);
+        assertThatThrownBy(() -> team.apply(portfolio2)).isInstanceOf(TeamRoleNotFoundException.class);
 
     }
 
@@ -129,14 +131,18 @@ public class TeamServiceTest {
                         .name(nameToFind + "참여하실분12312312")
                         .roles(List.of(role1))
                         .tags(tagList)
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         Team team2 =
                 Team.builder()
                         .name(nameToFind + "참여하실분1233434")
                         .roles(List.of(role1))
                         .tags(Arrays.asList(tag1,tag2,tag3))
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         teamRepository.save(team1);
         teamRepository.save(team2);
@@ -144,7 +150,7 @@ public class TeamServiceTest {
         List <TeamResponse> response = teamService.findTeamsByNameLike("공모전");
 
         assertThat(response).hasSize(2)
-                .extracting(TeamResponse::getTeamName)
+                .extracting(TeamResponse::getName)
                 .allMatch(name -> name.contains(nameToFind));
 
     }
@@ -171,14 +177,18 @@ public class TeamServiceTest {
                         .name("team1")
                         .roles(List.of(role1))
                         .tags(tagList)
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         Team team2 =
                 Team.builder()
                         .name("team1")
                         .roles(List.of(role1))
                         .tags(Arrays.asList(tag1,tag2,tag3))
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         teamRepository.save(team1);
         teamRepository.save(team2);
@@ -204,13 +214,17 @@ public class TeamServiceTest {
                 Team.builder()
                         .name("team1")
                         .roles(List.of(role1,role2))
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         Team team2 =
                 Team.builder()
                         .name("team1")
                         .roles(List.of(role1))
-                        .host(host).build();
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
 
         teamRepository.save(team1);
         teamRepository.save(team2);
@@ -225,38 +239,219 @@ public class TeamServiceTest {
     void findTeamsByApprovedApplicationMember(){
         String teamName = "밴드 팀";
         String roleName1 = "작곡가";
-        String roleName2 = "기타";
+        String roleName2 = "베이스";
         String tagName1 = "밴드";
+
         Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
         Member member1 = memberRepository.save(new Member("member1","a@a.com"));
-
 
         Role role1 = roleRepository.save(new Role(roleName1));
         Role role2 = roleRepository.save(new Role(roleName2));
 
         Tag tag1 = tagRepository.save(new Tag(tagName1));
 
-        Portfolio portfolio1 = portfolioRepository.save(new Portfolio( "portfolio1 for composer", role1));
-        Portfolio portfolio2 = portfolioRepository.save(new Portfolio( "portfolio2 for drummer", role2));
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1, "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member1, "portfolio2 for drummer", role2));
 
         Team team1 = new Team(teamName, host, List.of(tag1), List.of(role1));
-        Team team2 = new Team(teamName, host, List.of(tag1), List.of(role1));
+        Team team2 = new Team(teamName, host, List.of(tag1), List.of(role1,role2));
 
         teamRepository.save(team1);
         teamRepository.save(team2);
 
-        Application application1 = applicationRepository.save(new Application(team1, role1, member1, portfolio1));
-        Application application2 = applicationRepository.save(new Application(team2, role1, member1, portfolio2));
+        ApplicationResponse application1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
+        ApplicationResponse application2 = teamService.apply(team2.getId(),new PortfolioRequest(portfolio2.getId()));
 
-        team1.apply(application1);
-        team2.apply(application2);
-
-        application1.setStatus(ApplicationStatus.APPROVED);
-        application2.setStatus(ApplicationStatus.APPROVED);
+        applicationService.updateStatus(application1.getId(),team1.getHost().getId(),new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
+        applicationService.updateStatus(application2.getId(),team1.getHost().getId(),new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
 
         List <TeamResponse> responses = teamService.findTeamsByApprovedMember(member1.getId());
 
         assertThat(responses).hasSize(2);
+    }
+
+    @DisplayName("팀 정보를 수정할 때, 역할에 승인된 지원자가 없으면 수정을 실행한다.")
+    @Test
+    void update(){
+        String teamName = "밴드 팀";
+        String roleName1 = "작곡가";
+        String roleName2 = "드럼";
+        String roleName3 = "베이스";
+
+        String tagName1 = "밴드";
+        String tagName2 = "락";
+        String tagName3 = "인디";
+
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+
+        TagRequest tagRequest1 = createTagRequest(tagName1);
+        TagRequest tagRequest2 = createTagRequest(tagName2);
+        TagRequest tagRequest3 = createTagRequest(tagName3);
+
+        RoleRequest roleRequest1 = createRoleRequest(roleName1);
+        RoleRequest roleRequest2 = createRoleRequest(roleName2);
+        RoleRequest roleRequest3 = createRoleRequest(roleName3);
+
+        TeamCreateRequest teamCreateRequest =
+                new TeamCreateRequest(
+                        teamName,
+                        member1.getId(),
+                        Arrays.asList(tagRequest1,tagRequest2),
+                        Arrays.asList(roleRequest1,roleRequest2));
+
+        TeamResponse responseDto = teamService.create(teamCreateRequest);
+
+        String changedName = "밴드팀팀팀";
+
+        TeamUpdateRequest request =
+                TeamUpdateRequest.builder()
+                        .name(changedName)
+                        .tags(List.of(tagRequest1,tagRequest3))
+                        .roles(List.of(roleRequest2,roleRequest3))
+                        .teamStatus(String.valueOf(TeamStatus.RECRUITING))
+                        .build();
+
+        TeamResponse response = teamService.update(responseDto.getId(),request);
+
+        assertThat(response.getName()).isEqualTo(changedName);
+        assertThat(response.getTags()).containsExactly(tagName1,tagName3);
+        assertThat(response.getRoleNames()).containsExactly(roleName2,roleName3);
+        assertThat(response.getTeamStatus()).isEqualTo(String.valueOf(TeamStatus.RECRUITING));
+
+    }
+    @DisplayName("역할에 승인된 지원자가 있으면, Role을 수정할 때 예외를 출력한다.")
+    @Test
+    void exceptionWhenApprovedInTeamRole(){
+        String teamName = "밴드 팀";
+        String roleName1 = "작곡가";
+        String roleName2 = "드럼";
+        String roleName3 = "베이스";
+
+        String tagName1 = "밴드";
+        String tagName2 = "락";
+        String tagName3 = "인디";
+
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+
+        TagRequest tagRequest1 = createTagRequest(tagName1);
+        TagRequest tagRequest2 = createTagRequest(tagName2);
+        TagRequest tagRequest3 = createTagRequest(tagName3);
+
+        RoleRequest roleRequest1 = createRoleRequest(roleName1);
+        RoleRequest roleRequest2 = createRoleRequest(roleName2);
+        RoleRequest roleRequest3 = createRoleRequest(roleName3);
+
+        TeamCreateRequest teamCreateRequest =
+                new TeamCreateRequest(
+                        teamName,
+                        member1.getId(),
+                        Arrays.asList(tagRequest1,tagRequest2),
+                        Arrays.asList(roleRequest1,roleRequest2));
+
+        TeamResponse responseDto = teamService.create(teamCreateRequest);
+
+        String changedName = "밴드팀팀팀";
+
+        Role role1 = roleService.findEntityById(roleRequest1.getId());
+        Portfolio portfolio = portfolioRepository.save(new Portfolio(member1,"포폴1", role1));
+        Team team = teamService.findEntityById(responseDto.getId());
+
+        ApplicationResponse response = teamService.apply(responseDto.getId(), new PortfolioRequest(portfolio.getId()));
+        Application application = applicationService.findEntityById(response.getId());
+        application.setStatus(ApplicationStatus.APPROVED);
+
+        TeamUpdateRequest request =
+                TeamUpdateRequest.builder()
+                        .name(changedName)
+                        .tags(List.of(tagRequest1,tagRequest3))
+                        .roles(List.of(roleRequest2,roleRequest3))
+                        .teamStatus(String.valueOf(TeamStatus.CANCELED))
+                        .build();
+
+        assertThatThrownBy(() -> teamService.update(responseDto.getId(),request)).isInstanceOf(TeamRoleHasApprovedException.class);
+
+    }
+
+    @DisplayName("Team의 상태가 Cancel이 되면, apply를 중단하고, 모든 application을 삭제한다.")
+    @Test
+    void cancelTeam(){
+        String teamName = "밴드 팀";
+        String roleName1 = "작곡가";
+        String roleName2 = "베이스";
+        String tagName1 = "밴드";
+
+        Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+
+        Role role1 = roleRepository.save(new Role(roleName1));
+        Role role2 = roleRepository.save(new Role(roleName2));
+
+        Tag tag1 = tagRepository.save(new Tag(tagName1));
+
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1,"portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member1, "portfolio2 for drummer", role2));
+
+        Team team1 = new Team(teamName, host, List.of(tag1), List.of(role1));
+
+        teamRepository.save(team1);
+
+        ApplicationResponse applicationResponse1 = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
+
+        applicationService.updateStatus(applicationResponse1.getId(), team1.getHost().getId(), new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
+
+        //when
+        team1.cancel();
+
+        //then
+        assertThatThrownBy(()->team1.apply(portfolio2)).isInstanceOf(TeamNotRecruitingException.class);
+
+        assertThat(team1.getTeamRoles().stream()
+                .allMatch(teamRole -> teamRole.getApplications().isEmpty()))
+                .isTrue();
+    }
+
+    @DisplayName("Team의 상태가 Finish가 되면, apply를 중단하고, 승인된 application만 저장한다.")
+    @Test
+    void finishTeam(){
+        String teamName = "밴드 팀";
+        String roleName1 = "작곡가";
+        String roleName2 = "베이스";
+        String tagName1 = "밴드";
+
+        Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
+        Member member1 = memberRepository.save(new Member("member1","a@a.com"));
+        Member member2 = memberRepository.save(new Member("member2","a@a.com"));
+
+        Role role1 = roleRepository.save(new Role(roleName1));
+        Role role2 = roleRepository.save(new Role(roleName2));
+
+        Tag tag1 = tagRepository.save(new Tag(tagName1));
+
+        Portfolio portfolio1 = portfolioRepository.save(new Portfolio(member1, "portfolio1 for composer", role1));
+        Portfolio portfolio2 = portfolioRepository.save(new Portfolio(member1, "portfolio2 for drummer", role2));
+        Portfolio portfolio3 = portfolioRepository.save(new Portfolio(member2, "portfolio3 for drummer", role2));
+
+        Team team1 = new Team(teamName, host, List.of(tag1), List.of(role1,role2));
+
+        teamRepository.save(team1);
+
+        ApplicationResponse applicationResponse = teamService.apply(team1.getId(),new PortfolioRequest(portfolio1.getId()));
+        team1.apply(portfolio2);
+
+        applicationService.updateStatus(applicationResponse.getId(),team1.getHost().getId(), new ApplicationStatusUpdateRequest(ApplicationStatus.APPROVED.toString()));
+
+        //when
+        TeamRole teamRole1 = team1.findTeamRoleByRole(role1);
+        TeamRole teamRole2 = team1.findTeamRoleByRole(role2);
+
+        team1.finish();
+
+        //then
+        assertThatThrownBy(()->team1.apply(portfolio3)).isInstanceOf(TeamNotRecruitingException.class);
+        assertThat(teamRole1.getApplications().stream()
+                .map(Application::getStatus)
+                .allMatch(status -> status == ApplicationStatus.APPROVED)).isTrue();
+        assertThat(teamRole2.getApplications()).hasSize(0);
     }
 
 
@@ -267,6 +462,14 @@ public class TeamServiceTest {
                 .isInstanceOf(TeamNotFoundException.class);
     }
 
+    private TagRequest createTagRequest(String name){
+        Tag tag = tagRepository.save(new Tag(name));
+        return new TagRequest(tag.getId());
+    }
 
+    private RoleRequest createRoleRequest(String name){
+        Role role = roleRepository.save(new Role(name));
+        return new RoleRequest(role.getId());
+    }
 
 }

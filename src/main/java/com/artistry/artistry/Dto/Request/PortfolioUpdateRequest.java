@@ -17,7 +17,7 @@ public class PortfolioUpdateRequest {
     @NotEmpty(message = "포트폴리오 타이틀은 공백일 수 없습니다.")
     private String title;
     private RoleRequest role;
-    private List<ContentRequest> contents;
+    private List<LinkRequest> contents;
     @NotEmpty(message = "공개범위를 설정해야 합니다.")
     private String access;
 

@@ -21,30 +21,22 @@
 		<profile>
 			<id>local</id>
 			<activation>
-				<!--<activeByDefault>true</activeByDefault>-->
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<environment>local</environment>
+				<spring.profiles.active>local</spring.profiles.active>
 			</properties>
 		</profile>
-		<!-- dev: 개발 -->
 		<profile>
 			<id>dev</id>
 			<properties>
-				<environment>dev</environment>
+				<spring.profiles.active>dev</spring.profiles.active>
 			</properties>
 		</profile>
-		<!-- prd: 운영 -->
 		<profile>
 			<id>prod</id>
 			<properties>
-				<environment>prod</environment>
-			</properties>
-		</profile>
-		<profile>
-			<id>test</id>
-			<properties>
-				<environment>test</environment>
+				<spring.profiles.active>prod</spring.profiles.active>
 			</properties>
 		</profile>
 	</profiles>
@@ -171,10 +163,27 @@
 			<version>0.12.5</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- 썸네일 이미지 생성 Thumbnailator -->
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>0.4.20</version>
+		</dependency>
+		<!-- 프론트엔드 테스트 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>io.awspring.cloud</groupId>
 			<artifactId>spring-cloud-aws-starter-s3</artifactId>
 			<version>3.1.1</version>
+		</dependency>
+		<!-- mysql 커넥션 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.28</version> <!-- 최신 버전으로 교체 가능 -->
 		</dependency>
 	</dependencies>
 
@@ -182,15 +191,7 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-			</resource>
-			<!-- 환경별 리소스 포함 -->
-			<resource>
-				<directory>src/main/resources-${environment}</directory>
 				<filtering>true</filtering>
-				<includes>
-					<include>**/*.properties</include>
-					<include>**/*.xml</include>
-				</includes>
 			</resource>
 		</resources>
 
@@ -272,7 +273,7 @@
 				<configuration>
 					<excludes>
 						<exclude>**/config/*</exclude>
-						<exclude>**/Dto/**/*</exclude>
+						<exclude>**/Dto/**</exclude>
 						<exclude>**/Exceptions/*</exclude>
 					</excludes>
 					<outputDirectory>${project.build.directory}/jacoco</outputDirectory>
