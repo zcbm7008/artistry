@@ -4,11 +4,8 @@ spring:
   application:
     name: artistry
 
-  datasource:
-    url : jdbc:mysql://localhost:3306/artistrydb?serverTimezone=UTC&characterEncoding=UTF-8
-    username : root
-    password : root
-    driver-class-name: com.mysql.jdbc.Driver
+  profiles:
+    active: local
 
   cloud:
     aws:
