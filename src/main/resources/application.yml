@@ -56,4 +56,5 @@ security:
   jwt:
     token:
       secret-key: mysecretkeyasdgasdgsadgsdagsdagagsagsagsag
-      expire-length: 3600
+      expire-length: 600000
+
