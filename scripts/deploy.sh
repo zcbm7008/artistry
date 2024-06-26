@@ -35,8 +35,13 @@ shutdown_service() {
 
   echo "${service_name} 중단 시작 : ${CURRENT_TIME}" >> /home/ec2-user/deploy.log
   sudo docker-compose -p ${DOCKER_APP_NAME}-${service_name} -f ${compose_file} down
-  sudo docker image prune -af
   echo "${service_name} 중단 완료 : ${CURRENT_TIME}" >> /home/ec2-user/deploy.log
+}
+
+clean_docker_images() {
+  echo "Docker 이미지 정리 시작 : ${CURRENT_TIME}" >> /home/ec2-user/deploy.log
+  sudo docker image prune -af
+  echo "Docker 이미지 정리 완료 : ${CURRENT_TIME}" >> /home/ec2-user/deploy.log
 }
 
 if [ -z "$EXIST_BLUE" ]; then
@@ -46,6 +51,9 @@ else
   deploy_service "green" "docker-compose.green.yml"
   shutdown_service "blue" "docker-compose.blue.yml"
 fi
+
+# Docker 이미지 정리를 백그라운드에서 실행
+clean_docker_images &
 
 CURRENT_TIME=$(date +"%Y-%m-%d %H:%M:%S")
 echo "배포 종료 : ${CURRENT_TIME}" >> /home/ec2-user/deploy.log
