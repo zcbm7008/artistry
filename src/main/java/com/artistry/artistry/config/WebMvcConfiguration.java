@@ -20,9 +20,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(final InterceptorRegistry registry){
         registry.addInterceptor(authInterceptor)
-//                .addPathPatterns("/api/**")
-//                .addPathPatterns("/api/members/me")
-//                .addPathPatterns("/api/applications/**")
+                .addPathPatterns("/api/**")
+                .addPathPatterns("/api/members/me")
+                .addPathPatterns("/api/applications/**")
                 .excludePathPatterns("/api/images/**")
                 .excludePathPatterns("/api/auth/**")
                 .excludePathPatterns("/api/members/{id:[0-9]\\d*}")
@@ -31,8 +31,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .excludePathPatterns("/api/tags/**")
                 .excludePathPatterns("/api/roles/**")
                 .excludePathPatterns("/api/portfolios/**")
-                .excludePathPatterns("/api/teams/**")
-                .excludePathPatterns("/api/**");
+                .excludePathPatterns("/api/teams/**");
     }
 
     @Override
