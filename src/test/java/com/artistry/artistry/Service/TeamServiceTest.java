@@ -11,20 +11,25 @@ import com.artistry.artistry.Domain.team.TeamRole;
 import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
+import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Exceptions.TeamNotRecruitingException;
 import com.artistry.artistry.Exceptions.TeamRoleHasApprovedException;
 import com.artistry.artistry.Exceptions.TeamRoleNotFoundException;
 import com.artistry.artistry.Repository.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,6 +37,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 @SpringBootTest
 public class TeamServiceTest {
+
+    private static final Pageable PAGEABLE = PageRequest.of(0, 100);
+
     @Autowired
     private TeamService teamService;
     @Autowired
@@ -52,6 +60,43 @@ public class TeamServiceTest {
     PortfolioRepository portfolioRepository;
     @Autowired
     ApplicationRepository applicationRepository;
+    String nameToFind;
+    Role roleToFind;
+    Tag tag1;
+    Tag tag2;
+
+    @BeforeEach
+    void setUp(){
+        Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
+        tag1 = tagRepository.save(new Tag("tag1"));
+        tag2 = tagRepository.save(new Tag("tag2"));
+        Tag tag3 = tagRepository.save(new Tag("tag3"));
+        roleToFind = roleRepository.save(new Role("role1"));
+
+        List<Tag> tagList = Arrays.asList(tag1,tag2);
+        nameToFind = "공모전";
+
+        Team team1 =
+                Team.builder()
+                        .name(nameToFind + "참여하실분12312312")
+                        .roles(List.of(roleToFind))
+                        .tags(tagList)
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
+
+        Team team2 =
+                Team.builder()
+                        .name(nameToFind + "참여하실분1233434")
+                        .roles(List.of(roleToFind))
+                        .tags(Arrays.asList(tag1,tag2,tag3))
+                        .host(host)
+                        .teamStatus(TeamStatus.RECRUITING)
+                        .build();
+
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+    }
 
     @DisplayName("팀을 생성한다")
     @Test
@@ -117,41 +162,37 @@ public class TeamServiceTest {
     @DisplayName("팀 이름으로 팀을 검색한다.")
     @Test
     void findTeamByName(){
-        Member host = memberRepository.save(new Member("host","host@host.com","hosturl"));
-        Tag tag1 = tagRepository.save(new Tag("tag1"));
-        Tag tag2 = tagRepository.save(new Tag("tag2"));
-        Tag tag3 = tagRepository.save(new Tag("tag3"));
-        Role role1 = roleRepository.save(new Role("role1"));
-
-        List<Tag> tagList = Arrays.asList(tag1,tag2);
-        String nameToFind = "공모전";
-
-        Team team1 =
-                Team.builder()
-                        .name(nameToFind + "참여하실분12312312")
-                        .roles(List.of(role1))
-                        .tags(tagList)
-                        .host(host)
-                        .teamStatus(TeamStatus.RECRUITING)
-                        .build();
-
-        Team team2 =
-                Team.builder()
-                        .name(nameToFind + "참여하실분1233434")
-                        .roles(List.of(role1))
-                        .tags(Arrays.asList(tag1,tag2,tag3))
-                        .host(host)
-                        .teamStatus(TeamStatus.RECRUITING)
-                        .build();
-
-        teamRepository.save(team1);
-        teamRepository.save(team2);
-        
         List <TeamResponse> response = teamService.findTeamsByNameLike("공모전");
 
         assertThat(response).hasSize(2)
                 .extracting(TeamResponse::getName)
                 .allMatch(name -> name.contains(nameToFind));
+
+    }
+
+    @DisplayName("title, roleIds, tagIds ,status로 팀을 조회한다.")
+    @Test
+    void findTeamsQuery(){
+        //Given
+        String name = "trap";
+        TeamStatus statusToFind = TeamStatus.RECRUITING;
+        List<Tag> tags = List.of(tag1,tag2);
+        List<String> tagsToFind =
+                tags.stream().map(Tag::getName).toList();
+
+        List<Long> tagIdsToFind =
+                tags.stream().map(Tag::getId).toList();
+
+
+        TeamSearchRequest request = new TeamSearchRequest(name,List.of(roleToFind.getId()),tagIdsToFind,statusToFind);
+        //When
+        List<TeamResponse> responses = teamService.searchTeams(request,PAGEABLE);
+
+        //Then
+        assertThat(responses).allMatch(teamResponse -> teamResponse.getName().contains(name));
+        assertThat(responses).allMatch(teamResponse -> teamResponse.getRoleNames().contains(roleToFind.getName()));
+        assertThat(responses).allMatch(teamResponse -> teamResponse.getTeamStatus().equals(statusToFind.toString()));
+        assertThat(responses).allMatch(teamResponse -> teamResponse.getTags().contains(tagsToFind));
 
     }
 

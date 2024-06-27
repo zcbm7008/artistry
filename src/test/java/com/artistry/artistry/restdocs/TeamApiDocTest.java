@@ -21,6 +21,7 @@ import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import lombok.NonNull;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,9 @@ class TeamApiDocTest extends ApiTest{
     TeamResponse teamResponse2;
     Role role1;
     Member member1;
+
+    Tag tag1;
+    Tag tag2;
     @BeforeEach
     public void setUpData() {
         roleRepository.save(new Role("작곡가"));
@@ -70,14 +74,14 @@ class TeamApiDocTest extends ApiTest{
         tagRepository.save(new Tag("퓨처"));
         tagRepository.save(new Tag("하이퍼팝"));
         tagRepository.save(new Tag("디지코어"));
-        Tag tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
-        Tag tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
+        tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
+        tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
         Member member = new Member("member1","a@a.com");
         member.getMemberLinks().add(new MemberLink("a.url","soundcloud"));
         member1 = memberRepository.save(member);
 
         // 더미 팀 생성
-        String dummyTeamName = "더미 팀";
+        String dummyTeamName = "trap 더미 팀";
         List<Role> roles = Arrays.asList(role1, role2);
         List<Tag> tags = Arrays.asList(tag1, tag2);
         dummyTeam = new Team(dummyTeamName, member1, tags, roles);
@@ -187,6 +191,60 @@ class TeamApiDocTest extends ApiTest{
                 .ignoringFields("createdAt")
                 .isEqualTo(teamResponse1);
 
+    }
+
+
+    @DisplayName("title,roleIds,tagIds,teamStatus로 팀 조회")
+    @Test
+    void searchPortfolios(){
+        String searchName = "trap";
+        List<Role> searchRole = List.of(role1);
+        List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
+        List<Long> searchRoleIds = searchRole.stream().map(Role::getId).toList();
+        String searchStatus = TeamStatus.RECRUITING.toString();
+        List<Tag> searchTags = List.of(tag1,tag2);
+        List<String> searchTagsNames = searchTags.stream().map(Tag::getName).toList();
+        List<Long> searchTagIds = searchTags.stream().map(Tag::getId).toList();
+
+        List<TeamResponse> responses =
+                given()
+                        .filter(RestAssuredRestDocumentationWrapper.document("search-query-teams",
+                                "팀 쿼리 조회 API",
+                                responseFields(fieldWithPath("[].id").description("팀 Id"),
+                                        fieldWithPath("[].name").description("팀 이름"),
+                                        fieldWithPath("[].roleNames").description("팀 역할 구성"),
+                                        fieldWithPath("[].createdAt").description("팀 생성 시각"),
+                                        fieldWithPath("[].host.id").description("호스트 Id"),
+                                        fieldWithPath("[].host.nickName").description("호스트 닉네임"),
+                                        fieldWithPath("[].tags").description("팀 태그"),
+                                        fieldWithPath("[].teamRoles").description("팀 역할"),
+                                        fieldWithPath("[].teamRoles[].id").description("팀 역할 Id"),
+                                        fieldWithPath("[].teamRoles[].teamId").ignored(),
+                                        fieldWithPath("[].teamRoles[].role").ignored(),
+                                        fieldWithPath("[].teamRoles[].role.id").ignored(),
+                                        fieldWithPath("[].teamRoles[].role.name").description("역할 이름"),
+                                        fieldWithPath("[].teamRoles[].applications").description("팀 역할에 지원한 지원서"),
+                                        fieldWithPath("[].teamStatus").description("팀 상태"))))
+                        .when()
+                        .queryParam("name", searchName)
+                        .queryParam("roleId", searchRoleIds)
+                        .queryParam("tagIds", searchTagIds.stream().map(Object::toString).toArray())
+                        .queryParam("status", searchStatus)
+                        .get("/api/teams/search")
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().jsonPath().getList(".", TeamResponse.class);
+
+        AssertionsForInterfaceTypes.assertThat(responses)
+                .allMatch(response -> response.getName().contains(searchName));
+
+        AssertionsForInterfaceTypes.assertThat(responses)
+                .allMatch(response -> searchRoleNames.stream().allMatch(role -> response.getRoleNames().contains(role)));
+
+        AssertionsForInterfaceTypes.assertThat(responses)
+                .allMatch(response -> response.getTeamStatus().equals(searchStatus));
+
+        AssertionsForInterfaceTypes.assertThat(responses)
+                .allMatch(response -> searchTagsNames.stream().allMatch(tag -> response.getTags().contains(tag)));
     }
 
     @DisplayName("팀을 수정한다.")
