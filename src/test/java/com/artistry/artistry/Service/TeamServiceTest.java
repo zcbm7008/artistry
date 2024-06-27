@@ -170,7 +170,7 @@ public class TeamServiceTest {
 
     }
 
-    @DisplayName("title, roleId, tagIds ,status로 팀을 조회한다.")
+    @DisplayName("title, roleIds, tagIds ,status로 팀을 조회한다.")
     @Test
     void findTeamsQuery(){
         //Given
@@ -184,7 +184,7 @@ public class TeamServiceTest {
                 tags.stream().map(Tag::getId).toList();
 
 
-        TeamSearchRequest request = new TeamSearchRequest(name,roleToFind.getId(),tagIdsToFind,statusToFind);
+        TeamSearchRequest request = new TeamSearchRequest(name,List.of(roleToFind.getId()),tagIdsToFind,statusToFind);
         //When
         List<TeamResponse> responses = teamService.searchTeams(request,PAGEABLE);
 

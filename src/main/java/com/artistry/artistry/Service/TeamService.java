@@ -8,6 +8,7 @@ import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Domain.team.TeamRole;
 import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
@@ -84,20 +85,24 @@ public class TeamService {
 
             // Fetch the request parameters
             Optional<String> name = Optional.ofNullable(request.getName());
-            Optional<Long> roleId = Optional.ofNullable(request.getRoleId());
-            Optional<TeamStatus> status = Optional.ofNullable(request.getTeamStatus());
+            Optional<List<Long>> roleIds = Optional.ofNullable(request.getRoleIds());
             Optional<List<Long>> tagIds = Optional.ofNullable(request.getTagIds());
+            Optional<TeamStatus> status = Optional.ofNullable(request.getTeamStatus());
+
 
             // Add predicates based on the request parameters
             name.ifPresent(n ->
                     predicates.add(criteriaBuilder.like(root.get("name"), "%" + n + "%"))
             );
 
-            roleId.ifPresent(id ->
-                    predicates.add(criteriaBuilder.equal(root.get("teamRoles").get("id"), id))
-            );
+            roleIds.filter(ids -> !ids.isEmpty())
+                    .ifPresent(ids ->{
+                            Join<Team, TeamRole> roles = root.join("teamRoles");
+                            predicates.add(roles.get("id").in(ids));
+                    });
 
-            tagIds.filter(ids -> !ids.isEmpty()).ifPresent(ids -> {
+            tagIds.filter(ids -> !ids.isEmpty())
+                    .ifPresent(ids -> {
                 Join<Team, Tag> tags = root.join("tags");
                 predicates.add(tags.get("id").in(ids));
             });

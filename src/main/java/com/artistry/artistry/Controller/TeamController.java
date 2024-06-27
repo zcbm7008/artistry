@@ -41,12 +41,12 @@ public class TeamController {
     @GetMapping("/search")
     public ResponseEntity<List<TeamResponse>> findTeamsByCriteria(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) Long roleId,
+            @RequestParam(required = false) List<Long> roleIds,
             @RequestParam(required = false) List<Long> tagIds,
             @RequestParam(defaultValue = "RECRUITING") String status
             , final Pageable pageable) {
 
-        TeamSearchRequest request = new TeamSearchRequest(title,roleId,tagIds,TeamStatus.of(status));
+        TeamSearchRequest request = new TeamSearchRequest(title,roleIds,tagIds,TeamStatus.of(status));
         return ResponseEntity.ok(teamService.searchTeams(request,pageable));
     }
 

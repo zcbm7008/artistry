@@ -194,12 +194,13 @@ class TeamApiDocTest extends ApiTest{
     }
 
 
-    @DisplayName("title,roleId,tagIds,teamStatus로 팀 조회")
+    @DisplayName("title,roleIds,tagIds,teamStatus로 팀 조회")
     @Test
     void searchPortfolios(){
         String searchName = "trap";
-        Role searchRole = role1;
-        Long searchRoleId = searchRole.getId();
+        List<Role> searchRole = List.of(role1);
+        List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
+        List<Long> searchRoleIds = searchRole.stream().map(Role::getId).toList();
         String searchStatus = TeamStatus.RECRUITING.toString();
         List<Tag> searchTags = List.of(tag1,tag2);
         List<String> searchTagsNames = searchTags.stream().map(Tag::getName).toList();
@@ -226,16 +227,22 @@ class TeamApiDocTest extends ApiTest{
                                         fieldWithPath("[].teamStatus").description("팀 상태"))))
                         .when()
                         .queryParam("name", searchName)
-                        .queryParam("roleId", searchRoleId)
+                        .queryParam("roleId", searchRoleIds)
                         .queryParam("tagIds", searchTagIds.stream().map(Object::toString).toArray())
                         .queryParam("status", searchStatus)
                         .get("/api/teams/search")
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().jsonPath().getList(".", TeamResponse.class);
 
-        AssertionsForInterfaceTypes.assertThat(responses).allMatch(response -> response.getName().contains(searchName));
-        AssertionsForInterfaceTypes.assertThat(responses).allMatch(response -> response.getRoleNames().contains(searchRole.getName()));
-        AssertionsForInterfaceTypes.assertThat(responses).allMatch(response -> response.getTeamStatus().equals(searchStatus));
+        AssertionsForInterfaceTypes.assertThat(responses)
+                .allMatch(response -> response.getName().contains(searchName));
+
+        AssertionsForInterfaceTypes.assertThat(responses)
+                .allMatch(response -> searchRoleNames.stream().allMatch(role -> response.getRoleNames().contains(role)));
+
+        AssertionsForInterfaceTypes.assertThat(responses)
+                .allMatch(response -> response.getTeamStatus().equals(searchStatus));
+
         AssertionsForInterfaceTypes.assertThat(responses)
                 .allMatch(response -> searchTagsNames.stream().allMatch(tag -> response.getTags().contains(tag)));
     }

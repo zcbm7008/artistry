@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class TeamSearchRequest {
     private String name;
-    private Long roleId;
+    private List<Long> roleIds;
     private List<Long> tagIds;
     private TeamStatus teamStatus;
 
