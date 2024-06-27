@@ -1,20 +1,24 @@
 package com.artistry.artistry.Controller;
 
-import com.artistry.artistry.Dto.Request.PortfolioRequest;
-import com.artistry.artistry.Dto.Request.TeamCreateRequest;
-import com.artistry.artistry.Dto.Request.TeamUpdateRequest;
+import com.artistry.artistry.Domain.team.TeamStatus;
+import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
+import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Service.TeamService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RequestMapping(value = "/api/teams")
 @RestController
 public class TeamController {
+
+
 
     private final TeamService teamService;
 
@@ -33,6 +37,18 @@ public class TeamController {
         TeamResponse teamResponse = teamService.findById(teamId);
         return ResponseEntity.ok(teamResponse);
    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<TeamResponse>> findTeamsByCriteria(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Long roleId,
+            @RequestParam(required = false) List<Long> tagIds,
+            @RequestParam(defaultValue = "RECRUITING") String status
+            , final Pageable pageable) {
+
+        TeamSearchRequest request = new TeamSearchRequest(title,roleId,tagIds,TeamStatus.of(status));
+        return ResponseEntity.ok(teamService.searchTeams(request,pageable));
+    }
 
    @PutMapping("/{teamId}/applications")
    public ResponseEntity<ApplicationResponse> applyToTeam(
