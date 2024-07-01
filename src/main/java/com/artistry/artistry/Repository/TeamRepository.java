@@ -2,6 +2,8 @@ package com.artistry.artistry.Repository;
 
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.team.Team;
+import com.artistry.artistry.Domain.team.TeamStatus;
+import com.artistry.artistry.Repository.Query.TeamQueryRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,5 +34,6 @@ public interface TeamRepository extends JpaRepository<Team,Long>, JpaSpecificati
     + "FROM Team t join t.teamRoles tr "
     + "WHERE tr.role.id IN :roles ")
     List<Team> findByRoleIds(@Param("roles") Set<Long> roleIds);
+
 
 }
