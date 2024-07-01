@@ -5,25 +5,19 @@ import com.artistry.artistry.Domain.application.Application;
 import com.artistry.artistry.Domain.application.ApplicationStatus;
 import com.artistry.artistry.Domain.member.Member;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
-import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
-import com.artistry.artistry.Domain.team.TeamRole;
 import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
-import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
+import com.artistry.artistry.Repository.Team.TeamQueryRepository;
 import com.artistry.artistry.Repository.TeamRepository;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +37,7 @@ public class TeamService {
     private final ApplicationService applicationService;
     private final ApplicationRepository applicationRepository;
     private final PortfolioService portfolioService;
+    private final TeamQueryRepository teamQueryRepository;
 
     public TeamResponse create(TeamCreateRequest teamCreateRequest){
         Member host = memberService.findEntityById(teamCreateRequest.getHostId());
@@ -80,41 +75,12 @@ public class TeamService {
 
     @Transactional(readOnly = true)
     public List<TeamResponse> searchTeams(TeamSearchRequest request, final Pageable pageable) {
-        Specification<Team> spec = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+        Optional<String> name = Optional.ofNullable(request.getName());
+        Optional<List<Long>> roleIds = Optional.ofNullable(request.getRoleIds());
+        Optional<List<Long>> tagIds = Optional.ofNullable(request.getTagIds());
+        Optional<TeamStatus> status = Optional.ofNullable(request.getTeamStatus());
 
-            // Fetch the request parameters
-            Optional<String> name = Optional.ofNullable(request.getName());
-            Optional<List<Long>> roleIds = Optional.ofNullable(request.getRoleIds());
-            Optional<List<Long>> tagIds = Optional.ofNullable(request.getTagIds());
-            Optional<TeamStatus> status = Optional.ofNullable(request.getTeamStatus());
-
-
-            // Add predicates based on the request parameters
-            name.ifPresent(n ->
-                    predicates.add(criteriaBuilder.like(root.get("name"), "%" + n + "%"))
-            );
-
-            roleIds.filter(ids -> !ids.isEmpty())
-                    .ifPresent(ids ->{
-                            Join<Team, TeamRole> roles = root.join("teamRoles");
-                            predicates.add(roles.get("id").in(ids));
-                    });
-
-            tagIds.filter(ids -> !ids.isEmpty())
-                    .ifPresent(ids -> {
-                Join<Team, Tag> tags = root.join("tags");
-                predicates.add(tags.get("id").in(ids));
-            });
-
-            status.ifPresent(st ->
-                    predicates.add(criteriaBuilder.equal(root.get("teamStatus"), st))
-            );
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-
-        Slice<Team> teams = teamRepository.findAll(spec, pageable);
+        Slice<Team> teams = teamQueryRepository.searchTeamsWithCriteria(name, roleIds, tagIds, status, pageable);
         return getTeamResponses(teams);
     }
 
