@@ -1,10 +1,9 @@
-package com.artistry.artistry.Repository.Team;
+package com.artistry.artistry.Repository.Query;
 
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;

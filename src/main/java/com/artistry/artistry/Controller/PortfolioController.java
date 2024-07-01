@@ -35,7 +35,7 @@ public class PortfolioController {
             , final Pageable pageable) {
 
         PortfolioSearchRequest request = new PortfolioSearchRequest(title,memberId,roleId);
-        return ResponseEntity.ok(portfolioService.searchPublicPortfolios(request,pageable));
+        return ResponseEntity.ok(portfolioService.searchPortfolios(request,pageable));
     }
 
     @GetMapping("/access")

@@ -334,7 +334,7 @@ public class PortfolioServiceTest {
         PortfolioSearchRequest request = new PortfolioSearchRequest(title,savedMember.getId(),role.getId());
         PortfolioSearchRequest request2 = new PortfolioSearchRequest(title,null,null);
         //When
-        List<PortfolioResponse> responses = portfolioService.searchPublicPortfolios(request,PAGEABLE);
+        List<PortfolioResponse> responses = portfolioService.searchPortfolios(request,PAGEABLE);
 
         //Then
         assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getTitle().contains(title));
@@ -342,7 +342,7 @@ public class PortfolioServiceTest {
         assertThat(responses).allMatch(portfolioResponse -> portfolioResponse.getRoleName().equals(role.getName()));
 
         //When
-        List<PortfolioResponse> responses2 = portfolioService.searchPublicPortfolios(request2,PAGEABLE);
+        List<PortfolioResponse> responses2 = portfolioService.searchPortfolios(request2,PAGEABLE);
         assertThat(responses2).allMatch(portfolioResponse -> portfolioResponse.getTitle().contains(title));
 
     }

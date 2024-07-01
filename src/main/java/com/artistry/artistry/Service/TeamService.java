@@ -13,7 +13,7 @@ import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Repository.ApplicationRepository;
-import com.artistry.artistry.Repository.Team.TeamQueryRepository;
+import com.artistry.artistry.Repository.Query.TeamQueryRepository;
 import com.artistry.artistry.Repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

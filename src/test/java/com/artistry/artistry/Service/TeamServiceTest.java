@@ -185,14 +185,19 @@ public class TeamServiceTest {
 
 
         TeamSearchRequest request = new TeamSearchRequest(name,List.of(roleToFind.getId()),tagIdsToFind,statusToFind);
+        TeamSearchRequest request2 = new TeamSearchRequest(name,List.of(roleToFind.getId()),null,null);
         //When
         List<TeamResponse> responses = teamService.searchTeams(request,PAGEABLE);
+        List<TeamResponse> responses2 = teamService.searchTeams(request2,PAGEABLE);
+
 
         //Then
         assertThat(responses).allMatch(teamResponse -> teamResponse.getName().contains(name));
         assertThat(responses).allMatch(teamResponse -> teamResponse.getRoleNames().contains(roleToFind.getName()));
         assertThat(responses).allMatch(teamResponse -> teamResponse.getTeamStatus().equals(statusToFind.toString()));
         assertThat(responses).allMatch(teamResponse -> teamResponse.getTags().contains(tagsToFind));
+
+        assertThat(responses2).allMatch(teamResponse -> teamResponse.getName().contains(name));
 
     }
 

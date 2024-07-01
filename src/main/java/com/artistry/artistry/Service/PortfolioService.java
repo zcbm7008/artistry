@@ -9,31 +9,28 @@ import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Exceptions.PortfolioNotFoundException;
 import com.artistry.artistry.Repository.PortfolioRepository;
+import com.artistry.artistry.Repository.Query.PortfolioQueryRepository;
 import com.artistry.artistry.Repository.TeamRoleRepository;
-import jakarta.persistence.criteria.Predicate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Pageable;
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final RoleService roleService;
     private final MemberService memberService;
     private final TeamRoleRepository teamRoleRepository;
+    private final PortfolioQueryRepository portfolioQueryRepository;
 
-    public PortfolioService(PortfolioRepository portfolioRepository,RoleService roleService,MemberService memberService,TeamRoleRepository teamRoleRepository){
-        this.portfolioRepository = portfolioRepository;
-        this.roleService = roleService;
-        this.memberService = memberService;
-        this.teamRoleRepository = teamRoleRepository;
-    }
     @Transactional
     public PortfolioResponse create(final PortfolioCreateRequest request){
         Role role = roleService.findEntityById(request.getRole().getId());
@@ -108,29 +105,13 @@ public class PortfolioService {
     }
 
     @Transactional
-    public List<PortfolioResponse> searchPublicPortfolios(PortfolioSearchRequest request, final Pageable pageable) {
-        Specification<Portfolio> spec = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+    public List<PortfolioResponse> searchPortfolios(PortfolioSearchRequest request, final Pageable pageable) {
+        Optional<String> title = Optional.ofNullable(request.getTitle());
+        Optional<Long> memberId = Optional.ofNullable(request.getMemberId());
+        Optional<Long> roleId = Optional.ofNullable(request.getRoleId());
+        Optional<PortfolioAccess> access = Optional.ofNullable(request.getAccess());
 
-            String title = request.getTitle();
-            Long memberId = request.getMemberId();
-            Long roleId = request.getRoleId();
-
-            if (title != null && !title.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));
-            }
-            if (memberId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("member").get("id"), memberId));
-            }
-            if (roleId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("role").get("id"), roleId));
-            }
-            predicates.add(criteriaBuilder.equal(root.get("access"), PortfolioAccess.PUBLIC));
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-
-        Slice<Portfolio> portfolios = portfolioRepository.findAll(spec,pageable);
+        Slice<Portfolio> portfolios = portfolioQueryRepository.searchPortfoliosWithCriteria(title,memberId,roleId,access,pageable);
         return getPortfolioResponses(portfolios);
     }
 
