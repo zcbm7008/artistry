@@ -45,10 +45,10 @@ public class Team {
     @JoinColumn(name = "host_id")
     private Member host;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TeamRole> teamRoles = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "team_tag",
             joinColumns = @JoinColumn(name="team_id"),
             inverseJoinColumns = @JoinColumn(name="tag_id"))

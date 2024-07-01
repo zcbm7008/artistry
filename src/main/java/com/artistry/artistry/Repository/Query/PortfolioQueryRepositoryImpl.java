@@ -1,10 +1,8 @@
 package com.artistry.artistry.Repository.Query;
 
-import com.artistry.artistry.Domain.Role.Role;
 import com.artistry.artistry.Domain.portfolio.Portfolio;
 import com.artistry.artistry.Domain.portfolio.PortfolioAccess;
 import com.artistry.artistry.Repository.PortfolioRepository;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;

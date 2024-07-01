@@ -80,7 +80,14 @@ public class TeamService {
         Optional<List<Long>> tagIds = Optional.ofNullable(request.getTagIds());
         Optional<TeamStatus> status = Optional.ofNullable(request.getTeamStatus());
 
-        Slice<Team> teams = teamQueryRepository.searchTeamsWithCriteria(name, roleIds, tagIds, status, pageable);
+        Slice<Team> teams =
+                teamQueryRepository.searchTeamsWithCriteria(
+                        name.orElse(null),
+                        roleIds.orElse(null),
+                        tagIds.orElse(null),
+                        status.orElse(null),
+                        pageable);
+
         return getTeamResponses(teams);
     }
 

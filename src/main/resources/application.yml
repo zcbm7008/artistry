@@ -21,6 +21,9 @@ spring:
       max-file-size: 4MB # 최대 파일 사이즈
       max-request-size: 4MB # 최대 요청 사이즈
 
+  jpa:
+    properties:
+      hibernate.default_batch_fetch_size: 1000
 
 springdoc:
   swagger-ui:
@@ -51,6 +54,24 @@ oauth:
     client_secret: ${NAVER_CLIENT_SECRET}
     client_id : ${NAVER_CLIENT_ID}
     state : ${NAVER_STATE}
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
 
 security:
   jwt:

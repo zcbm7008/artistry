@@ -31,7 +31,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .excludePathPatterns("/api/tags/**")
                 .excludePathPatterns("/api/roles/**")
                 .excludePathPatterns("/api/portfolios/**")
-                .excludePathPatterns("/api/teams/**");
+                .excludePathPatterns("/api/teams/**")
+                .excludePathPatterns("/actuator/**");
     }
 
     @Override
