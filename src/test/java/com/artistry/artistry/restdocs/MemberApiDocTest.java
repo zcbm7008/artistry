@@ -110,7 +110,7 @@ public class MemberApiDocTest extends ApiTest{
     void checkProfile(){
         String email = createdMembers.get(0).getEmail();
 
-        AccessTokenResponse accessTokenResponse = given().when().get("/api/auth/fake/tokens?email=" + email)
+        AccessTokenResponse accessTokenResponse = given().when().get("/api/fake/auth/tokens?email=" + email)
                 .then().log().all()
                 .extract()
                 .as(AccessTokenResponse.class);

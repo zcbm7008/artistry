@@ -276,7 +276,7 @@ public class ApplicationApiDocTest extends ApiTest{
     }
 
     private static String getAccessToken(String email) {
-        AccessTokenResponse accessTokenResponse = given().when().get("/api/auth/fake/tokens?email=" + email)
+        AccessTokenResponse accessTokenResponse = given().when().get("/api/fake/auth/tokens?email=" + email)
                 .then().log().all()
                 .extract()
                 .as(AccessTokenResponse.class);
