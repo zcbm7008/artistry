@@ -13,3 +13,9 @@ spring:
 
 AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
 AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
+server:
+  tomcat:
+    accept-count: 10
+    maxThread: 150
+    connection-timeout: 20000ms

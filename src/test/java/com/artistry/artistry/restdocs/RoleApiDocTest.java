@@ -21,9 +21,6 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureRestDocs(outputDir = "target/generated-snippets")
 public class RoleApiDocTest extends ApiTest{
     private List<RoleResponse> createdRoles = new ArrayList<>();
 

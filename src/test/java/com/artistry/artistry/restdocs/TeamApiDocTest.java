@@ -44,9 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureRestDocs(outputDir = "target/generated-snippets")
 class TeamApiDocTest extends ApiTest{
     @Autowired
     private TeamService teamService;

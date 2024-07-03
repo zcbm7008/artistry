@@ -31,6 +31,9 @@ springdoc:
     path: /docs/swagger
 
 server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
   port=0:
   servlet:
     session:
@@ -61,7 +64,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus, metrics
+        include: "*"
   endpoint:
     prometheus:
       enabled: true
