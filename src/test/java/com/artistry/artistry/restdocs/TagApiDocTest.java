@@ -22,9 +22,6 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureRestDocs(outputDir = "target/generated-snippets")
 public class TagApiDocTest extends ApiTest{
     private List<TagResponse> createTags = new ArrayList<>();
 
