@@ -4,6 +4,12 @@ spring:
     username : admin
     password : ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 3000
+      validation-timeout: 3000
+      minimum-idle: 5
+      max-lifetime: 240000
+      maximum-pool-size: 10
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
@@ -17,5 +23,13 @@ AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
 server:
   tomcat:
     accept-count: 10
-    maxThread: 150
+    maxThread: 50
     connection-timeout: 20000ms
+    maxKeepAliveRequests: 100
+    keepAliveTimeout: 5000
+
+logging:
+  level:
+    org.hibernate.SQL: info
+    root: info
+    com.zaxxer.hikari.pool.HikariPool: debug
