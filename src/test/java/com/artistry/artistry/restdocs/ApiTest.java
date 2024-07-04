@@ -3,6 +3,8 @@ package com.artistry.artistry.restdocs;
 
 import com.artistry.artistry.DataLoader;
 import com.artistry.artistry.Repository.*;
+import com.artistry.artistry.Service.RequestCounterService;
+import io.github.bucket4j.Bucket;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
@@ -48,9 +50,18 @@ public abstract class ApiTest {
     @Autowired
     protected ApplicationRepository applicationRepository;
 
+    @Autowired
+    Bucket bucket;
+    @Autowired
+    RequestCounterService requestCounterService;
+
     @BeforeEach
     protected void setUp(RestDocumentationContextProvider restDocumentation) {
+
         RestAssured.port = port;
+        bucket.reset();
+        requestCounterService.reset();
+
         specification = new RequestSpecBuilder()
                 .addFilter(RestAssuredRestDocumentation.documentationConfiguration(restDocumentation).operationPreprocessors()
                         .withRequestDefaults(prettyPrint())

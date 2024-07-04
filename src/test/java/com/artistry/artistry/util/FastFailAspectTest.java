@@ -2,6 +2,7 @@ package com.artistry.artistry.util;
 
 import com.artistry.artistry.Service.RequestCounterService;
 import com.artistry.artistry.restdocs.ApiTest;
+import io.github.bucket4j.Bucket;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +10,18 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+
 public class FastFailAspectTest extends ApiTest {
 
     @Autowired
     private RequestCounterService requestCounterService;
 
+    @Autowired
+    Bucket bucket;
+
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation){
         super.setUp(restDocumentation);
-        requestCounterService.reset(); // 요청 카운터 초기화 메서드 추가 필요
     }
 
     @Test
@@ -31,10 +35,12 @@ public class FastFailAspectTest extends ApiTest {
 
     @Test
     public void testFastFailAspect_overLimit() throws InterruptedException {
+
         // MAX_ACTIVE_REQUESTS를 초과하도록 요청을 반복
         for (int i = 0; i < 50; i++) {
             new Thread(() -> {
                 given().when().get("/api/fake");
+                bucket.forceAddTokens(1);
             }).start();
         }
 
