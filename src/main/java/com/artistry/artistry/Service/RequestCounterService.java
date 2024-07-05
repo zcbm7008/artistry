@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class RequestCounterService {
     private final AtomicInteger activeRequests = new AtomicInteger(0);
-    private static final int MAX_ACTIVE_REQUESTS = 30;
+    private static final int MAX_ACTIVE_REQUESTS = 20;
 
     public boolean increment() {
         if (activeRequests.incrementAndGet() > MAX_ACTIVE_REQUESTS){
