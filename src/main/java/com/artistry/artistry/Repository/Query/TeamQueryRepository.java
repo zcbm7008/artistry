@@ -18,16 +18,18 @@ import java.util.Optional;
 
 @Repository
 public interface TeamQueryRepository extends JpaRepository<Team,Long>, JpaSpecificationExecutor<Team> {
-    @Query("SELECT t FROM Team t " +
-            "LEFT JOIN FETCH t.teamRoles tr " +
-            "LEFT JOIN t.tags tg " +
+
+    @Query("SELECT distinct t.id FROM Team t " +
+            "INNER JOIN t.teamRoles tr " +
+            "INNER JOIN t.tags tg " +
             "WHERE (:name IS NULL OR t.name = :name) " +
             "AND (:status IS NULL OR t.teamStatus = :status) " +
             "AND (:roleIds IS NULL OR tr.id IN :roleIds) " +
             "AND (:tagIds IS NULL OR tg.id IN :tagIds)")
-    Slice<Team> searchTeamsWithCriteria(@Param("name") String name,
-                              @Param("roleIds") List<Long> roleIds,
-                              @Param("tagIds") List<Long> tagIds,
-                              @Param("status") TeamStatus status,
+    Slice<Long> searchTeamIdsWithCriteria(@Param("name") Optional<String> name,
+                              @Param("roleIds") Optional<List<Long>> roleIds,
+                              @Param("tagIds") Optional<List<Long>> tagIds,
+                              @Param("status") Optional<TeamStatus> status,
                               Pageable pageable);
+
 }
