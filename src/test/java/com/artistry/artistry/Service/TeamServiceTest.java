@@ -43,7 +43,7 @@ public class TeamServiceTest {
     @Autowired
     private TeamService teamService;
     @Autowired
-    private TeamRoleService teamRoleService;
+    private TeamSearchService teamSearchService;
     @Autowired
     private TagRepository tagRepository;
     @Autowired
@@ -187,8 +187,8 @@ public class TeamServiceTest {
         TeamSearchRequest request = new TeamSearchRequest(name,List.of(roleToFind.getId()),tagIdsToFind,statusToFind);
         TeamSearchRequest request2 = new TeamSearchRequest(name,List.of(roleToFind.getId()),null,null);
         //When
-        List<TeamResponse> responses = teamService.searchTeams(request,PAGEABLE);
-        List<TeamResponse> responses2 = teamService.searchTeams(request2,PAGEABLE);
+        List<TeamResponse> responses = teamSearchService.searchTeams(request,PAGEABLE);
+        List<TeamResponse> responses2 = teamSearchService.searchTeams(request2,PAGEABLE);
 
 
         //Then
