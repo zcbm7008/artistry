@@ -29,14 +29,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 public class TeamSearchServiceTest {
 
-    private static final Pageable PAGEABLE = PageRequest.of(0, 100);
+    private static final Pageable PAGEABLE = PageRequest.of(0, 20);
 
     @Autowired
     private TeamSearchService teamSearchService;
@@ -90,7 +89,7 @@ public class TeamSearchServiceTest {
     @Test
     void findTeamsQuery(){
         //Given
-        String name = "trap";
+        String name = "공모전";
         TeamStatus statusToFind = TeamStatus.RECRUITING;
         List<Tag> tags = List.of(tag1,tag2);
         List<String> tagsToFind =
@@ -101,18 +100,20 @@ public class TeamSearchServiceTest {
 
 
         TeamSearchRequest request = new TeamSearchRequest(name,List.of(roleToFind.getId()),tagIdsToFind,statusToFind);
-        TeamSearchRequest request2 = new TeamSearchRequest(name,List.of(roleToFind.getId()),null,null);
+        TeamSearchRequest request2 = new TeamSearchRequest(name,null,null,null);
         //When
         List<TeamResponse> responses = teamSearchService.searchTeams(request,PAGEABLE);
         List<TeamResponse> responses2 = teamSearchService.searchTeams(request2,PAGEABLE);
 
 
         //Then
+        assertThat(responses).isNotEmpty();
         assertThat(responses).allMatch(teamResponse -> teamResponse.getName().contains(name));
         assertThat(responses).allMatch(teamResponse -> teamResponse.getRoleNames().contains(roleToFind.getName()));
         assertThat(responses).allMatch(teamResponse -> teamResponse.getTeamStatus().equals(statusToFind.toString()));
-        assertThat(responses).allMatch(teamResponse -> teamResponse.getTags().contains(tagsToFind));
+        assertThat(responses).allMatch(teamResponse -> teamResponse.getTags().containsAll(tagsToFind));
 
+        assertThat(responses2).isNotEmpty();
         assertThat(responses2).allMatch(teamResponse -> teamResponse.getName().contains(name));
 
     }
