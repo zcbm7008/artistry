@@ -7,15 +7,13 @@ import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
-import com.artistry.artistry.Dto.Request.ApplicationInfoRequest;
-import com.artistry.artistry.Dto.Request.ApplicationStatusUpdateRequest;
-import com.artistry.artistry.Dto.Request.LinkRequest;
-import com.artistry.artistry.Dto.Request.RoleRequest;
+import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Service.ApplicationService;
+import com.artistry.artistry.Service.TeamSearchService;
 import com.artistry.artistry.Service.TeamService;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,14 +23,12 @@ import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +38,9 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 class TeamApiDocTest extends ApiTest{
@@ -49,6 +48,9 @@ class TeamApiDocTest extends ApiTest{
     private TeamService teamService;
     @Autowired
     private ApplicationService applicationService;
+    @MockBean
+    private TeamSearchService teamSearchService;
+
 
     private Team dummyTeam;
     TeamResponse teamResponse1;
@@ -60,6 +62,7 @@ class TeamApiDocTest extends ApiTest{
     Tag tag2;
     @BeforeEach
     public void setUpData() {
+        MockitoAnnotations.openMocks(this);
         roleRepository.save(new Role("작곡가"));
         roleRepository.save(new Role("일러스트레이터"));
         roleRepository.save(new Role("작사가"));
@@ -242,6 +245,43 @@ class TeamApiDocTest extends ApiTest{
 
         AssertionsForInterfaceTypes.assertThat(responses)
                 .allMatch(response -> searchTagsNames.stream().allMatch(tag -> response.getTags().contains(tag)));
+    }
+
+    @DisplayName("캐싱으로 팀 조회")
+    @Test
+    void searchPortfoliosByCache(){
+        String searchName = "trap";
+        List<Role> searchRole = List.of(role1);
+        List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
+        List<Long> searchRoleIds = searchRole.stream().map(Role::getId).toList();
+        String searchStatus = TeamStatus.RECRUITING.toString();
+        List<Tag> searchTags = List.of(tag1,tag2);
+        List<String> searchTagsNames = searchTags.stream().map(Tag::getName).toList();
+        List<Long> searchTagIds = searchTags.stream().map(Tag::getId).toList();
+
+        List<TeamResponse> responses =
+                given()
+                        .when()
+                        .queryParam("name", searchName)
+                        .queryParam("roleId", searchRoleIds)
+                        .queryParam("tagIds", searchTagIds.stream().map(Object::toString).toArray())
+                        .queryParam("status", searchStatus)
+                        .get("/api/teams/search")
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().jsonPath().getList(".", TeamResponse.class);
+
+        List<TeamResponse> responses2 =
+                given()
+                        .when()
+                        .queryParam("name", searchName)
+                        .queryParam("roleId", searchRoleIds)
+                        .queryParam("tagIds", searchTagIds.stream().map(Object::toString).toArray())
+                        .queryParam("status", searchStatus)
+                        .get("/api/teams/search")
+                        .then().statusCode(HttpStatus.OK.value())
+                        .extract().body().jsonPath().getList(".", TeamResponse.class);
+
+        verify(teamSearchService, times(1)).searchTeams(any(TeamSearchRequest.class), any(Pageable.class));
     }
 
     @DisplayName("팀을 수정한다.")
