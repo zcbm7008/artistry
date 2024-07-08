@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.atMost;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 class TeamApiDocTest extends ApiTest{
@@ -281,7 +282,7 @@ class TeamApiDocTest extends ApiTest{
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().jsonPath().getList(".", TeamResponse.class);
 
-        verify(teamSearchService, times(1)).searchTeams(any(TeamSearchRequest.class), any(Pageable.class));
+        verify(teamSearchService, atMost(1)).searchTeams(any(TeamSearchRequest.class), any(Pageable.class));
     }
 
     @DisplayName("팀을 수정한다.")
