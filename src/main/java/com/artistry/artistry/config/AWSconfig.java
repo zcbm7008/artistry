@@ -15,7 +15,7 @@ public class AWSconfig {
     @Value("${spring.cloud.aws.credentials.secret-key}")
     private String accessSecret;
 
-    private static String region = "ap-northeast-2";
+    private final static String region = "ap-northeast-2";
 
     @Bean
     public S3Client s3Client() {
