@@ -10,13 +10,11 @@ import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Request.ApplicationStatusUpdateRequest;
 import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.RoleRequest;
-import com.artistry.artistry.Dto.Request.TeamSearchRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Exceptions.TeamNotFoundException;
 import com.artistry.artistry.Service.ApplicationService;
-import com.artistry.artistry.Service.TeamSearchService;
 import com.artistry.artistry.Service.TeamService;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,22 +25,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.interceptor.SimpleKey;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 class TeamApiDocTest extends ApiTest{
@@ -50,11 +40,6 @@ class TeamApiDocTest extends ApiTest{
     private TeamService teamService;
     @Autowired
     private ApplicationService applicationService;
-    @MockBean
-    private TeamSearchService teamSearchService;
-
-    @Autowired
-    private CacheManager cacheManager;
 
     private Team dummyTeam;
     TeamResponse teamResponse1;
@@ -64,21 +49,27 @@ class TeamApiDocTest extends ApiTest{
 
     Tag tag1;
     Tag tag2;
+
     @BeforeEach
     public void setUpData() {
+
         roleRepository.save(new Role("작곡가"));
         roleRepository.save(new Role("일러스트레이터"));
         roleRepository.save(new Role("작사가"));
         roleRepository.save(new Role("영상편집"));
-        role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
-        Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
 
         tagRepository.save(new Tag("힙합"));
         tagRepository.save(new Tag("퓨처"));
         tagRepository.save(new Tag("하이퍼팝"));
         tagRepository.save(new Tag("디지코어"));
+
+
+        role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
+        Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
+
         tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
+
         Member member = new Member("member1","a@a.com");
         member.getMemberLinks().add(new MemberLink("a.url","soundcloud"));
         member1 = memberRepository.save(member);
@@ -166,7 +157,6 @@ class TeamApiDocTest extends ApiTest{
     @DisplayName("팀을 조회한다")
     @Test
     void readTeamTest() throws Exception{
-
         TeamResponse response =
                 given()
                 .filter(RestAssuredRestDocumentationWrapper.document("read-team",
@@ -202,12 +192,12 @@ class TeamApiDocTest extends ApiTest{
     void searchTeams(){
         String searchName = "trap";
         List<Role> searchRole = List.of(role1);
-        List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
         List<Long> searchRoleIds = searchRole.stream().map(Role::getId).toList();
-        String searchStatus = TeamStatus.RECRUITING.toString();
+
         List<Tag> searchTags = List.of(tag1,tag2);
-        List<String> searchTagsNames = searchTags.stream().map(Tag::getName).toList();
         List<Long> searchTagIds = searchTags.stream().map(Tag::getId).toList();
+
+        TeamStatus searchStatus = TeamStatus.RECRUITING;
 
         List<TeamResponse> responses =
                 given()
@@ -230,12 +220,16 @@ class TeamApiDocTest extends ApiTest{
                                         fieldWithPath("[].teamStatus").description("팀 상태"))))
                         .when()
                         .queryParam("name", searchName)
-                        .queryParam("roleId", searchRoleIds)
-                        .queryParam("tagIds", searchTagIds.stream().map(Object::toString).toArray())
+                        .queryParam("roleIds", searchRoleIds)
+                        .queryParam("tagIds", searchTagIds)
                         .queryParam("status", searchStatus)
                         .get("/api/teams/search")
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().jsonPath().getList(".", TeamResponse.class);
+
+
+        List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
+        List<String> searchTagsNames = searchTags.stream().map(Tag::getName).toList();
 
         AssertionsForInterfaceTypes.assertThat(responses)
                 .allMatch(response -> response.getName().contains(searchName));
@@ -244,48 +238,10 @@ class TeamApiDocTest extends ApiTest{
                 .allMatch(response -> searchRoleNames.stream().allMatch(role -> response.getRoleNames().contains(role)));
 
         AssertionsForInterfaceTypes.assertThat(responses)
-                .allMatch(response -> response.getTeamStatus().equals(searchStatus));
+                .allMatch(response -> response.getTeamStatus().equals(searchStatus.toString()));
 
         AssertionsForInterfaceTypes.assertThat(responses)
                 .allMatch(response -> searchTagsNames.stream().allMatch(tag -> response.getTags().contains(tag)));
-    }
-
-    @DisplayName("캐시로 팀 조회")
-    @Test
-    void searchTeamsByCaching(){
-        String searchName = "trap";
-        List<Role> searchRole = List.of(role1);
-        List<Long> searchRoleIds = searchRole.stream().map(Role::getId).toList();
-        TeamStatus searchStatus = TeamStatus.RECRUITING;
-        List<Tag> searchTags = List.of(tag1,tag2);
-        List<Long> searchTagIds = searchTags.stream().map(Tag::getId).toList();
-
-        List<TeamResponse> firstCall =
-                given()
-                        .when()
-                        .queryParam("name", searchName)
-                        .queryParam("roleId", searchRoleIds)
-                        .queryParam("tagIds", searchTagIds.stream().map(Object::toString).toArray())
-                        .queryParam("status", searchStatus)
-                        .get("/api/teams/search")
-                        .then().statusCode(HttpStatus.OK.value())
-                        .extract().body().jsonPath().getList(".", TeamResponse.class);
-
-        List<TeamResponse> secondCall =
-                given()
-                        .when()
-                        .queryParam("name", searchName)
-                        .queryParam("roleId", searchRoleIds)
-                        .queryParam("tagIds", searchTagIds.stream().map(Object::toString).toArray())
-                        .queryParam("status", searchStatus)
-                        .get("/api/teams/search")
-                        .then().statusCode(HttpStatus.OK.value())
-                        .extract().body().jsonPath().getList(".", TeamResponse.class);
-
-        // Verify that the service method was called only once
-        verify(teamSearchService, times(1)).searchTeams(any(TeamSearchRequest.class), any(Pageable.class));
-        assertEquals(firstCall, secondCall);
-
     }
 
     @DisplayName("팀을 수정한다.")

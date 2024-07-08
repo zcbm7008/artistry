@@ -19,8 +19,6 @@ import java.util.List;
 @RestController
 public class TeamController {
 
-
-
     private final TeamService teamService;
     private final TeamSearchService teamSearchService;
 
