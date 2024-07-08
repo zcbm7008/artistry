@@ -58,7 +58,7 @@ jobs:
 
 
     - name: Build with Maven
-      run: mvn package -f --quiet pom.xml -Pdev
+      run: mvn package -q -f pom.xml -Pdev
 
     - name: Run the Maven verify phase
       run: mvn --batch-mode  --update-snapshots verify
