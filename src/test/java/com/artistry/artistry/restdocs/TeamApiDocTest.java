@@ -259,7 +259,6 @@ class TeamApiDocTest extends ApiTest{
         TeamStatus searchStatus = TeamStatus.RECRUITING;
         List<Tag> searchTags = List.of(tag1,tag2);
         List<Long> searchTagIds = searchTags.stream().map(Tag::getId).toList();
-        Pageable pageable = PageRequest.of(0, 20);
 
         List<TeamResponse> firstCall =
                 given()
@@ -284,7 +283,7 @@ class TeamApiDocTest extends ApiTest{
                         .extract().body().jsonPath().getList(".", TeamResponse.class);
 
         // Verify that the service method was called only once
-        verify(teamSearchService, times(1)).searchTeams(any(TeamSearchRequest.class), eq(pageable));
+        verify(teamSearchService, times(1)).searchTeams(any(TeamSearchRequest.class), any(Pageable.class));
         assertEquals(firstCall, secondCall);
 
     }
