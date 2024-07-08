@@ -41,16 +41,16 @@ public class TeamController {
         return ResponseEntity.ok(teamResponse);
    }
 
-   @Cacheable(cacheNames = "teamSearchCache")
+   @Cacheable(value = "teamSearchCache", key = "{#name, #roleIds, #tagIds, #status}")
    @GetMapping("/search")
    public ResponseEntity<List<TeamResponse>> findTeamsByCriteria(
-           @RequestParam(required = false) String title,
+           @RequestParam(required = false) String name,
            @RequestParam(required = false) List<Long> roleIds,
            @RequestParam(required = false) List<Long> tagIds,
            @RequestParam(defaultValue = "RECRUITING") TeamStatus status
            , final Pageable pageable) {
 
-        TeamSearchRequest request = new TeamSearchRequest(title,roleIds,tagIds,status);
+        TeamSearchRequest request = new TeamSearchRequest(name,roleIds,tagIds,status);
         return ResponseEntity.ok(teamSearchService.searchTeams(request,pageable));
     }
 

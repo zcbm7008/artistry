@@ -7,7 +7,10 @@ import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
-import com.artistry.artistry.Dto.Request.*;
+import com.artistry.artistry.Dto.Request.ApplicationStatusUpdateRequest;
+import com.artistry.artistry.Dto.Request.LinkRequest;
+import com.artistry.artistry.Dto.Request.RoleRequest;
+import com.artistry.artistry.Dto.Request.TeamSearchRequest;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
 import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
@@ -23,25 +26,23 @@ import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.interceptor.SimpleKey;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.atMost;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 class TeamApiDocTest extends ApiTest{
@@ -52,6 +53,8 @@ class TeamApiDocTest extends ApiTest{
     @MockBean
     private TeamSearchService teamSearchService;
 
+    @Autowired
+    private CacheManager cacheManager;
 
     private Team dummyTeam;
     TeamResponse teamResponse1;
@@ -63,7 +66,6 @@ class TeamApiDocTest extends ApiTest{
     Tag tag2;
     @BeforeEach
     public void setUpData() {
-        MockitoAnnotations.openMocks(this);
         roleRepository.save(new Role("작곡가"));
         roleRepository.save(new Role("일러스트레이터"));
         roleRepository.save(new Role("작사가"));
@@ -197,7 +199,7 @@ class TeamApiDocTest extends ApiTest{
 
     @DisplayName("title,roleIds,tagIds,teamStatus로 팀 조회")
     @Test
-    void searchPortfolios(){
+    void searchTeams(){
         String searchName = "trap";
         List<Role> searchRole = List.of(role1);
         List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
@@ -248,19 +250,18 @@ class TeamApiDocTest extends ApiTest{
                 .allMatch(response -> searchTagsNames.stream().allMatch(tag -> response.getTags().contains(tag)));
     }
 
-    @DisplayName("캐싱으로 팀 조회")
+    @DisplayName("캐시로 팀 조회")
     @Test
-    void searchPortfoliosByCache(){
+    void searchTeamsByCaching(){
         String searchName = "trap";
         List<Role> searchRole = List.of(role1);
-        List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
         List<Long> searchRoleIds = searchRole.stream().map(Role::getId).toList();
-        String searchStatus = TeamStatus.RECRUITING.toString();
+        TeamStatus searchStatus = TeamStatus.RECRUITING;
         List<Tag> searchTags = List.of(tag1,tag2);
-        List<String> searchTagsNames = searchTags.stream().map(Tag::getName).toList();
         List<Long> searchTagIds = searchTags.stream().map(Tag::getId).toList();
+        Pageable pageable = PageRequest.of(0, 20);
 
-        List<TeamResponse> responses =
+        List<TeamResponse> firstCall =
                 given()
                         .when()
                         .queryParam("name", searchName)
@@ -271,7 +272,7 @@ class TeamApiDocTest extends ApiTest{
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().jsonPath().getList(".", TeamResponse.class);
 
-        List<TeamResponse> responses2 =
+        List<TeamResponse> secondCall =
                 given()
                         .when()
                         .queryParam("name", searchName)
@@ -282,7 +283,10 @@ class TeamApiDocTest extends ApiTest{
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().jsonPath().getList(".", TeamResponse.class);
 
-        verify(teamSearchService, atMost(1)).searchTeams(any(TeamSearchRequest.class), any(Pageable.class));
+        // Verify that the service method was called only once
+        verify(teamSearchService, times(1)).searchTeams(any(TeamSearchRequest.class), eq(pageable));
+        assertEquals(firstCall, secondCall);
+
     }
 
     @DisplayName("팀을 수정한다.")

@@ -7,7 +7,7 @@ spring:
     active: local
 
   cache:
-    cache-names: teamSearch
+    cache-names: teamSearchCache
 
   cloud:
     aws:
