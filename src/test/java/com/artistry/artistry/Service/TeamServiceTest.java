@@ -38,8 +38,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 public class TeamServiceTest {
 
-    private static final Pageable PAGEABLE = PageRequest.of(0, 100);
-
     @Autowired
     private TeamService teamService;
     @Autowired
