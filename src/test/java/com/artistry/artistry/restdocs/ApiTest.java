@@ -57,7 +57,6 @@ public abstract class ApiTest {
 
     @BeforeEach
     protected void setUp(RestDocumentationContextProvider restDocumentation) {
-
         RestAssured.port = port;
         bucket.reset();
         requestCounterService.reset();
@@ -77,7 +76,7 @@ public abstract class ApiTest {
     @AfterEach
     void teardown() throws Exception {
         clearDatabase();
-        initializeDatabase();
+//        initializeDatabase();
     }
 
     @Transactional
