@@ -24,8 +24,8 @@ public interface TeamQueryRepository extends JpaRepository<Team,Long>, JpaSpecif
             "LEFT JOIN t.tags tg " +
             "WHERE (:name IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
             "AND (:status IS NULL OR t.teamStatus = :status) " +
-            "AND (:roleIds IS NULL OR tr.id IN :roleIds) " +
-            "AND (:tagIds IS NULL OR tg.id IN :tagIds)")
+            "AND (:roleIds IS NULL OR EXISTS (SELECT 1 FROM t.teamRoles tr WHERE tr.role.id IN :roleIds)) " +
+            "AND (:tagIds IS NULL OR EXISTS (SELECT 1 FROM t.tags tg WHERE tg.id IN :tagIds))")
     Slice<Long> searchTeamIdsWithCriteria(@Param("name") String name,
                               @Param("roleIds") List<Long> roleIds,
                               @Param("tagIds") List<Long> tagIds,
