@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 
 @Getter
+@Setter
 @SQLDelete(sql = "UPDATE team SET deleted = true WHERE id=?")
 @SQLRestriction("deleted=false")
 @AllArgsConstructor

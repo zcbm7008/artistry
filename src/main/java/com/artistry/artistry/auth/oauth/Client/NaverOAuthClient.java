@@ -62,7 +62,7 @@ public class NaverOAuthClient extends AbstractOAuthClient{
 
     private NaverUserResponse parseJsonToResponse(String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(json).path("response");;
+        JsonNode rootNode = objectMapper.readTree(json).path("response");
 
         return objectMapper.treeToValue(rootNode, NaverUserResponse.class);
     }

@@ -55,7 +55,7 @@ jobs:
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> $GITHUB_ENV
           
       - name: Build with Maven
-        run: mvn clean package -f pom.xml -Pdev
+        run: mvn clean package -q -f pom.xml -Pdev
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4

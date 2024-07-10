@@ -6,6 +6,9 @@ spring:
   profiles:
     active: local
 
+  cache:
+    cache-names: teamSearchCache
+
   cloud:
     aws:
       credentials:

@@ -1,46 +1,49 @@
 package com.artistry.artistry.Repository.Query;
 
-import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Response.TeamResponse;
-import com.artistry.artistry.Exceptions.TeamNotFoundException;
-import com.artistry.artistry.Repository.TeamRepository;
+
 import com.artistry.artistry.Service.TeamService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-@Repository
+@Service
 public class TeamQueryRepositoryCustomImpl implements TeamQueryRepositoryCustom {
-    @Autowired
-    private TeamQueryRepository teamQueryRepository;
-    @Autowired
-    private TeamRepository teamRepository;
+    private static final Logger logger = LoggerFactory.getLogger(TeamQueryRepositoryCustomImpl.class);
 
-    @Autowired
-    private TeamService teamService; // TeamService를 주입받음
+    private final TeamQueryRepository teamQueryRepository;
+    private final TeamService teamService;
+
+
+    public TeamQueryRepositoryCustomImpl(TeamQueryRepository teamQueryRepository, TeamService teamService) {
+        this.teamQueryRepository = teamQueryRepository;
+        this.teamService = teamService;
+    }
 
     @Override
+    @Transactional(readOnly = true)
     public Slice<TeamResponse> searchTeamsWithCriteria(
-            Optional<String> name,
-            Optional<List<Long>> roleIds,
-            Optional<List<Long>> tagIds,
-            Optional<TeamStatus> status,
+            String name,
+            List<Long> roleIds,
+            List<Long> tagIds,
+            TeamStatus status,
             Pageable pageable) {
+        logger.info("Searching teams with criteria. Name: {}, RoleIds: {}, TagIds: {}, Status: {}", name, roleIds, tagIds, status);
         Slice<Long> teamIdsSlice = teamQueryRepository.searchTeamIdsWithCriteria(name, roleIds, tagIds, status, pageable);
 
         List<Long> teamIds = teamIdsSlice.getContent();
+        logger.info("Found teamids : {}", teamIds);
 
-        List<TeamResponse> responses = teamService.findTeamsByIds(teamIds); // TeamService를 사용하여 팀 목록을 가져옴
+        List<TeamResponse> responses = teamService.findTeamsByIds(teamIds);
 
+        logger.info("Search completed. Found {} teams.", responses.size());
         return new SliceImpl<>(responses, pageable, teamIdsSlice.hasNext());
     }
 }

@@ -35,13 +35,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TeamSearchService {
-
     private final TeamRepository teamRepository;
-    private final TagService tagService;
-    private final RoleService roleService;
-    private final ApplicationService applicationService;
     private final TeamQueryRepositoryCustom teamQueryRepositoryCustom;
-
 
     public TeamResponse findById(Long id){
         return TeamResponse.from(findEntityById(id));
@@ -61,10 +56,10 @@ public class TeamSearchService {
 
         Slice<TeamResponse> teams =
                 teamQueryRepositoryCustom.searchTeamsWithCriteria(
-                        name,
-                        roleIds,
-                        tagIds,
-                        status,
+                        name.orElse(null),
+                        roleIds.orElse(null),
+                        tagIds.orElse(null),
+                        status.orElse(null),
                         pageable);
 
         return teams.stream().toList();

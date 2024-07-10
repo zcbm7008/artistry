@@ -3,11 +3,11 @@ package com.artistry.artistry.Controller;
 import com.artistry.artistry.Domain.team.TeamStatus;
 import com.artistry.artistry.Dto.Request.*;
 import com.artistry.artistry.Dto.Response.ApplicationResponse;
-import com.artistry.artistry.Dto.Response.PortfolioResponse;
 import com.artistry.artistry.Dto.Response.TeamResponse;
 import com.artistry.artistry.Service.TeamSearchService;
 import com.artistry.artistry.Service.TeamService;
 import jakarta.validation.Valid;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +18,6 @@ import java.util.List;
 @RequestMapping(value = "/api/teams")
 @RestController
 public class TeamController {
-
-
 
     private final TeamService teamService;
     private final TeamSearchService teamSearchService;
@@ -41,15 +39,16 @@ public class TeamController {
         return ResponseEntity.ok(teamResponse);
    }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<TeamResponse>> findTeamsByCriteria(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) List<Long> roleIds,
-            @RequestParam(required = false) List<Long> tagIds,
-            @RequestParam(defaultValue = "RECRUITING") String status
-            , final Pageable pageable) {
+   @Cacheable(value = "teamSearchCache", key = "{#name, #roleIds, #tagIds, #status}")
+   @GetMapping("/search")
+   public ResponseEntity<List<TeamResponse>> findTeamsByCriteria(
+           @RequestParam(required = false) String name,
+           @RequestParam(required = false) List<Long> roleIds,
+           @RequestParam(required = false) List<Long> tagIds,
+           @RequestParam(defaultValue = "RECRUITING") TeamStatus status
+           , final Pageable pageable) {
 
-        TeamSearchRequest request = new TeamSearchRequest(title,roleIds,tagIds,TeamStatus.of(status));
+        TeamSearchRequest request = new TeamSearchRequest(name,roleIds,tagIds,status);
         return ResponseEntity.ok(teamSearchService.searchTeams(request,pageable));
     }
 

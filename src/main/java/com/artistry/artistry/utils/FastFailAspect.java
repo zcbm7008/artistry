@@ -7,7 +7,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 @Aspect
@@ -22,7 +21,7 @@ public class FastFailAspect {
     @Around("@annotation(org.springframework.web.bind.annotation.RequestMapping) || @annotation(org.springframework.web.bind.annotation.GetMapping) || @annotation(org.springframework.web.bind.annotation.PostMapping)")
     public Object checkRequestLimit(ProceedingJoinPoint joinPoint) throws Throwable {
         if (!tryConsumeToken()) {
-           throw new ArtistryTooManyRequests(String.valueOf("요청이 너무 많습니다."));
+           throw new ArtistryTooManyRequests("요청이 너무 많습니다.");
         }
 
         if (!checkRequestCount()) {

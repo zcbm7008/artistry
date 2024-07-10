@@ -7,7 +7,6 @@ import com.artistry.artistry.Domain.member.MemberLink;
 import com.artistry.artistry.Domain.tag.Tag;
 import com.artistry.artistry.Domain.team.Team;
 import com.artistry.artistry.Domain.team.TeamStatus;
-import com.artistry.artistry.Dto.Request.ApplicationInfoRequest;
 import com.artistry.artistry.Dto.Request.ApplicationStatusUpdateRequest;
 import com.artistry.artistry.Dto.Request.LinkRequest;
 import com.artistry.artistry.Dto.Request.RoleRequest;
@@ -25,19 +24,11 @@ import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,21 +49,27 @@ class TeamApiDocTest extends ApiTest{
 
     Tag tag1;
     Tag tag2;
+
     @BeforeEach
     public void setUpData() {
+
         roleRepository.save(new Role("작곡가"));
         roleRepository.save(new Role("일러스트레이터"));
         roleRepository.save(new Role("작사가"));
         roleRepository.save(new Role("영상편집"));
-        role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
-        Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
 
         tagRepository.save(new Tag("힙합"));
         tagRepository.save(new Tag("퓨처"));
         tagRepository.save(new Tag("하이퍼팝"));
         tagRepository.save(new Tag("디지코어"));
+
+
+        role1 = roleRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 1"));
+        Role role2 = roleRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid role ID 2"));
+
         tag1 = tagRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 1"));
         tag2 = tagRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Invalid tag ID 2"));
+
         Member member = new Member("member1","a@a.com");
         member.getMemberLinks().add(new MemberLink("a.url","soundcloud"));
         member1 = memberRepository.save(member);
@@ -160,7 +157,6 @@ class TeamApiDocTest extends ApiTest{
     @DisplayName("팀을 조회한다")
     @Test
     void readTeamTest() throws Exception{
-
         TeamResponse response =
                 given()
                 .filter(RestAssuredRestDocumentationWrapper.document("read-team",
@@ -193,15 +189,15 @@ class TeamApiDocTest extends ApiTest{
 
     @DisplayName("title,roleIds,tagIds,teamStatus로 팀 조회")
     @Test
-    void searchPortfolios(){
+    void searchTeams(){
         String searchName = "trap";
         List<Role> searchRole = List.of(role1);
-        List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
         List<Long> searchRoleIds = searchRole.stream().map(Role::getId).toList();
-        String searchStatus = TeamStatus.RECRUITING.toString();
+
         List<Tag> searchTags = List.of(tag1,tag2);
-        List<String> searchTagsNames = searchTags.stream().map(Tag::getName).toList();
         List<Long> searchTagIds = searchTags.stream().map(Tag::getId).toList();
+
+        TeamStatus searchStatus = TeamStatus.RECRUITING;
 
         List<TeamResponse> responses =
                 given()
@@ -224,12 +220,16 @@ class TeamApiDocTest extends ApiTest{
                                         fieldWithPath("[].teamStatus").description("팀 상태"))))
                         .when()
                         .queryParam("name", searchName)
-                        .queryParam("roleId", searchRoleIds)
-                        .queryParam("tagIds", searchTagIds.stream().map(Object::toString).toArray())
+                        .queryParam("roleIds", searchRoleIds)
+                        .queryParam("tagIds", searchTagIds)
                         .queryParam("status", searchStatus)
                         .get("/api/teams/search")
                         .then().statusCode(HttpStatus.OK.value())
                         .extract().body().jsonPath().getList(".", TeamResponse.class);
+
+
+        List<String> searchRoleNames = searchRole.stream().map(Role::getName).toList();
+        List<String> searchTagsNames = searchTags.stream().map(Tag::getName).toList();
 
         AssertionsForInterfaceTypes.assertThat(responses)
                 .allMatch(response -> response.getName().contains(searchName));
@@ -238,7 +238,7 @@ class TeamApiDocTest extends ApiTest{
                 .allMatch(response -> searchRoleNames.stream().allMatch(role -> response.getRoleNames().contains(role)));
 
         AssertionsForInterfaceTypes.assertThat(responses)
-                .allMatch(response -> response.getTeamStatus().equals(searchStatus));
+                .allMatch(response -> response.getTeamStatus().equals(searchStatus.toString()));
 
         AssertionsForInterfaceTypes.assertThat(responses)
                 .allMatch(response -> searchTagsNames.stream().allMatch(tag -> response.getTags().contains(tag)));

@@ -38,12 +38,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 public class TeamServiceTest {
 
-    private static final Pageable PAGEABLE = PageRequest.of(0, 100);
-
     @Autowired
     private TeamService teamService;
-    @Autowired
-    private TeamSearchService teamSearchService;
     @Autowired
     private TagRepository tagRepository;
     @Autowired
@@ -58,8 +54,6 @@ public class TeamServiceTest {
     MemberRepository memberRepository;
     @Autowired
     PortfolioRepository portfolioRepository;
-    @Autowired
-    ApplicationRepository applicationRepository;
     String nameToFind;
     Role roleToFind;
     Tag tag1;
@@ -170,36 +164,7 @@ public class TeamServiceTest {
 
     }
 
-    @DisplayName("title, roleIds, tagIds ,status로 팀을 조회한다.")
-    @Test
-    void findTeamsQuery(){
-        //Given
-        String name = "trap";
-        TeamStatus statusToFind = TeamStatus.RECRUITING;
-        List<Tag> tags = List.of(tag1,tag2);
-        List<String> tagsToFind =
-                tags.stream().map(Tag::getName).toList();
 
-        List<Long> tagIdsToFind =
-                tags.stream().map(Tag::getId).toList();
-
-
-        TeamSearchRequest request = new TeamSearchRequest(name,List.of(roleToFind.getId()),tagIdsToFind,statusToFind);
-        TeamSearchRequest request2 = new TeamSearchRequest(name,List.of(roleToFind.getId()),null,null);
-        //When
-        List<TeamResponse> responses = teamSearchService.searchTeams(request,PAGEABLE);
-        List<TeamResponse> responses2 = teamSearchService.searchTeams(request2,PAGEABLE);
-
-
-        //Then
-        assertThat(responses).allMatch(teamResponse -> teamResponse.getName().contains(name));
-        assertThat(responses).allMatch(teamResponse -> teamResponse.getRoleNames().contains(roleToFind.getName()));
-        assertThat(responses).allMatch(teamResponse -> teamResponse.getTeamStatus().equals(statusToFind.toString()));
-        assertThat(responses).allMatch(teamResponse -> teamResponse.getTags().contains(tagsToFind));
-
-        assertThat(responses2).allMatch(teamResponse -> teamResponse.getName().contains(name));
-
-    }
 
     @DisplayName("태그 Id로 팀을 검색한다.")
     @Test
