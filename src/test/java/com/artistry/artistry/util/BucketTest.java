@@ -26,7 +26,7 @@ public class BucketTest extends ApiTest {
     @Test
     void testBucket4j() throws InterruptedException {
         bucket.tryConsumeAsMuchAsPossible();
-        bucket.tryConsume(1);
+        bucket.tryConsume(25);
         given().when().get("/api/tags")
                 .then()
                 .statusCode(HttpStatus.TOO_MANY_REQUESTS.value());
