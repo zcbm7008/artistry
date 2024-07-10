@@ -16,7 +16,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: validate h
+      ddl-auto: validate
 
 
 AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
