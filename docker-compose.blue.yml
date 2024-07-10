@@ -5,6 +5,8 @@ services:
     build: .
     env_file:
       - .env
+    volumes:
+      - /path/on/host:/logs
     ports:
       - "8081:8080"
     container_name: artistry-blue
