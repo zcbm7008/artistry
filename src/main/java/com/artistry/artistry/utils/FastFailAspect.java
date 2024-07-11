@@ -3,6 +3,8 @@ package com.artistry.artistry.utils;
 import com.artistry.artistry.Exceptions.ArtistryTooManyRequests;
 import com.artistry.artistry.Service.RequestCounterService;
 import io.github.bucket4j.Bucket;
+import lombok.Getter;
+import lombok.Setter;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,6 +17,8 @@ public class FastFailAspect {
 
     @Autowired
     private RequestCounterService requestCounterService;
+    @Setter
+    @Getter
     @Autowired
     Bucket bucket;
 
@@ -42,4 +46,5 @@ public class FastFailAspect {
     private boolean checkRequestCount() {
         return requestCounterService.increment();
     }
+
 }
