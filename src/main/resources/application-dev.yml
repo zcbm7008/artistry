@@ -24,9 +24,11 @@ AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
 
 server:
   tomcat:
-    accept-count: 10
-    maxThread: 50
-    connection-timeout: 20000ms
+    accept-count: 100
+    minSpareThreads: 25
+    maxSpareThreads: 75
+    maxThread: 100
+    connection-timeout: 20000
     maxKeepAliveRequests: 100
     keepAliveTimeout: 5000
 

@@ -11,7 +11,7 @@ public class BucketConfig {
     @Bean
     public Bucket bucket() {
         return Bucket.builder()
-                .addLimit(limit -> limit.capacity(200).refillGreedy(30, Duration.ofMillis(1000)))
+                .addLimit(limit -> limit.capacity(200).refillGreedy(20, Duration.ofMillis(1000)))
                 .build();
     }
 }

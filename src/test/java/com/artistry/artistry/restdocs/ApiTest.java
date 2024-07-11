@@ -4,6 +4,7 @@ package com.artistry.artistry.restdocs;
 import com.artistry.artistry.DataLoader;
 import com.artistry.artistry.Repository.*;
 import com.artistry.artistry.Service.RequestCounterService;
+import com.artistry.artistry.utils.FastFailAspect;
 import io.github.bucket4j.Bucket;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -47,13 +48,13 @@ public abstract class ApiTest {
     protected RoleRepository roleRepository;
     @Autowired
     protected TeamRepository teamRepository;
-    @Autowired
-    protected ApplicationRepository applicationRepository;
 
     @Autowired
     Bucket bucket;
     @Autowired
     RequestCounterService requestCounterService;
+    @Autowired
+    FastFailAspect fastFailAspect;
 
     @BeforeEach
     protected void setUp(RestDocumentationContextProvider restDocumentation) {
